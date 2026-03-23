@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->text('url_demo')->nullable();
             $table->text('url_github')->nullable();
             $table->boolean('destacado')->nullable();
-
+            $table->timestamps();
             $table->foreign('id_portafolio')->references('id_portafolio')->on('portafolio');
         });
 

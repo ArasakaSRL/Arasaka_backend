@@ -1,7 +1,8 @@
+-- EXTENSION
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE usuario (
-    id_usuario UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_usuario UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     nombre VARCHAR(50),
     apellido VARCHAR(50),
     correo VARCHAR(150),
@@ -15,69 +16,69 @@ CREATE TABLE usuario (
 );
 
 CREATE TABLE rol (
-    id_rol UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_rol UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     nombre_rol VARCHAR(50),
     descripcion VARCHAR(550)
 );
 
 CREATE TABLE usuario_rol (
-    id_usuario UUID NOT NULL,
-    id_rol UUID NOT NULL,
+    id_usuario UUID,
+    id_rol UUID,
     PRIMARY KEY (id_usuario, id_rol),
     FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_rol) REFERENCES rol (id_rol) ON DELETE CASCADE
 );
 
 CREATE TABLE telefono (
-    id_telefono UUID DEFAULT gen_random_uuid () PRIMARY KEY,
-    id_usuario UUID NOT NULL,
+    id_telefono UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    id_usuario UUID,
     telefono VARCHAR(10),
     FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario) ON DELETE CASCADE
 );
 
 CREATE TABLE pais (
-    id_pais UUID DEFAULT gen_random_uuid () PRIMARY KEY,
-    id_usuario UUID NOT NULL,
+    id_pais UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    id_usuario UUID,
     nombre VARCHAR(255),
     FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario) ON DELETE CASCADE
 );
 
 CREATE TABLE profesion (
-    id_profesion UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_profesion UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     nombre VARCHAR(50),
     descripcion VARCHAR(550)
 );
 
 CREATE TABLE usuario_profesion (
-    id_usuario UUID NOT NULL,
-    id_profesion UUID NOT NULL,
+    id_usuario UUID,
+    id_profesion UUID,
     PRIMARY KEY (id_usuario, id_profesion),
     FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_profesion) REFERENCES profesion (id_profesion) ON DELETE CASCADE
 );
 
 CREATE TABLE idioma (
-    id_idioma UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_idioma UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     nombre VARCHAR(100)
 );
 
 CREATE TABLE nivel_ingles (
-    id_nivel_ingles UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_nivel_ingles UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_idioma UUID,
     nivel VARCHAR(2),
     FOREIGN KEY (id_idioma) REFERENCES idioma (id_idioma)
 );
 
 CREATE TABLE usuario_idioma (
-    id_usuario UUID NOT NULL,
-    id_idioma UUID NOT NULL,
+    id_usuario UUID,
+    id_idioma UUID,
     PRIMARY KEY (id_usuario, id_idioma),
     FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_idioma) REFERENCES idioma (id_idioma) ON DELETE CASCADE
 );
 
 CREATE TABLE portafolio (
-    id_portafolio UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_portafolio UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_usuario UUID,
     nombre VARCHAR(50),
     visibilidad BOOLEAN,
@@ -88,7 +89,7 @@ CREATE TABLE portafolio (
 );
 
 CREATE TABLE configuracion_portafolio (
-    id_configuracion_portafolio UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_configuracion_portafolio UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_portafolio UUID,
     mostrar_proyecto BOOLEAN,
     mostrar_habilidades BOOLEAN,
@@ -100,17 +101,17 @@ CREATE TABLE configuracion_portafolio (
 );
 
 CREATE TABLE visualizaciones_portafolio (
-    id_visualizacion_portafolio UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_visualizacion_portafolio UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_portafolio UUID,
     numero INTEGER,
     fecha DATE,
     ip_vista TEXT,
-    clics_redes NUMERIC,
+    clics_redes DECIMAL,
     FOREIGN KEY (id_portafolio) REFERENCES portafolio (id_portafolio)
 );
 
 CREATE TABLE reporte (
-    id_reporte UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_reporte UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_visualizacion_portafolio UUID,
     tipo VARCHAR(150),
     fecha_creacion DATE,
@@ -119,7 +120,7 @@ CREATE TABLE reporte (
 );
 
 CREATE TABLE proyecto (
-    id_proyecto UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_proyecto UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_portafolio UUID,
     nombre VARCHAR(50),
     descripcion VARCHAR(550),
@@ -128,35 +129,37 @@ CREATE TABLE proyecto (
     url_demo TEXT,
     url_github TEXT,
     destacado BOOLEAN,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now(),
     FOREIGN KEY (id_portafolio) REFERENCES portafolio (id_portafolio)
 );
 
 CREATE TABLE estado_proyecto (
-    id_estado_proyecto UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_estado_proyecto UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_proyecto UUID,
-    estado VARCHAR(255),
+    estado VARCHAR,
     FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto)
 );
 
 CREATE TABLE url_imagen_proyecto (
-    id_url_imagen_proyecto UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_url_imagen_proyecto UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_proyecto UUID,
     url_imagen TEXT,
     FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto)
 );
 
 CREATE TABLE categoria_habilidad (
-    id_categoria_habilidad UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_categoria_habilidad UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     nombre VARCHAR(100)
 );
 
 CREATE TABLE nivel_de_habilidad (
-    id_nivel_habilidad UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_nivel_habilidad UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     nivel VARCHAR(50)
 );
 
 CREATE TABLE habilidad (
-    id_habilidad UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_habilidad UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_portafolio UUID,
     id_categoria_habilidad UUID,
     id_nivel_habilidad UUID,
@@ -167,7 +170,7 @@ CREATE TABLE habilidad (
 );
 
 CREATE TABLE tecnologias (
-    id_tecnologia UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_tecnologia UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_proyecto UUID,
     id_habilidad UUID,
     nombre VARCHAR(225),
@@ -177,19 +180,19 @@ CREATE TABLE tecnologias (
 );
 
 CREATE TABLE categoria_tecnologia (
-    id_categoria_tecnologia UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_categoria_tecnologia UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_tecnologia UUID,
     nombre VARCHAR(225),
     FOREIGN KEY (id_tecnologia) REFERENCES tecnologias (id_tecnologia)
 );
 
 CREATE TABLE tipo_experiencia (
-    id_tipo_experiencia UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_tipo_experiencia UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     nombre VARCHAR(100)
 );
 
 CREATE TABLE experiencia (
-    id_experiencia UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_experiencia UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_portafolio UUID,
     id_tipo_experiencia UUID,
     cargo VARCHAR(100),
@@ -202,8 +205,9 @@ CREATE TABLE experiencia (
     FOREIGN KEY (id_tipo_experiencia) REFERENCES tipo_experiencia (id_tipo_experiencia)
 );
 
+=
 CREATE TABLE servicio (
-    id_servicio UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_servicio UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_portafolio UUID,
     nombre VARCHAR(150),
     descripcion VARCHAR(550),
@@ -212,7 +216,7 @@ CREATE TABLE servicio (
 );
 
 CREATE TABLE certificacion (
-    id_certificacion UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_certificacion UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_portafolio UUID,
     titulo VARCHAR(100),
     descripcion VARCHAR(550),
@@ -223,7 +227,7 @@ CREATE TABLE certificacion (
 );
 
 CREATE TABLE redes_profesionales (
-    id_red_profesional UUID DEFAULT gen_random_uuid () PRIMARY KEY,
+    id_red_profesional UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     id_portafolio UUID,
     nombre VARCHAR(150),
     url TEXT,

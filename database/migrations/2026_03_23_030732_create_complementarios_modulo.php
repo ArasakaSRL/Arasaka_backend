@@ -18,10 +18,16 @@ return new class extends Migration {
 
             $table->foreign('id_portafolio')->references('id_portafolio')->on('portafolio');
         });
+        
+        Schema::create('categoria_certificacion', function (Blueprint $table) {
+            $table->uuid('id_categoria_certificacion')->primary()->default(DB::raw('gen_random_uuid()'));
+            $table->string('nombre',150)->nullable();
+        });
 
         Schema::create('certificacion', function (Blueprint $table) {
             $table->uuid('id_certificacion')->primary()->default(DB::raw('gen_random_uuid()'));
             $table->uuid('id_portafolio');
+            $table->uuid('id_categoria_certificacion')->nullable();
             $table->string('titulo',100)->nullable();
             $table->string('descripcion',550)->nullable();
             $table->string('institucion_emisora',150)->nullable();
@@ -29,6 +35,7 @@ return new class extends Migration {
             $table->text('url_archivo')->nullable();
 
             $table->foreign('id_portafolio')->references('id_portafolio')->on('portafolio');
+            $table->foreign('id_categoria_certificacion')->references('id_categoria_certificacion')->on('categoria_certificacion');
         });
 
         Schema::create('redes_profesionales', function (Blueprint $table) {
@@ -43,6 +50,7 @@ return new class extends Migration {
 
     public function down(): void {
         Schema::dropIfExists('redes_profesionales');
+        Schema::dropIfExists('categoria_certificacion');
         Schema::dropIfExists('certificacion');
         Schema::dropIfExists('servicio');
     }
