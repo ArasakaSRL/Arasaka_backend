@@ -22,6 +22,8 @@ return new class extends Migration {
         Schema::create('categoria_certificacion', function (Blueprint $table) {
             $table->uuid('id_categoria_certificacion')->primary()->default(DB::raw('gen_random_uuid()'));
             $table->string('nombre',150)->nullable();
+            $table->string('descripcion',550)->nullable();
+            $table->text('url_imagen')->nullable();
         });
 
         Schema::create('certificacion', function (Blueprint $table) {
