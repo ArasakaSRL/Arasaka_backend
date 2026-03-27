@@ -13,7 +13,7 @@ class Certificacion extends Model
     protected $primaryKey = 'id_certificacion';
     public $incrementing = false;
     protected $keyType = 'string';
-
+    public $timestamps = false;
     protected $fillable = [
         'id_portafolio',
         'titulo',
@@ -21,6 +21,8 @@ class Certificacion extends Model
         'institucion_emisora',
         'fecha_obtencion',
         'url_archivo',
+        'orientacion_imagen',
+        'id_categoria_certificacion',
     ];
 
     protected $casts = [
