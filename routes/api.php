@@ -7,6 +7,14 @@ use App\Http\Controllers\PortafolioController;
 use App\Http\Controllers\Api\ProyectoController;
 use App\Http\Controllers\Api\TecnologiaController;
 use App\Http\Controllers\Api\HabilidadController;
+use App\Http\Controllers\Api\CategoriaHabilidadController;
+
+Route::get('/ping', fn () => response()->json([
+        'message' => 'pong',
+        'service' => 'Arasaka Backend',
+        'enviroment' => app()->environment(),
+        'timestamp' => now()->toIso8601String()
+    ]));
 
 Route::middleware('auth:sanctum')->group(function () {
    
@@ -20,19 +28,19 @@ Route::middleware('auth:sanctum')->group(function () {
     
 });
 
- Route::get('/ping', fn () => response()->json([
-        'message' => 'pong',
-        'service' => 'Arasaka Backend',
-        'enviroment' => app()->environment(),
-        'timestamp' => now()->toIso8601String()
-    ]));
-
+    // Rutas para proyectos
     Route::get('/proyectos', [ProyectoController::class, 'index']);
     Route::post('/proyectos', [ProyectoController::class, 'store']);
     Route::get('/proyectos/{id}', [ProyectoController::class, 'show']);
     Route::put('/proyectos/{id}', [ProyectoController::class, 'update']);
     Route::delete('/proyectos/{id}', [ProyectoController::class, 'destroy']);
 
+    // Rutas para tecnologías
     Route::get('/tecnologias', [TecnologiaController::class, 'index']);
 
+
+    // Rutas para habilidades
     Route::post('/habilidades', [HabilidadController::class, 'store']);
+
+    // rutas para categorías de habilidades
+    Route::get('/categorias-habilidad', [CategoriaHabilidadController::class, 'index']);
