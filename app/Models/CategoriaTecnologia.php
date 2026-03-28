@@ -21,6 +21,6 @@ class CategoriaTecnologia extends Model
 
     public function tecnologia()
     {
-        return $this->belongsTo(Tecnologia::class, 'id_tecnologia', 'id_tecnologia');
+        return $this->hasMany(Tecnologia::class, 'id_tecnologia', 'id_tecnologia');
     }
 }

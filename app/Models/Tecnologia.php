@@ -39,6 +39,6 @@ class Tecnologia extends Model
 
     public function categorias()
     {
-        return $this->hasMany(CategoriaTecnologia::class, 'id_tecnologia', 'id_tecnologia');
+        return $this->belongsTo(CategoriaTecnologia::class, 'id_tecnologia', 'id_tecnologia');
     }
 }
