@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreProyectoRequest;
+use App\Http\Requests\proyecto\StoreProyectoRequest;
 use Illuminate\Http\Request;
 use App\Actions\proyectos\CrearProyectoAction;
 use App\Models\Proyecto;
@@ -25,7 +25,8 @@ class ProyectoController extends Controller
             'descripcion' => 'nullable|string',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
-            'id_tecnologia' => 'nullable|exists:tecnologias,id',
+            'tecnologias' => 'nullable|array',
+            'tecnologias.*' => 'exists:tecnologias,id_tecnologia',
             'url_proyecto' => 'nullable|url',
             'url_repositorio' => 'nullable|url',
         ]);
@@ -45,10 +46,11 @@ class ProyectoController extends Controller
             'descripcion' => $request->descripcion,
             'fecha_inicio' => $request->fecha_inicio,
             'fecha_fin' => $request->fecha_fin,
-            'id_tecnologia' => $request->id_tecnologia,
             'url_proyecto' => $request->url_proyecto,
             'url_repositorio' => $request->url_repositorio,
         ]);
+
+        $proyecto->tecnologias()->sync($request->tecnologias);
 
         if ($proyecto) {
             $data = [
