@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ProyectoController;
 use App\Http\Controllers\Api\TecnologiaController;
 use App\Http\Controllers\Api\HabilidadController;
 use App\Http\Controllers\Api\CategoriaHabilidadController;
+use App\Http\Controllers\Api\NivelHabilidadController;
 
 Route::get('/ping', fn () => response()->json([
         'message' => 'pong',
@@ -38,9 +39,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rutas para tecnologías
     Route::get('/tecnologias', [TecnologiaController::class, 'index']);
 
-
     // Rutas para habilidades
     Route::post('/habilidades', [HabilidadController::class, 'store']);
 
     // rutas para categorías de habilidades
     Route::get('/categorias-habilidad', [CategoriaHabilidadController::class, 'index']);
+
+    // ruta para niveles de habilidad
+    Route::get('/niveles-habilidad', [NivelHabilidadController::class, 'index']);
