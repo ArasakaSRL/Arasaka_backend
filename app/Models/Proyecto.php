@@ -15,6 +15,7 @@ class Proyecto extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'id_proyecto',
         'id_portafolio',
         'nombre',
         'descripcion',
@@ -46,8 +47,13 @@ class Proyecto extends Model
         return $this->hasMany(UrlImagenProyecto::class, 'id_proyecto', 'id_proyecto');
     }
 
-    public function tecnologias()
-    {
-        return $this->hasMany(Tecnologia::class, 'id_proyecto', 'id_proyecto');
-    }
+   public function tecnologias()
+{
+    return $this->belongsToMany(
+        Tecnologia::class,
+        'proyecto_tecnologia',
+        'id_proyecto',
+        'id_tecnologia'
+    );
+}
 }

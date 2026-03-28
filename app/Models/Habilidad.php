@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Str ;
 class Habilidad extends Model
 {
     use HasFactory;
@@ -13,7 +13,7 @@ class Habilidad extends Model
     protected $primaryKey = 'id_habilidad';
     public $incrementing = false;
     protected $keyType = 'string';
-
+    public $timestamps = false;
     protected $fillable = [
         'id_portafolio',
         'id_categoria_habilidad',
@@ -21,6 +21,16 @@ class Habilidad extends Model
         'nombre',
     ];
 
+    protected static function boot()
+{
+    parent::boot();
+
+    static::creating(function ($model) {
+        if (!$model->id_habilidad) {
+            $model->id_habilidad = (string) Str::uuid();
+        }
+    });
+}
     public function portafolio()
     {
         return $this->belongsTo(Portafolio::class, 'id_portafolio', 'id_portafolio');
@@ -37,7 +47,12 @@ class Habilidad extends Model
     }
 
     public function tecnologias()
-    {
-        return $this->hasMany(Tecnologia::class, 'id_habilidad', 'id_habilidad');
-    }
+{
+    return $this->belongsToMany(
+        Tecnologia::class,
+        'habilidades_tiene_tecnologias',
+        'id_habilidad',
+        'id_tecnologia'
+    );
+}
 }
