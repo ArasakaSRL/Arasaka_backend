@@ -55,8 +55,7 @@ class ProyectoController extends Controller
         if ($proyecto) {
             $data = [
                 'message' => 'Proyecto creado exitosamente',
-                'data' => $proyecto,
-                "tecnologias" => $proyecto->tecnologias
+                'data' => $proyecto->load('tecnologias')
             ];
             return response()->json($data, 201);
         } else {
