@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PortafolioController;
 use App\Http\Controllers\Api\ProyectoController;
 use App\Http\Controllers\Api\TecnologiaController;
+use App\Http\Controllers\Api\HabilidadController;
 
 Route::middleware('auth:sanctum')->group(function () {
    
@@ -33,3 +34,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/proyectos/{id}', [ProyectoController::class, 'destroy']);
 
     Route::get('/tecnologias', [TecnologiaController::class, 'index']);
+
+    Route::post('/habilidades', [HabilidadController::class, 'store']);
