@@ -13,17 +13,23 @@ class Tecnologia extends Model
     protected $primaryKey = 'id_tecnologia';
     public $incrementing = false;
     protected $keyType = 'string';
-
+    public $timestamps = false;
+    
     protected $fillable = [
-        'id_proyecto',
         'id_habilidad',
         'nombre',
         'descripcion',
+        'logo',
     ];
 
-    public function proyecto()
+     public function proyectos()
     {
-        return $this->belongsTo(Proyecto::class, 'id_proyecto', 'id_proyecto');
+        return $this->belongsToMany(
+            Proyecto::class,
+            'proyecto_tecnologia',
+            'id_tecnologia',
+            'id_proyecto'
+        );
     }
 
     public function habilidad()
