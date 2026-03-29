@@ -43,7 +43,10 @@ class Usuario extends Authenticatable
         });
     }
 
-    // 🔹 Relaciones
+    public function getEmailForPasswordReset(): string
+    {
+        return $this->correo;
+    }
 
     public function roles()
     {
