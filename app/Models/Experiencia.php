@@ -13,7 +13,7 @@ class Experiencia extends Model
     protected $primaryKey = 'id_experiencia';
     public $incrementing = false;
     protected $keyType = 'string';
-
+    public $timestamps = false; 
     protected $fillable = [
         'id_portafolio',
         'id_tipo_experiencia',

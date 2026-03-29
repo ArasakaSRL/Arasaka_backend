@@ -9,6 +9,9 @@ use App\Http\Controllers\Api\TecnologiaController;
 use App\Http\Controllers\Api\HabilidadController;
 use App\Http\Controllers\Api\CategoriaHabilidadController;
 use App\Http\Controllers\Api\NivelHabilidadController;
+use App\Http\Controllers\Certificacion\CategoriaCertificacionController;
+use App\Http\Controllers\Certificacion\CertificacionController;
+use App\Http\Controllers\Experiencia\ExperienciaController;
 
 Route::get('/ping', fn () => response()->json([
         'message' => 'pong',
@@ -47,3 +50,40 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ruta para niveles de habilidad
     Route::get('/niveles-habilidad', [NivelHabilidadController::class, 'index']);
+
+
+
+Route::prefix('categorias')->group(function () {
+    Route::get('/', [CategoriaCertificacionController::class, 'index']);
+    Route::post('/', [CategoriaCertificacionController::class, 'store']);
+    Route::get('/{id}', [CategoriaCertificacionController::class, 'show']);
+    Route::put('/{categoria}', [CategoriaCertificacionController::class, 'update']);
+    Route::delete('/{categoria}', [CategoriaCertificacionController::class, 'destroy']);
+});
+
+Route::prefix('portafolios/{idPortafolio}')->group(function () {
+    Route::get('certificaciones', [CertificacionController::class, 'index']);
+    Route::post('certificaciones', [CertificacionController::class, 'store']);
+});
+
+Route::get('certificaciones/{certificacion}', [CertificacionController::class, 'show']);
+Route::put('certificaciones/{certificacion}', [CertificacionController::class, 'update']);
+Route::delete('certificaciones/{certificacion}', [CertificacionController::class, 'destroy']);
+Route::get(
+    'portafolios/{idPortafolio}/certificaciones/categoria/{idCategoria}',
+    [CertificacionController::class, 'byCategoria']
+);
+
+Route::delete(
+    'portafolios/{idPortafolio}/certificaciones',
+    [CertificacionController::class, 'deleteByPortafolio']
+);
+
+Route::prefix('experiencias')->group(function () {
+    Route::get('/', [ExperienciaController::class, 'index']);
+    Route::get('{id}', [ExperienciaController::class, 'show']);
+    Route::post('/', [ExperienciaController::class, 'store']);
+    Route::put('{id}', [ExperienciaController::class, 'update']);
+    Route::delete('{id}', [ExperienciaController::class, 'destroy']);
+    Route::get('portafolio/{portafolioId}', [ExperienciaController::class, 'byPortafolio']);
+});
