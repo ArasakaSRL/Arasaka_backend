@@ -1,7 +1,7 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 
 use App\Http\Controllers\PortafolioController;
 use App\Http\Controllers\Api\ProyectoController;
@@ -12,6 +12,11 @@ use App\Http\Controllers\Api\NivelHabilidadController;
 use App\Http\Controllers\Certificacion\CategoriaCertificacionController;
 use App\Http\Controllers\Certificacion\CertificacionController;
 use App\Http\Controllers\Experiencia\ExperienciaController;
+
+Route::middleware(['auth:sanctum'])->get('/usuario', function (Request $request) {
+    return $request->user();
+});
+
 
 Route::get('/ping', fn () => response()->json([
         'message' => 'pong',
@@ -87,3 +92,5 @@ Route::prefix('experiencias')->group(function () {
     Route::delete('{id}', [ExperienciaController::class, 'destroy']);
     Route::get('portafolio/{portafolioId}', [ExperienciaController::class, 'byPortafolio']);
 });
+
+require __DIR__.'/auth.php';
