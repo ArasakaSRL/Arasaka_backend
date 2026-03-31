@@ -22,7 +22,7 @@ class Usuario extends Authenticatable
         'apellido',
         'correo',
         'password',
-        'biografia',
+        'descripcion_laboral',
         'url_foto',
         'estado',
         'verificacion_email'
