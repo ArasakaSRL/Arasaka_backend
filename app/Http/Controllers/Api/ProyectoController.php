@@ -9,9 +9,22 @@ use App\Http\Requests\Proyecto\StoreProyectoRequest;
 
 class ProyectoController extends Controller
 {
-    public function index()
+    public function index(string $idPortafolio)
     {
         // Lógica para obtener todos los proyectos
+        $proyectos = Proyecto::where('id_portafolio', $idPortafolio)->with('tecnologias')->get();
+        if ($proyectos) {
+            $data = [
+                'message' => 'Proyectos obtenidos exitosamente',
+                'data' => $proyectos
+            ];
+            return response()->json($data, 200);
+        } else {
+            $data = [
+                'message' => 'Error al obtener los proyectos'
+            ];
+            return response()->json($data, 500);
+        }
     }
 
     public function store(StoreProyectoRequest $request)

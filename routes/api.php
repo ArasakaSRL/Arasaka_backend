@@ -38,12 +38,15 @@ Route::middleware("auth:sanctum")->group(function () {
   Route::delete("/portafolios/{id}", [PortafolioController::class, "destroy"]);
 });
 
-// Rutas para proyectos
-Route::get("/proyectos", [ProyectoController::class, "index"]);
-Route::post("/proyectos", [ProyectoController::class, "store"]);
-Route::get("/proyectos/{id}", [ProyectoController::class, "show"]);
-Route::put("/proyectos/{id}", [ProyectoController::class, "update"]);
-Route::delete("/proyectos/{id}", [ProyectoController::class, "destroy"]);
+// Rutas para elementos relacionados a portafolios
+Route::prefix("portafolios/{idPortafolio}")->group(function () {
+    //proyectos
+    Route::get("/proyectos", [ProyectoController::class, "index"]);
+    Route::post("/proyectos", [ProyectoController::class, "store"]);
+    Route::get("/proyectos/{id}", [ProyectoController::class, "show"]);
+    Route::put("/proyectos/{id}", [ProyectoController::class, "update"]);
+    Route::delete("/proyectos/{id}", [ProyectoController::class, "destroy"]);
+});
 
 // Rutas para tecnologías
 Route::get("/tecnologias", [TecnologiaController::class, "index"]);
