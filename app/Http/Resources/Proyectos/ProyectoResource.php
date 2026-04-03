@@ -11,13 +11,13 @@ class ProyectoResource extends JsonResource
             'id_proyecto' => $this->id_proyecto,
             'nombre' => $this->nombre,
             'descripcion' => $this->descripcion,
-            'url_repositorio' => $this->url_repositorio,
+            'url_repositorio' => $this->url_github,
             'url_demo' => $this->url_demo,
             'tecnologias' => $this->tecnologias ? $this->tecnologias->map(function ($tecnologia) {
                 return [
                     'id_tecnologia' => $tecnologia->id_tecnologia,
-                    'nombre_tecnologia' => $tecnologia->nombre_tecnologia,
-                    'icono_tecnologia' => $tecnologia->icono_tecnologia,
+                    'nombre_tecnologia' => $tecnologia->nombre,
+                    'icono_tecnologia' => $tecnologia->logo,
                 ];
             }) : [],
             'fecha_inicio' => $this->fecha_inicio?->format('d-m-Y'),

@@ -14,6 +14,7 @@ class ProyectoController extends Controller
     {
         // Lógica para obtener todos los proyectos
         $proyectos = Proyecto::where('id_portafolio', $idPortafolio)->with('tecnologias')->get();
+        //dd(ProyectoResource::collection($proyectos));
         if ($proyectos) {
             $data = [
                 'message' => 'Proyectos obtenidos exitosamente',
@@ -37,8 +38,8 @@ class ProyectoController extends Controller
             'descripcion' => $request->descripcion,
             'fecha_inicio' => $request->fecha_inicio,
             'fecha_fin' => $request->fecha_fin,
-            'url_proyecto' => $request->url_proyecto,
-            'url_repositorio' => $request->url_repositorio,
+            'url_demo' => $request->url_proyecto,
+            'url_github' => $request->url_repositorio,
         ]);
 
         $proyecto->tecnologias()->sync($request->tecnologias);
