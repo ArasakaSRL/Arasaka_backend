@@ -14,12 +14,6 @@ use App\Http\Controllers\Certificacion\CertificacionController;
 use App\Http\Controllers\Experiencia\ExperienciaController;
 use App\Http\Controllers\Usuario\UsuarioController;
 
-Route::middleware(["auth:sanctum"])->get("/usuario", function (
-  Request $request
-) {
-  return $request->user();
-});
-
 Route::get(
   "/ping",
   fn() => response()->json([
@@ -118,20 +112,17 @@ Route::prefix("experiencias")->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
 
+    // Info del usuario autenticado
+    Route::get('/usuario', fn(Request $request) => $request->user());
+
     // Profesiones del usuario
     Route::get('/usuario/profesiones', [UsuarioController::class, 'getProfesiones']);
     Route::post('/usuario/profesiones', [UsuarioController::class, 'asignarProfesion']);
     Route::delete('/usuario/profesiones/{id}', [UsuarioController::class, 'desasignarProfesion']);
 
     // Editar info del usuario
-    // Route::patch('/usuario/biografia', [UsuarioController::class, 'actualizarBiografia']);
-   
     Route::patch('/usuario/informacion', [UsuarioController::class, 'actualizarInformacion']);
-
-     Route::patch('/usuario/foto', [UsuarioController::class, 'actualizarFoto']);
-
-
-
+    Route::patch('/usuario/foto', [UsuarioController::class, 'actualizarFoto']);
 });
 
 require __DIR__ . "/auth.php";
