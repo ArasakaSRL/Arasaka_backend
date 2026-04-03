@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Proyecto;
 use App\Http\Requests\Proyecto\StoreProyectoRequest;
+use App\Http\Resources\Proyectos\ProyectoResource;
 
 class ProyectoController extends Controller
 {
@@ -16,7 +17,7 @@ class ProyectoController extends Controller
         if ($proyectos) {
             $data = [
                 'message' => 'Proyectos obtenidos exitosamente',
-                'data' => $proyectos
+                'data' => ProyectoResource::collection($proyectos)
             ];
             return response()->json($data, 200);
         } else {
