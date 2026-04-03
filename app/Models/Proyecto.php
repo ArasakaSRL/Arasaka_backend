@@ -26,11 +26,13 @@ class Proyecto extends Model
         'destacado',
     ];
 
-    protected $casts = [
-        'destacado' => 'boolean',
-        'fecha_inicio' => 'date',
-        'fecha_fin' => 'date',
-    ];
+    protected function casts(): array {
+        return [
+            'destacado' => 'boolean',
+            'fecha_inicio' => 'date',
+            'fecha_fin' => 'date',
+        ];
+    }
 
     public function portafolio()
     {

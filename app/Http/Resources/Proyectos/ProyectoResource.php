@@ -20,8 +20,8 @@ class ProyectoResource extends JsonResource
                     'icono_tecnologia' => $tecnologia->icono_tecnologia,
                 ];
             }) : [],
-            'fecha_inicio' => $this->fecha_inicio,
-            'fecha_fin' => $this->fecha_fin,
+            'fecha_inicio' => $this->fecha_inicio?->format('d-m-Y'),
+            'fecha_fin' => $this->fecha_fin?->format('d-m-Y'),
         ];
     }
 }   
