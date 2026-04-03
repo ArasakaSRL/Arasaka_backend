@@ -1,11 +1,8 @@
 # Usuario — Endpoints
 
 Base URL: `/api`
-Autenticación: **Bearer Token** (Laravel Sanctum)
-Todos los endpoints requieren el header:
-```
-Authorization: Bearer {token}
-```
+Autenticación: **Cookie de sesión** (Laravel Sanctum)
+Todos los endpoints requieren sesión activa (cookie `laravel_session`).
 
 ---
 
@@ -17,7 +14,6 @@ Obtiene las profesiones asignadas al usuario autenticado.
 **Request**
 ```
 GET /api/usuario/profesiones
-Authorization: Bearer {token}
 ```
 
 **Response 200**
@@ -41,7 +37,6 @@ Asigna una profesión existente al usuario autenticado.
 **Request**
 ```
 POST /api/usuario/profesiones
-Authorization: Bearer {token}
 Content-Type: application/json
 ```
 ```json
@@ -80,7 +75,6 @@ Desasigna una profesión del usuario autenticado.
 **Request**
 ```
 DELETE /api/usuario/profesiones/{id_profesion}
-Authorization: Bearer {token}
 ```
 
 **Response 200**
@@ -94,36 +88,43 @@ Authorization: Bearer {token}
 
 ## Editar información del usuario
 
-### PATCH `/usuario/biografia`
-Actualiza únicamente la biografía del usuario autenticado.
+### PATCH `/usuario/informacion`
+Actualiza la información del usuario autenticado. Se pueden enviar uno o varios campos.
 
 **Request**
 ```
-PATCH /api/usuario/biografia
-Authorization: Bearer {token}
+PATCH /api/usuario/informacion
 Content-Type: application/json
 ```
 ```json
 {
-  "biografia": "Soy un desarrollador apasionado por la tecnología..."
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "descripcion_laboral": "Desarrollador full stack con 5 años de experiencia",
+  "correo": "juan@example.com"
 }
 ```
 
 **Validaciones**
 | Campo | Tipo | Requerido | Reglas |
 |-------|------|-----------|--------|
-| `biografia` | string | Sí | Máx. 550 caracteres |
+| `nombre` | string | Opcional* | Máx. 50 caracteres |
+| `apellido` | string | Opcional* | Máx. 50 caracteres |
+| `descripcion_laboral` | string | Opcional* | Máx. 550 caracteres |
+| `correo` | string (email) | Opcional* | Email válido, máx. 255 caracteres |
+
+> *Al menos uno debe enviarse. Si se envía el campo, no puede estar vacío.
 
 **Response 200**
 ```json
 {
-  "message": "Biografía actualizada correctamente",
+  "message": "Información actualizada correctamente",
   "data": {
     "id_usuario": "uuid",
     "nombre": "Juan",
     "apellido": "Pérez",
     "correo": "juan@example.com",
-    "biografia": "Soy un desarrollador apasionado por la tecnología...",
+    "descripcion_laboral": "Desarrollador full stack con 5 años de experiencia",
     "url_foto": "https://..."
   }
 }
@@ -132,12 +133,11 @@ Content-Type: application/json
 ---
 
 ### PATCH `/usuario/foto`
-Actualiza únicamente la foto de perfil del usuario autenticado.
+Actualiza la foto de perfil del usuario autenticado.
 
 **Request**
 ```
 PATCH /api/usuario/foto
-Authorization: Bearer {token}
 Content-Type: application/json
 ```
 ```json
@@ -160,49 +160,8 @@ Content-Type: application/json
     "nombre": "Juan",
     "apellido": "Pérez",
     "correo": "juan@example.com",
-    "biografia": "...",
+    "descripcion_laboral": "...",
     "url_foto": "https://example.com/fotos/mi-foto.jpg"
-  }
-}
-```
-
----
-
-### PATCH `/usuario/nombre`
-Actualiza el nombre y/o apellido del usuario autenticado. Se pueden enviar ambos o solo uno.
-
-**Request**
-```
-PATCH /api/usuario/nombre
-Authorization: Bearer {token}
-Content-Type: application/json
-```
-```json
-{
-  "nombre": "Juan",
-  "apellido": "Pérez"
-}
-```
-
-**Validaciones**
-| Campo | Tipo | Requerido | Reglas |
-|-------|------|-----------|--------|
-| `nombre` | string | Opcional* | Máx. 50 caracteres |
-| `apellido` | string | Opcional* | Máx. 50 caracteres |
-
-> *Al menos uno debe enviarse. Si se envía el campo, no puede estar vacío.
-
-**Response 200**
-```json
-{
-  "message": "Nombre actualizado correctamente",
-  "data": {
-    "id_usuario": "uuid",
-    "nombre": "Juan",
-    "apellido": "Pérez",
-    "correo": "juan@example.com",
-    "biografia": "...",
-    "url_foto": "https://..."
   }
 }
 ```
@@ -213,6 +172,6 @@ Content-Type: application/json
 
 | Código | Descripción |
 |--------|-------------|
-| `401` | Token inválido o no enviado |
+| `401` | Sesión inválida o no iniciada |
 | `422` | Error de validación en el body |
 | `404` | Recurso no encontrado (ej. profesión inexistente) |
