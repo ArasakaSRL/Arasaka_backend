@@ -28,11 +28,11 @@ class ProyectoController extends Controller
         }
     }
 
-    public function store(StoreProyectoRequest $request)
+    public function store(StoreProyectoRequest $request, string $idPortafolio)
     {
         $proyecto = Proyecto::create([
             'id_proyecto' => (string) \Illuminate\Support\Str::uuid(),
-            'id_portafolio' => $request->id_portafolio,
+            'id_portafolio' => $idPortafolio,
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
             'fecha_inicio' => $request->fecha_inicio,

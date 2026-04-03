@@ -39,7 +39,7 @@ Route::middleware("auth:sanctum")->group(function () {
 });
 
 // Rutas para elementos relacionados a portafolios
-Route::prefix("portafolios/{idPortafolio}")->group(function () {
+Route::prefix("portafolios/{idPortafolio}")->group(function () { // Autenticacion pendiente
     //proyectos
     Route::get("/proyectos", [ProyectoController::class, "index"]);
     Route::post("/proyectos", [ProyectoController::class, "store"]);
