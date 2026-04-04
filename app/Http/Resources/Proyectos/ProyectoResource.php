@@ -16,8 +16,8 @@ class ProyectoResource extends JsonResource
             'tecnologias' => $this->tecnologias ? $this->tecnologias->map(function ($tecnologia) {
                 return [
                     'id_tecnologia' => $tecnologia->id_tecnologia,
-                    'nombre_tecnologia' => $tecnologia->nombre,
-                    'icono_tecnologia' => $tecnologia->logo,
+                    'nombre' => $tecnologia->nombre,
+                    'logo' => $tecnologia->logo,
                 ];
             }) : [],
             'fecha_inicio' => $this->fecha_inicio?->format('d-m-Y'),
