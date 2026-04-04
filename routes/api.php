@@ -13,6 +13,7 @@ use App\Http\Controllers\Certificacion\CategoriaCertificacionController;
 use App\Http\Controllers\Certificacion\CertificacionController;
 use App\Http\Controllers\Experiencia\ExperienciaController;
 use App\Http\Controllers\Usuario\UsuarioController;
+use App\Http\Controllers\Profesion\ProfesionController;
 
 Route::get(
   "/ping",
@@ -41,6 +42,10 @@ Route::prefix("portafolios/{idPortafolio}")->group(function () { // Autenticacio
     Route::put("/proyectos/{id}", [ProyectoController::class, "update"]);
     Route::delete("/proyectos/{id}", [ProyectoController::class, "destroy"]);
 });
+
+// Rutas para profesiones
+Route::get("/profesiones", [ProfesionController::class, "index"]);
+Route::get("/profesiones/{id}", [ProfesionController::class, "show"]);
 
 // Rutas para tecnologías
 Route::get("/tecnologias", [TecnologiaController::class, "index"]);
