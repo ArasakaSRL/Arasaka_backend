@@ -14,8 +14,8 @@ class HabilidadController extends Controller
     public function index()
     {
         $idUsuario = request()->user()->id_usuario;
-        dd($idUsuario);
-        /* $idPortafolio = Portafolio::where("id_usuario", $idUsuario)->value("id_portafolio");
+        //dd($idUsuario);
+        $idPortafolio = Portafolio::where("id_usuario", $idUsuario)->value("id_portafolio");
 
         $habilidades = Habilidad::where("id_portafolio", $idPortafolio)->with('categoria', 'nivel')->get();
         //dd($habilidades);
@@ -30,7 +30,7 @@ class HabilidadController extends Controller
                 "message" => "Error al obtener las habilidades",
             ];
             return response()->json($data, 500);
-        } */
+        }
     }
 
     public function store(StoreHabilidadRequest $request){

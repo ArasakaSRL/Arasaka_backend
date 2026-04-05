@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\Proyecto\ProyectoController;
 use App\Http\Controllers\Tecnologia\TecnologiaController;
@@ -21,6 +22,13 @@ Route::get(
   ])
 );
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/autenticar', fn() => response()->json([
+        "message" => "Autenticado correctamente",
+        "user" => Auth::user()
+    ]));
+});
+
 // Rutas para profesiones
 Route::get("/profesiones", [ProfesionController::class, "index"]);
 Route::get("/profesiones/{id}", [ProfesionController::class, "show"]);
@@ -37,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Editar info del usuario
     Route::patch('/usuario/informacion', [UsuarioController::class, 'actualizarInformacion']);
-    Route::patch('/usuario/foto', [UsuarioController::class, 'actualizarFoto']);
+    Route::patch('/usuario/foto', [UsuarioController::class, 'actualizarFoto']);    
 });
 
 require __DIR__ . "/auth.php";
