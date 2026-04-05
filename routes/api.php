@@ -3,15 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\PortafolioController;
 use App\Http\Controllers\Proyecto\ProyectoController;
 use App\Http\Controllers\Tecnologia\TecnologiaController;
 use App\Http\Controllers\Habilidad\HabilidadController;
 use App\Http\Controllers\Habilidad\CategoriaHabilidadController;
 use App\Http\Controllers\Habilidad\NivelHabilidadController;
-use App\Http\Controllers\Certificacion\CategoriaCertificacionController;
-use App\Http\Controllers\Certificacion\CertificacionController;
-use App\Http\Controllers\Experiencia\ExperienciaController;
 use App\Http\Controllers\Usuario\UsuarioController;
 use App\Http\Controllers\Profesion\ProfesionController;
 
