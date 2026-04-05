@@ -7,12 +7,15 @@ use Illuminate\Http\Request;
 use App\Models\Proyecto;
 use App\Http\Requests\Proyecto\StoreProyectoRequest;
 use App\Http\Resources\Proyectos\ProyectoResource;
+use App\Models\Portafolio;
 
 class ProyectoController extends Controller
 {
-    public function index(string $idPortafolio)
+    public function index()
     {
-        // Lógica para obtener todos los proyectos
+        $idUsuario = request()->user()->id_usuario;
+        $idPortafolio = Portafolio::where('id_usuario', $idUsuario)->first()->id_portafolio;
+
         $proyectos = Proyecto::where('id_portafolio', $idPortafolio)->with('tecnologias')->get();
         //dd(ProyectoResource::collection($proyectos));
         if ($proyectos) {
@@ -29,8 +32,11 @@ class ProyectoController extends Controller
         }
     }
 
-    public function store(StoreProyectoRequest $request, string $idPortafolio)
+    public function store(StoreProyectoRequest $request)
     {
+        $idUsuario = $request->user()->id_usuario;
+        $idPortafolio = Portafolio::where('id_usuario', $idUsuario)->first()->id_portafolio;
+
         $proyecto = Proyecto::create([
             'id_proyecto' => (string) \Illuminate\Support\Str::uuid(),
             'id_portafolio' => $idPortafolio,

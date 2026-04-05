@@ -21,38 +21,9 @@ Route::get(
   ])
 );
 
-
-// Rutas para elementos relacionados a portafolios
-Route::prefix("portafolios/{idPortafolio}")->group(function () { // Autenticacion pendiente
-    //proyectos
-    Route::get("/proyectos", [ProyectoController::class, "index"]);
-    Route::post("/proyectos", [ProyectoController::class, "store"]);
-    Route::get("/proyectos/{id}", [ProyectoController::class, "show"]);
-    Route::put("/proyectos/{id}", [ProyectoController::class, "update"]);
-    Route::delete("/proyectos/{id}", [ProyectoController::class, "destroy"]);
-
-    Route::get("/habilidades", [HabilidadController::class, "index"]);
-});
-
 // Rutas para profesiones
 Route::get("/profesiones", [ProfesionController::class, "index"]);
 Route::get("/profesiones/{id}", [ProfesionController::class, "show"]);
-
-// Rutas para tecnologías
-Route::get("/tecnologias", [TecnologiaController::class, "index"]);
-
-// Rutas para habilidades
-
-Route::post("/habilidades", [HabilidadController::class, "store"]);
-
-// rutas para categorías de habilidades
-Route::get("/categorias-habilidad", [
-  CategoriaHabilidadController::class,
-  "index",
-]);
-
-// ruta para niveles de habilidad
-Route::get("/niveles-habilidad", [NivelHabilidadController::class, "index"]);
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -70,5 +41,8 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 require __DIR__ . "/auth.php";
+require __DIR__ . "/Modules/proyectos.php";
+require __DIR__ . "/Modules/habilidades.php";
+require __DIR__ . "/Modules/tecnologias.php";
 require __DIR__ . "/Modules/certificaciones.php";
 require __DIR__ . "/Modules/experiencia.php";
