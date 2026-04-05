@@ -1,18 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Habilidad;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Habilidad\StoreHabilidadRequest;
 use App\Models\Habilidad;
-use App\Models\NivelDeHabilidad;
 use App\Models\Tecnologia;
+use App\Http\Resources\Habilidad\HabilidadResource;
 
 class HabilidadController extends Controller
 {
-    public function index()
+    public function index(string $idPortafolio)
     {
-        // Lógica para obtener todas las habilidades
+        $habilidades = Habilidad::where("id_portafolio", $idPortafolio)->get();
+
+        $data = [
+            "message" => "Habilidades obtenidas exitosamente",
+            "data" => HabilidadResource::collection($habilidades)
+        ];
+
+        return response()->json($data, 200);
     }
 
     public function store(StoreHabilidadRequest $request){
@@ -28,7 +35,7 @@ class HabilidadController extends Controller
         if ($habilidad) {
             $data = [
                 'message' => 'Habilidad creada exitosamente',
-                'data' => $habilidad
+                'data' => HabilidadResource::collection([$habilidad])
             ];
             return response()->json($data, 201);
         } else {
