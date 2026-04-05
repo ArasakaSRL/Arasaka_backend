@@ -35,7 +35,7 @@ class HabilidadController extends Controller
         if ($habilidad) {
             $data = [
                 'message' => 'Habilidad creada exitosamente',
-                'data' => $habilidad
+                'data' => HabilidadResource::collection([$habilidad])
             ];
             return response()->json($data, 201);
         } else {

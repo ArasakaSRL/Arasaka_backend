@@ -47,7 +47,7 @@ class ProyectoController extends Controller
         if ($proyecto) {
             $data = [
                 'message' => 'Proyecto creado exitosamente',
-                'data' => $proyecto->load('tecnologias')
+                'data' => ProyectoResource::collection([$proyecto])
             ];
             return response()->json($data, 201);
         } else {

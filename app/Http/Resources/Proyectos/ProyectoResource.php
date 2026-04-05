@@ -5,7 +5,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProyectoResource extends JsonResource
 {
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
             'id_proyecto' => $this->id_proyecto,
