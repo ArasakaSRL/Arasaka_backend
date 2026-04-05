@@ -46,7 +46,7 @@ class RegisteredUserController extends Controller
             'biografia'          => $request->biografia,
             'url_foto'           => $request->url_foto,
             'estado'             => $request->estado,
-            'verificacion_email' => $request->boolean('verificacion_email', false),
+            'verificacion_email' => null,
         ]);
 
         if ($request->boolean('crear_portafolio', false)) {
@@ -63,6 +63,10 @@ class RegisteredUserController extends Controller
         }
 
         event(new Registered($usuario));
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         Auth::login($usuario);
 

@@ -8,9 +8,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Str;
 
-class Usuario extends Authenticatable
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\VerificarCorreoNotification;
+class Usuario extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, HasApiTokens;
+    use HasFactory, HasApiTokens, Notifiable;
 
     protected $table = 'usuario';
     protected $primaryKey = 'id_usuario';
@@ -31,6 +34,29 @@ class Usuario extends Authenticatable
     protected $hidden = [
         'password'
     ];
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerificarCorreoNotification());
+    }
+
+    public function getEmailForVerification()
+    {
+        return $this->correo;
+    }
+
+    public function hasVerifiedEmail()
+    {
+        return !is_null($this->verificacion_email);
+    }
+
+    //sirve para marcar el correo electrónico del usuario como verificado
+    public function markEmailAsVerified()
+    {
+        return $this->forceFill([
+            'verificacion_email' => now(),
+        ])->save();
+    }
 
     protected static function boot()
     {
