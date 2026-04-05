@@ -31,7 +31,7 @@ class RegisteredUserController extends Controller
             'biografia'                 => ['nullable', 'string'],
             'url_foto'                  => ['nullable', 'string', 'url', 'max:500'],
             'estado'                    => ['nullable', 'boolean'],
-            'verificacion_email'        => ['nullable', 'boolean'],
+            'verificacion_email'        => ['nullable', 'date'],
             'crear_portafolio'          => ['nullable', 'boolean'],
             'portafolio.nombre'         => ['required_if:crear_portafolio,true', 'nullable', 'string', 'max:255'],
             'portafolio.descripcion'    => ['nullable', 'string'],
