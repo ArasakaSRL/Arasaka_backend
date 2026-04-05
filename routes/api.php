@@ -3,13 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-<<<<<<< HEAD
-use App\Http\Controllers\Api\ProyectoController;
-use App\Http\Controllers\Api\TecnologiaController;
-use App\Http\Controllers\Api\HabilidadController;
-use App\Http\Controllers\Api\CategoriaHabilidadController;
-use App\Http\Controllers\Api\NivelHabilidadController;
-=======
 use App\Http\Controllers\PortafolioController;
 use App\Http\Controllers\Proyecto\ProyectoController;
 use App\Http\Controllers\Tecnologia\TecnologiaController;
@@ -19,7 +12,6 @@ use App\Http\Controllers\Habilidad\NivelHabilidadController;
 use App\Http\Controllers\Certificacion\CategoriaCertificacionController;
 use App\Http\Controllers\Certificacion\CertificacionController;
 use App\Http\Controllers\Experiencia\ExperienciaController;
->>>>>>> 61725ee25ac79f9fb44cb7c2b11ceeebcda5f915
 use App\Http\Controllers\Usuario\UsuarioController;
 use App\Http\Controllers\Profesion\ProfesionController;
 

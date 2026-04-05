@@ -4,6 +4,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Certificacion\CertificacionController;
 use App\Http\Controllers\Certificacion\CategoriaCertificacionController;
+
 Route::middleware('auth:sanctum')->group(function () {
 
   
