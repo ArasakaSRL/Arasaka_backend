@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Str;
-
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Str;
 use App\Notifications\VerificarCorreoNotification;
+use App\Notifications\RestablecerContrasenaNotification;
+
 class Usuario extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, HasApiTokens, Notifiable;
@@ -21,19 +21,21 @@ class Usuario extends Authenticatable implements MustVerifyEmail
     protected $keyType = 'string';
 
     protected $fillable = [
-        'nombre',
-        'apellido',
-        'correo',
-        'password',
-        'descripcion_laboral',
-        'url_foto',
-        'estado',
-        'verificacion_email'
+        'nombre', 'apellido', 'correo', 'password',
+        'descripcion_laboral', 'url_foto', 'estado', 'verificacion_email',
     ];
 
-    protected $hidden = [
-        'password'
-    ];
+    protected $hidden = ['password'];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (!$model->id_usuario) {
+                $model->id_usuario = (string) Str::uuid();
+            }
+        });
+    }
 
     public function sendEmailVerificationNotification()
     {
@@ -50,28 +52,19 @@ class Usuario extends Authenticatable implements MustVerifyEmail
         return !is_null($this->verificacion_email);
     }
 
-    //sirve para marcar el correo electrónico del usuario como verificado
     public function markEmailAsVerified()
     {
-        return $this->forceFill([
-            'verificacion_email' => now(),
-        ])->save();
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (!$model->id_usuario) {
-                $model->id_usuario = (string) Str::uuid();
-            }
-        });
+        return $this->forceFill(['verificacion_email' => now()])->save();
     }
 
     public function getEmailForPasswordReset(): string
     {
         return $this->correo;
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new RestablecerContrasenaNotification($token));
     }
 
     public function roles()

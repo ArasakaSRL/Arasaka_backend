@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 class PasswordResetLinkController extends Controller
 {
     /**
-     * Handle an incoming password reset link request.
+     * envia un enlace de restablecimiento de contraseña al correo electrónico del usuario. El usuario debe proporcionar su correo electrónico para recibir el enlace.
      *
      * @throws ValidationException
      */
@@ -22,7 +22,7 @@ class PasswordResetLinkController extends Controller
         ]);
 
         $status = Password::sendResetLink(
-            ['email' => $request->correo]
+            ['correo' => $request->correo]
         );
 
         if ($status != Password::RESET_LINK_SENT) {

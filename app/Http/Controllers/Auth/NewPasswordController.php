@@ -8,14 +8,20 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 
 class NewPasswordController extends Controller
 {
     /**
-     * Handle an incoming new password request.
+     * funciona para restablecer la contraseña de un usuario. 
+     * El usuario debe proporcionar un token válido,
+     * su correo electrónico y la nueva contraseña que desea establecer.
+     * Si el token es válido y el correo electrónico coincide con el token, 
+     * se actualiza la contraseña del usuario en la base de datos y se marca el token como utilizado. 
+     * Si el proceso es exitoso, se devuelve una respuesta JSON indicando que la contraseña ha sido
+     * restablecida correctamente. Si hay algún error, se lanza una excepción de validación
+     * con el mensaje correspondiente.
      *
      * @throws ValidationException
      */
@@ -23,16 +29,21 @@ class NewPasswordController extends Controller
     {
         $request->validate([
             'token'    => ['required'],
-            'correo'   => ['required', 'email'],
+            'correo'   => ['required', 'email'], // Validamos tu campo 'correo'
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $status = Password::reset(
-            array_merge($request->only('password', 'password_confirmation', 'token'), ['email' => $request->correo]),
-            function ($user) use ($request) {
+            [
+                'token'    => $request->token,
+                'correo'   => $request->correo,
+                'email'    => $request->correo,
+                'password' => $request->password,
+                'password_confirmation' => $request->password_confirmation,
+            ],
+            function ($user, $password) {
                 $user->forceFill([
-                    'password' => Hash::make($request->string('password')),
-                    'remember_token' => Str::random(60),
+                    'password' => Hash::make($password),
                 ])->save();
 
                 event(new PasswordReset($user));
@@ -41,7 +52,7 @@ class NewPasswordController extends Controller
 
         if ($status != Password::PASSWORD_RESET) {
             throw ValidationException::withMessages([
-                'email' => [__($status)],
+                'correo' => [__($status)], // Cambiado a 'correo' para tu front
             ]);
         }
 
