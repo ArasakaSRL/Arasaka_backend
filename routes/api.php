@@ -2,16 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
-use App\Http\Controllers\PortafolioController;
 use App\Http\Controllers\Proyecto\ProyectoController;
 use App\Http\Controllers\Tecnologia\TecnologiaController;
 use App\Http\Controllers\Habilidad\HabilidadController;
 use App\Http\Controllers\Habilidad\CategoriaHabilidadController;
 use App\Http\Controllers\Habilidad\NivelHabilidadController;
-use App\Http\Controllers\Certificacion\CategoriaCertificacionController;
-use App\Http\Controllers\Certificacion\CertificacionController;
-use App\Http\Controllers\Experiencia\ExperienciaController;
 use App\Http\Controllers\Usuario\UsuarioController;
 use App\Http\Controllers\Profesion\ProfesionController;
 
@@ -25,38 +22,16 @@ Route::get(
   ])
 );
 
-
-// Rutas para elementos relacionados a portafolios
-Route::prefix("portafolios/{idPortafolio}")->group(function () { // Autenticacion pendiente
-    //proyectos
-    Route::get("/proyectos", [ProyectoController::class, "index"]);
-    Route::post("/proyectos", [ProyectoController::class, "store"]);
-    Route::get("/proyectos/{id}", [ProyectoController::class, "show"]);
-    Route::put("/proyectos/{id}", [ProyectoController::class, "update"]);
-    Route::delete("/proyectos/{id}", [ProyectoController::class, "destroy"]);
-
-    Route::get("/habilidades", [HabilidadController::class, "index"]);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/autenticar', fn() => response()->json([
+        "message" => "Autenticado correctamente",
+        "user" => Auth::user()
+    ]));
 });
 
 // Rutas para profesiones
 Route::get("/profesiones", [ProfesionController::class, "index"]);
 Route::get("/profesiones/{id}", [ProfesionController::class, "show"]);
-
-// Rutas para tecnologías
-Route::get("/tecnologias", [TecnologiaController::class, "index"]);
-
-// Rutas para habilidades
-
-Route::post("/habilidades", [HabilidadController::class, "store"]);
-
-// rutas para categorías de habilidades
-Route::get("/categorias-habilidad", [
-  CategoriaHabilidadController::class,
-  "index",
-]);
-
-// ruta para niveles de habilidad
-Route::get("/niveles-habilidad", [NivelHabilidadController::class, "index"]);
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -70,9 +45,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Editar info del usuario
     Route::patch('/usuario/informacion', [UsuarioController::class, 'actualizarInformacion']);
-    Route::patch('/usuario/foto', [UsuarioController::class, 'actualizarFoto']);
+    Route::patch('/usuario/foto', [UsuarioController::class, 'actualizarFoto']);    
 });
 
 require __DIR__ . "/auth.php";
+require __DIR__ . "/Modules/proyectos.php";
+require __DIR__ . "/Modules/habilidades.php";
+require __DIR__ . "/Modules/tecnologias.php";
 require __DIR__ . "/Modules/certificaciones.php";
 require __DIR__ . "/Modules/experiencia.php";
