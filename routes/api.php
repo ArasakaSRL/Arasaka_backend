@@ -25,7 +25,7 @@ Route::get(
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/autenticar', fn() => response()->json([
         "message" => "Autenticado correctamente",
-        "user" => Auth::user()
+        "user" => request()->user(),
     ]));
 });
 
@@ -49,8 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 require __DIR__ . "/auth.php";
-require __DIR__ . "/Modules/proyectos.php";
-require __DIR__ . "/Modules/habilidades.php";
-require __DIR__ . "/Modules/tecnologias.php";
-require __DIR__ . "/Modules/certificaciones.php";
-require __DIR__ . "/Modules/experiencia.php";
+require __DIR__ . "/Modules/proyectosRutas.php";
+require __DIR__ . "/Modules/habilidadesRutas.php";
+require __DIR__ . "/Modules/tecnologiasRutas.php";
+require __DIR__ . "/Modules/certificacionesRutas.php";
+require __DIR__ . "/Modules/experienciaRutas.php";
