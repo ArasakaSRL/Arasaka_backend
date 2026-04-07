@@ -26,7 +26,7 @@ class StoreProyectoRequest extends FormRequest
             'descripcion' => 'nullable|string',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
-            'tecnologias' => 'required|array',
+            'tecnologias' => 'required|array||min:1',
             'tecnologias.*' => 'exists:tecnologias,id_tecnologia',
             'url_proyecto' => 'nullable|url',
             'url_repositorio' => 'nullable|url',

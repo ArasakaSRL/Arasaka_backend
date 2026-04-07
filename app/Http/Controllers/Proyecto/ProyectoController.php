@@ -55,8 +55,7 @@ class ProyectoController extends Controller
         if ($proyecto) {
             $data = [
                 'message' => 'Proyecto creado exitosamente',
-                'fecha_inicio' => $proyecto->fecha_inicio->format('d-m-Y'),
-                'fecha_fin' => $proyecto->fecha_fin->format('d-m-Y'),
+                'data' => new ProyectoResource($proyecto)
             ];
             return response()->json($data, 201);
         } else {
