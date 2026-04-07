@@ -26,6 +26,8 @@ return new class extends Migration {
             $table->uuid('id_categoria_habilidad');
             $table->uuid('id_nivel_habilidad');
             $table->string('nombre',50)->nullable();
+            $table->timestamp('fecha_creacion')->nullable();
+            $table->timestamp('fecha_actualizacion')->nullable();
 
             $table->foreign('id_portafolio')->references('id_portafolio')->on('portafolio');
             $table->foreign('id_categoria_habilidad')->references('id_categoria_habilidad')->on('categoria_habilidad');
