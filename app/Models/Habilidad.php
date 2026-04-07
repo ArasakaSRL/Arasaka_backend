@@ -9,14 +9,14 @@ class Habilidad extends Model
 {
     use HasFactory;
 
-    const CREATED_AT = 'fecha_creacion';
-    const UPDATED_AT = 'fecha_actualizacion';
-
     protected $table = 'habilidad';
     protected $primaryKey = 'id_habilidad';
     public $incrementing = false;
     protected $keyType = 'string';
-    public $timestamps = false;
+
+    const CREATED_AT = 'fecha_creacion';
+    const UPDATED_AT = 'fecha_actualizacion';
+    
     protected $fillable = [
         'id_portafolio',
         'id_categoria_habilidad',
