@@ -12,9 +12,5 @@ Route::prefix("experiencias")
         Route::post("/", [ExperienciaController::class, "store"]);
         Route::put("{id}", [ExperienciaController::class, "update"]);
         Route::delete("{id}", [ExperienciaController::class, "destroy"]);
-        Route::get("portafolio/{portafolioId}", [
-            ExperienciaController::class,
-            "byPortafolio",
-        ]);
     });
 

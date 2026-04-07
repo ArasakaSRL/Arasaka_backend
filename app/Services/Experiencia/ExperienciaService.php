@@ -7,40 +7,36 @@ use Illuminate\Support\Str;
 
 class ExperienciaService
 {
-    public function list()
+    public function listByPortafolio(string $portafolioId)
     {
-        return Experiencia::with(['tipo', 'portafolio'])->get();
+        return Experiencia::with(['tipo'])
+            ->where('id_portafolio', $portafolioId)
+            ->orderBy('fecha_inicio', 'asc')
+            ->get();
     }
 
     public function find(string $id)
     {
-        return Experiencia::with(['tipo', 'portafolio'])->findOrFail($id);
+        return Experiencia::with(['tipo', 'portafolio'])
+            ->findOrFail($id);
     }
 
-    public function create(array $data)
+    public function create(array $data, string $portafolioId)
     {
         $data['id_experiencia'] = Str::uuid()->toString();
+        $data['id_portafolio'] = $portafolioId;
+
         return Experiencia::create($data);
     }
 
-    public function update(string $id, array $data)
+    public function updateModel(Experiencia $exp, array $data)
     {
-        $experiencia = $this->find($id);
-        $experiencia->update($data);
-        return $experiencia;
+        $exp->update($data);
+        return $exp;
     }
 
-    public function delete(string $id)
+    public function deleteModel(Experiencia $exp)
     {
-        $experiencia = $this->find($id);
-        $experiencia->delete();
-        return $experiencia;
+        $exp->delete();
     }
-    public function getByPortafolio(string $portafolioId, string $order = 'asc')
-   {
-    return Experiencia::with(['tipo', 'portafolio'])
-        ->where('id_portafolio', $portafolioId)
-        ->orderBy('fecha_inicio', $order) 
-        ->get();
-   }
 }

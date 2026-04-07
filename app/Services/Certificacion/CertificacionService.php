@@ -2,7 +2,7 @@
 
 namespace App\Services\Certificacion;
 use App\Models\Certificacion;
-use illuminate\Support\Str;
+use Illuminate\Support\Str;
 
 class CertificacionService {
     public function crear($data ,$idPortafolio){
