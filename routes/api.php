@@ -2,13 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 
-use App\Http\Controllers\Proyecto\ProyectoController;
-use App\Http\Controllers\Tecnologia\TecnologiaController;
-use App\Http\Controllers\Habilidad\HabilidadController;
-use App\Http\Controllers\Habilidad\CategoriaHabilidadController;
-use App\Http\Controllers\Habilidad\NivelHabilidadController;
 use App\Http\Controllers\Usuario\UsuarioController;
 use App\Http\Controllers\Profesion\ProfesionController;
 
