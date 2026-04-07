@@ -16,7 +16,7 @@ class ProyectoController extends Controller
         $idUsuario = request()->user()->id_usuario;
         $idPortafolio = Portafolio::where('id_usuario', $idUsuario)->first()->id_portafolio;
 
-        $proyectos = Proyecto::where('id_portafolio', $idPortafolio)->with('tecnologias')->get();
+        $proyectos = Proyecto::where('id_portafolio', $idPortafolio)->with('tecnologias')->orderBy('fecha_creacion', 'desc')->get();
         //dd(ProyectoResource::collection($proyectos));
         if ($proyectos) {
             $data = [
@@ -46,6 +46,8 @@ class ProyectoController extends Controller
             'fecha_fin' => $request->fecha_fin,
             'url_demo' => $request->url_proyecto,
             'url_github' => $request->url_repositorio,
+            'fecha_creacion' => now(),
+            'fecha_actualizacion' => now(),
         ]);
 
         $proyecto->tecnologias()->sync($request->tecnologias);
@@ -53,7 +55,8 @@ class ProyectoController extends Controller
         if ($proyecto) {
             $data = [
                 'message' => 'Proyecto creado exitosamente',
-                'data' => ProyectoResource::collection([$proyecto])
+                'fecha_inicio' => $proyecto->fecha_inicio->format('d-m-Y'),
+                'fecha_fin' => $proyecto->fecha_fin->format('d-m-Y'),
             ];
             return response()->json($data, 201);
         } else {

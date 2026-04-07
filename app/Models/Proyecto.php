@@ -14,6 +14,9 @@ class Proyecto extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    const CREATED_AT = 'fecha_creacion';
+    const UPDATED_AT = 'fecha_actualizacion';
+
     protected $fillable = [
         'id_proyecto',
         'id_portafolio',
