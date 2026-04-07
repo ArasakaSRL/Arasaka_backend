@@ -16,7 +16,9 @@ class HabilidadController extends Controller
         $idUsuario = request()->user()->id_usuario;
         $idPortafolio = Portafolio::where("id_usuario", $idUsuario)->value("id_portafolio");
 
-        $habilidades = Habilidad::where("id_portafolio", $idPortafolio)->with('categoria', 'nivel')->orderBy('fecha_creacion', 'desc')->get();
+        //$habilidades = Habilidad::where("id_portafolio", $idPortafolio)->with('categoria', 'nivel')->orderBy('fecha_creacion', 'desc')->get();
+        
+        $habilidades = Habilidad::with(['categoria:id_categoria_habilidad,nombre', 'nivel:id_nivel_habilidad,nivel'])->where("id_portafolio", $idPortafolio)->orderBy('fecha_creacion', 'desc')->get();
         //dd($habilidades);
         if ($habilidades) {
             $data = [
