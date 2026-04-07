@@ -22,7 +22,7 @@ class Usuario extends Authenticatable implements MustVerifyEmail
 
     protected $fillable = [
         'nombre', 'apellido', 'correo', 'password',
-        'descripcion_laboral', 'url_foto', 'estado', 'verificacion_email',
+        'biografia', 'url_foto', 'estado', 'verificacion_email',
     ];
 
     protected $hidden = ['password'];
