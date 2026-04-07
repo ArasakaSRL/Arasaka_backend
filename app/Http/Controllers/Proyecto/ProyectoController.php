@@ -8,6 +8,7 @@ use App\Models\Proyecto;
 use App\Http\Requests\Proyecto\StoreProyectoRequest;
 use App\Http\Resources\Proyectos\ProyectoResource;
 use App\Models\Portafolio;
+use Mews\Purifier\Facades\Purifier;
 
 class ProyectoController extends Controller
 {
@@ -41,7 +42,7 @@ class ProyectoController extends Controller
             'id_proyecto' => (string) \Illuminate\Support\Str::uuid(),
             'id_portafolio' => $idPortafolio,
             'nombre' => $request->nombre,
-            'descripcion' => $request->descripcion,
+            'descripcion' => Purifier::clean($request->descripcion), // filtra el campo descripcion para evitar XSS
             'fecha_inicio' => $request->fecha_inicio,
             'fecha_fin' => $request->fecha_fin,
             'url_demo' => $request->url_proyecto,
@@ -55,8 +56,7 @@ class ProyectoController extends Controller
         if ($proyecto) {
             $data = [
                 'message' => 'Proyecto creado exitosamente',
-                'fecha_inicio' => $proyecto->fecha_inicio->format('d-m-Y'),
-                'fecha_fin' => $proyecto->fecha_fin->format('d-m-Y'),
+                'data' => new ProyectoResource($proyecto)
             ];
             return response()->json($data, 201);
         } else {
