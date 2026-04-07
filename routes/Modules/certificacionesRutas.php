@@ -8,19 +8,16 @@ use App\Http\Controllers\Certificacion\CategoriaCertificacionController;
 Route::middleware('auth:sanctum')->group(function () {
 
   
-    Route::prefix('portafolios/{idPortafolio}')->group(function () {
-        Route::get('certificaciones', [CertificacionController::class, 'index']);
-        Route::post('certificaciones', [CertificacionController::class, 'store']);
-        Route::delete('certificaciones', [CertificacionController::class, 'deleteByPortafolio']);
+    Route::prefix('certificaciones')->group(function () {
+        Route::get('/', [CertificacionController::class, 'index']);
+        Route::post('/', [CertificacionController::class, 'store']);
+        Route::delete('/', [CertificacionController::class, 'deleteByPortafolio']);
 
-        
-        Route::get('certificaciones/categoria/{idCategoria}', [
+        Route::get('/categoria/{idCategoria}', [
             CertificacionController::class,
             'byCategoria'
         ]);
-    });
 
-    Route::prefix('certificaciones')->group(function () {
         Route::get('{certificacion}', [CertificacionController::class, 'show']);
         Route::put('{certificacion}', [CertificacionController::class, 'update']);
         Route::delete('{certificacion}', [CertificacionController::class, 'destroy']);

@@ -91,4 +91,9 @@ class Usuario extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Idioma::class, 'usuario_idioma', 'id_usuario', 'id_idioma');
     }
+    public function portafolio()
+{
+    return $this->hasOne(Portafolio::class, 'id_usuario', 'id_usuario')
+                ->withDefault();
+}
 }

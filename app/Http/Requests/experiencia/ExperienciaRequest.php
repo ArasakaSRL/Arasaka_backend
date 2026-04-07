@@ -14,7 +14,6 @@ class ExperienciaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_portafolio' => 'required|uuid|exists:portafolio,id_portafolio',
             'id_tipo_experiencia' => 'nullable|uuid|exists:tipo_experiencia,id_tipo_experiencia',
             'cargo' => 'required|string|max:100',
             'nombre_organizacion' => 'nullable|string|max:255',

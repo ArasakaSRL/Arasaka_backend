@@ -9,23 +9,34 @@ use App\Models\Certificacion;
 use App\Services\Certificacion\CertificacionService;
 
 class CertificacionController {
+
     public function __construct(
         protected CertificacionService $service, 
     ) {}
 
-    public function index($idPortafolio, GetCertificacionesByPortafolio $action){
-        $certificaciones = $action->execute($idPortafolio);
-        return CertificacionResource::collection($certificaciones);
-
+    private function getPortafolioId()
+    {
+        return auth()->user()->portafolio->id_portafolio;
     }
 
-    public function store($idPortafolio, StoreCertificacionRequest $request, CreateCertificacion $action){
-        $certificaciones = $action->execute($request->validated(), $idPortafolio);
-        return new CertificacionResource($certificaciones);
+    public function index(GetCertificacionesByPortafolio $action){
+        $certificaciones = $action->execute($this->getPortafolioId());
+        return CertificacionResource::collection($certificaciones);
+    }
+
+    public function store(StoreCertificacionRequest $request, CreateCertificacion $action){
+        $certificacion = $action->execute(
+            $request->validated(),
+            $this->getPortafolioId()
+        );
+
+        return new CertificacionResource($certificacion);
     }
 
     public function show(Certificacion $certificacion){
-        return new CertificacionResource($certificacion ->load('categoria'));
+        return new CertificacionResource(
+            $certificacion->load('categoria')
+        );
     }
     
     public function update(StoreCertificacionRequest $request, Certificacion $certificacion){
@@ -38,23 +49,26 @@ class CertificacionController {
         return response()->json(['message' => 'Certificación eliminada correctamente']);
     }
     
-    public function byCategoria($idPortafolio, $idCategoria)
-{
-    $certificaciones = \App\Models\Certificacion::with('categoria')
-        ->where('id_portafolio', $idPortafolio)
-        ->where('id_categoria_certificacion', $idCategoria)
-        ->get();
+    public function byCategoria($idCategoria)
+    {
+        $certificaciones = \App\Models\Certificacion::with('categoria')
+            ->where('id_portafolio', $this->getPortafolioId())
+            ->where('id_categoria_certificacion', $idCategoria)
+            ->get();
 
-    return \App\Http\Resources\CertificacionResource::collection($certificaciones);
-}
+        return CertificacionResource::collection($certificaciones);
+    }
 
- public function deleteByPortafolio($idPortafolio)
-{
-    $total = \App\Models\Certificacion::where('id_portafolio', $idPortafolio)->delete();
+    public function deleteByPortafolio()
+    {
+        $total = \App\Models\Certificacion::where(
+            'id_portafolio',
+            $this->getPortafolioId()
+        )->delete();
 
-    return response()->json([
-        'message' => 'Todas las certificaciones fueron eliminadas',
-        'total_eliminadas' => $total
-    ]);
-}
+        return response()->json([
+            'message' => 'Todas las certificaciones fueron eliminadas',
+            'total_eliminadas' => $total
+        ]);
+    }
 }

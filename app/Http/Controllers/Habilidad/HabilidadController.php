@@ -14,7 +14,6 @@ class HabilidadController extends Controller
     public function index()
     {
         $idUsuario = request()->user()->id_usuario;
-        //dd($idUsuario);
         $idPortafolio = Portafolio::where("id_usuario", $idUsuario)->value("id_portafolio");
 
         $habilidades = Habilidad::where("id_portafolio", $idPortafolio)->with('categoria', 'nivel')->get();
