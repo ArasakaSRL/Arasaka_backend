@@ -8,6 +8,7 @@ use App\Models\Proyecto;
 use App\Http\Requests\Proyecto\StoreProyectoRequest;
 use App\Http\Resources\Proyectos\ProyectoResource;
 use App\Models\Portafolio;
+use Mews\Purifier\Facades\Purifier;
 
 class ProyectoController extends Controller
 {
@@ -16,7 +17,7 @@ class ProyectoController extends Controller
         $idUsuario = request()->user()->id_usuario;
         $idPortafolio = Portafolio::where('id_usuario', $idUsuario)->first()->id_portafolio;
 
-        $proyectos = Proyecto::where('id_portafolio', $idPortafolio)->with('tecnologias')->get();
+        $proyectos = Proyecto::where('id_portafolio', $idPortafolio)->with('tecnologias')->orderBy('fecha_creacion', 'desc')->get();
         //dd(ProyectoResource::collection($proyectos));
         if ($proyectos) {
             $data = [
@@ -41,11 +42,13 @@ class ProyectoController extends Controller
             'id_proyecto' => (string) \Illuminate\Support\Str::uuid(),
             'id_portafolio' => $idPortafolio,
             'nombre' => $request->nombre,
-            'descripcion' => $request->descripcion,
+            'descripcion' => Purifier::clean($request->descripcion), // filtra el campo descripcion para evitar XSS
             'fecha_inicio' => $request->fecha_inicio,
             'fecha_fin' => $request->fecha_fin,
             'url_demo' => $request->url_proyecto,
             'url_github' => $request->url_repositorio,
+            'fecha_creacion' => now(),
+            'fecha_actualizacion' => now(),
         ]);
 
         $proyecto->tecnologias()->sync($request->tecnologias);
@@ -53,7 +56,7 @@ class ProyectoController extends Controller
         if ($proyecto) {
             $data = [
                 'message' => 'Proyecto creado exitosamente',
-                'data' => ProyectoResource::collection([$proyecto])
+                'data' => new ProyectoResource($proyecto)
             ];
             return response()->json($data, 201);
         } else {

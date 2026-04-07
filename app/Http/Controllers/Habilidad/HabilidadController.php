@@ -16,7 +16,9 @@ class HabilidadController extends Controller
         $idUsuario = request()->user()->id_usuario;
         $idPortafolio = Portafolio::where("id_usuario", $idUsuario)->value("id_portafolio");
 
-        $habilidades = Habilidad::where("id_portafolio", $idPortafolio)->with('categoria', 'nivel')->get();
+        //$habilidades = Habilidad::where("id_portafolio", $idPortafolio)->with('categoria', 'nivel')->orderBy('fecha_creacion', 'desc')->get();
+        
+        $habilidades = Habilidad::with(['categoria:id_categoria_habilidad,nombre', 'nivel:id_nivel_habilidad,nivel'])->where("id_portafolio", $idPortafolio)->orderBy('fecha_creacion', 'desc')->get();
         //dd($habilidades);
         if ($habilidades) {
             $data = [
@@ -43,6 +45,8 @@ class HabilidadController extends Controller
             'id_categoria_habilidad' => $request->id_categoria_habilidad,
             'id_nivel_habilidad' => $request->nivel,
             'nombre' => Tecnologia::find($request->id_tecnologia)->nombre ?? $request->nombre, // Si es técnica, se asigna el nombre de la tecnología; si es blanda, se usa el nombre proporcionado 
+            'fecha_creacion' => now(),
+            'fecha_actualizacion' => now(),
         ]);
         
         if ($habilidad) {
