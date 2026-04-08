@@ -22,11 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->api(
-            append: [
+            prepend: [
                 EnsureFrontendRequestsAreStateful::class,
-                \Illuminate\Cookie\Middleware\EncryptCookies::class,
-                \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-                \Illuminate\Session\Middleware\StartSession::class,
             ]
         );
 
