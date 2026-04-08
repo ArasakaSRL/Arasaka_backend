@@ -16,6 +16,7 @@ class Portafolio extends Model
     public $timestamps = false;
     
     protected $fillable = [
+        'id_portafolio',
         'id_usuario',
         'nombre',
         'visibilidad',

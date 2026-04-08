@@ -24,7 +24,7 @@ Route::post('/restablecer-contrasena', [NewPasswordController::class, 'store'])
     ->name('contrasena.restablecer');
 
 Route::get('/verificar-correo/{id}/{hash}', VerifyEmailController::class)
-    ->middleware(['auth', 'signed', 'throttle:6,1'])
+    ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
 
 Route::post('/correo/notificacion-verificacion', [EmailVerificationNotificationController::class, 'store'])

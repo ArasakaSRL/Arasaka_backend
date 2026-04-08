@@ -39,6 +39,12 @@ class HabilidadController extends Controller
         $idUsuario = request()->user()->id_usuario;
         $idPortafolio = Portafolio::where("id_usuario", $idUsuario)->value("id_portafolio");
 
+        if (!$idPortafolio) {
+            return response()->json([
+                'message' => 'Debes crear un portafolio antes de agregar habilidades',
+            ], 422);
+        }
+
         $habilidad = Habilidad::create([
             'id_habilidad' => (string) \Illuminate\Support\Str::uuid(),
             'id_portafolio' => $idPortafolio,

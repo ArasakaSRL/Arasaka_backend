@@ -32,10 +32,9 @@ class RegisteredUserController extends Controller
             'url_foto'                  => ['nullable', 'string', 'url', 'max:500'],
             'estado'                    => ['nullable', 'boolean'],
             'verificacion_email'        => ['nullable', 'date'],
-            'crear_portafolio'          => ['nullable', 'boolean'],
-            'portafolio.nombre'         => ['required_if:crear_portafolio,true', 'nullable', 'string', 'max:255'],
+            'portafolio.nombre'         => ['nullable', 'string', 'max:255'],
             'portafolio.descripcion'    => ['nullable', 'string'],
-            'portafolio.visibilidad'    => ['required_if:crear_portafolio,true', 'nullable', 'boolean'],
+            'portafolio.visibilidad'    => ['nullable', 'boolean'],
         ]);
 
         $usuario = Usuario::create([
@@ -49,18 +48,16 @@ class RegisteredUserController extends Controller
             'verificacion_email' => null,
         ]);
 
-        if ($request->boolean('crear_portafolio', false)) {
-            $portafolioData = $request->input('portafolio', []);
-            Portafolio::create([
-                'id_portafolio'       => (string) Str::uuid(),
-                'id_usuario'          => $usuario->id_usuario,
-                'nombre'              => $portafolioData['nombre'],
-                'descripcion'         => $portafolioData['descripcion'] ?? null,
-                'visibilidad'         => $portafolioData['visibilidad'],
-                'fecha_creacion'      => now(),
-                'fecha_actualizacion' => now(),
-            ]);
-        }
+        $portafolioData = $request->input('portafolio', []);
+        Portafolio::create([
+            'id_portafolio'       => (string) Str::uuid(),
+            'id_usuario'          => $usuario->id_usuario,
+            'nombre'              => $portafolioData['nombre'] ?? $request->nombre . ' ' . $request->apellido,
+            'descripcion'         => $portafolioData['descripcion'] ?? null,
+            'visibilidad'         => $portafolioData['visibilidad'] ?? false,
+            'fecha_creacion'      => now(),
+            'fecha_actualizacion' => now(),
+        ]);
 
         event(new Registered($usuario));
 
