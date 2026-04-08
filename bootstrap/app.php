@@ -16,9 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
-        $middleware->prepend(
+        $middleware->prepend([
+            \Illuminate\Http\Middleware\TrustProxies::class,
             \Illuminate\Http\Middleware\HandleCors::class,
-        );
+        ]);
 
         $middleware->api(
             append: [
