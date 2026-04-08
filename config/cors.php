@@ -14,22 +14,22 @@ return [
     |
     */
 
-  "paths" => ["api/*", "sanctum/csrf-cookie"],
+  'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
-  "allowed_methods" => ["*"],
+    'allowed_methods' => ['*'],
 
-  "allowed_origins" => [
-    env("FRONTEND_URL"),
-    "http://localhost:5173","https://frontend-arasaka-frontend.b5lsqc.easypanel.host"
-  ],
+    'allowed_origins' => [
+        env('FRONTEND_URL', 'https://frontend-arasaka-frontend.b5lsqc.easypanel.host'),
+        'http://localhost:5173', // solo si usas local
+    ],
 
-  "allowed_origins_patterns" => [],
+    'allowed_origins_patterns' => [],
 
-  "allowed_headers" => ["*"],
+    'allowed_headers' => ['*'],
 
-  "exposed_headers" => [],
+    'exposed_headers' => [],
 
-  "max_age" => 0,
+    'max_age' => 0,
 
-  "supports_credentials" => true,
+    'supports_credentials' => true,
 ];
