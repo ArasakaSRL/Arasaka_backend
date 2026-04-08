@@ -35,7 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
 
-        // ✅ Evita el redirect a 'login' — devuelve 401 JSON para rutas API
+        //  Evita el redirect a 'login' — devuelve 401 JSON para rutas API
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
