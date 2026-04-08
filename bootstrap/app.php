@@ -35,12 +35,27 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
 
-        //  Evita el redirect a 'login' — devuelve 401 JSON para rutas API
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
-                return response()->json([
+
+                $origin = $request->header('Origin');
+                $allowed = [
+                    'https://frontend-arasaka-frontend.b5lsqc.easypanel.host',
+                    'http://localhost:5173',
+                ];
+
+                $response = response()->json([
                     'message' => 'No autenticado.',
                 ], 401);
+
+                if (in_array($origin, $allowed)) {
+                    $response->headers->set('Access-Control-Allow-Origin', $origin);
+                    $response->headers->set('Access-Control-Allow-Credentials', 'true');
+                    $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+                    $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-XSRF-TOKEN');
+                }
+
+                return $response;
             }
         });
 
