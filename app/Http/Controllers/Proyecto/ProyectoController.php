@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Proyecto;
 
+use App\Actions\Proyecto\CreateProyectoAction;
 use App\Http\Controllers\Controller;
 use App\Models\Proyecto;
 use App\Http\Requests\Proyecto\StoreProyectoRequest;
@@ -16,7 +17,7 @@ class ProyectoController extends Controller
     public function __construct(protected ProyectoService $service){}
 
     private function getIdPortafolio(){
-        return auth()->user()->portafolio->id_portafolio;
+        return request()->user()->portafolio->id_portafolio;
     }
 
     public function index(GetProyectosByPortafolio $action)
@@ -37,25 +38,9 @@ class ProyectoController extends Controller
         }
     }
 
-    public function store(StoreProyectoRequest $request)
+    public function store(StoreProyectoRequest $request, CreateProyectoAction $action)
     {
-        $idUsuario = $request->user()->id_usuario;
-        $idPortafolio = Portafolio::where('id_usuario', $idUsuario)->first()->id_portafolio;
-
-        $proyecto = Proyecto::create([
-            'id_proyecto' => (string) \Illuminate\Support\Str::uuid(),
-            'id_portafolio' => $idPortafolio,
-            'nombre' => $request->nombre,
-            'descripcion' => Purifier::clean($request->descripcion), // filtra el campo descripcion para evitar XSS
-            'fecha_inicio' => $request->fecha_inicio,
-            'fecha_fin' => $request->fecha_fin,
-            'url_demo' => $request->url_proyecto,
-            'url_github' => $request->url_repositorio,
-            'fecha_creacion' => now(),
-            'fecha_actualizacion' => now(),
-        ]);
-
-        $proyecto->tecnologias()->sync($request->tecnologias);
+        $proyecto = $action->execute($request->validated(), $this->getIdPortafolio());
 
         if ($proyecto) {
             $data = [
