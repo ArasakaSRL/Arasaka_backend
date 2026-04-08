@@ -13,19 +13,28 @@ return Application::configure(basePath: dirname(__DIR__))
     health: "/up"
   )
   ->withMiddleware(function (Middleware $middleware) {
+
+    // CORS debe ir primero, en el stack global
+    $middleware->prepend(
+        \Illuminate\Http\Middleware\HandleCors::class,
+    );
+
     $middleware->api(
-      append: [
-         EnsureFrontendRequestsAreStateful::class,
-        \Illuminate\Cookie\Middleware\EncryptCookies::class,
-        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-        \Illuminate\Session\Middleware\StartSession::class,
-      ]
+        prepend: [
+            \Illuminate\Http\Middleware\HandleCors::class, // también aquí por seguridad
+        ],
+        append: [
+            EnsureFrontendRequestsAreStateful::class,
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+        ]
     );
 
     $middleware->alias([
-      "verified" => \App\Http\Middleware\EnsureEmailIsVerified::class,
+        "verified" => \App\Http\Middleware\EnsureEmailIsVerified::class,
     ]);
-  })
+})
   ->withExceptions(function (Exceptions $exceptions) {
     //
   })
