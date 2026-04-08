@@ -84,7 +84,7 @@ class UsuarioController extends Controller
         $data = $request->validate([
             'nombre'   => 'sometimes|required|string|max:50',
             'apellido' => 'sometimes|required|string|max:50',
-            'descripcion_laboral'=> 'sometimes|required|string|max:550',
+            'biografia'=> 'sometimes|required|string|max:550',
             'correo'    =>'sometimes|required|email|max:255',
         ]);
 
