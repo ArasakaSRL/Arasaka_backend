@@ -3,21 +3,25 @@
 namespace App\Http\Controllers\Proyecto;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Proyecto;
 use App\Http\Requests\Proyecto\StoreProyectoRequest;
 use App\Http\Resources\Proyectos\ProyectoResource;
 use App\Models\Portafolio;
+use App\Services\Proyecto\ProyectoService;
 use Mews\Purifier\Facades\Purifier;
+use App\Actions\Proyecto\GetProyectosByPortafolio;
 
 class ProyectoController extends Controller
 {
-    public function index()
-    {
-        $idUsuario = request()->user()->id_usuario;
-        $idPortafolio = Portafolio::where('id_usuario', $idUsuario)->first()->id_portafolio;
+    public function __construct(protected ProyectoService $service){}
 
-        $proyectos = Proyecto::where('id_portafolio', $idPortafolio)->with('tecnologias')->orderBy('fecha_creacion', 'desc')->get();
+    private function getIdPortafolio(){
+        return auth()->user()->portafolio->id_portafolio;
+    }
+
+    public function index(GetProyectosByPortafolio $action)
+    {
+        $proyectos = $action->execute($this->getIdPortafolio());
         //dd(ProyectoResource::collection($proyectos));
         if ($proyectos) {
             $data = [
