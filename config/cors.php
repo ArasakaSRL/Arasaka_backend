@@ -19,9 +19,9 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        env('FRONTEND_URL', 'https://frontend-arasaka-frontend.b5lsqc.easypanel.host'),
-        'http://localhost:5173', // solo si usas local
-    ],
+    'https://frontend-arasaka-frontend.b5lsqc.easypanel.host',
+    'http://localhost:5173',
+],
 
     'allowed_origins_patterns' => [],
 
