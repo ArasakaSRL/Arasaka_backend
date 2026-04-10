@@ -2,22 +2,27 @@
 
 namespace App\Http\Controllers\Proyecto;
 
+use App\Actions\Proyecto\CreateProyectoAction;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Proyecto;
 use App\Http\Requests\Proyecto\StoreProyectoRequest;
 use App\Http\Resources\Proyectos\ProyectoResource;
 use App\Models\Portafolio;
+use App\Services\Proyecto\ProyectoService;
 use Mews\Purifier\Facades\Purifier;
+use App\Actions\Proyecto\GetProyectosByPortafolio;
 
 class ProyectoController extends Controller
 {
-    public function index()
-    {
-        $idUsuario = request()->user()->id_usuario;
-        $idPortafolio = Portafolio::where('id_usuario', $idUsuario)->first()->id_portafolio;
+    public function __construct(protected ProyectoService $service){}
 
-        $proyectos = Proyecto::where('id_portafolio', $idPortafolio)->with('tecnologias')->orderBy('fecha_creacion', 'desc')->get();
+    private function getIdPortafolio(){
+        return request()->user()->portafolio->id_portafolio;
+    }
+
+    public function index(GetProyectosByPortafolio $action)
+    {
+        $proyectos = $action->execute($this->getIdPortafolio());
         //dd(ProyectoResource::collection($proyectos));
         if ($proyectos) {
             $data = [
@@ -33,25 +38,9 @@ class ProyectoController extends Controller
         }
     }
 
-    public function store(StoreProyectoRequest $request)
+    public function store(StoreProyectoRequest $request, CreateProyectoAction $action)
     {
-        $idUsuario = $request->user()->id_usuario;
-        $idPortafolio = Portafolio::where('id_usuario', $idUsuario)->first()->id_portafolio;
-
-        $proyecto = Proyecto::create([
-            'id_proyecto' => (string) \Illuminate\Support\Str::uuid(),
-            'id_portafolio' => $idPortafolio,
-            'nombre' => $request->nombre,
-            'descripcion' => Purifier::clean($request->descripcion), // filtra el campo descripcion para evitar XSS
-            'fecha_inicio' => $request->fecha_inicio,
-            'fecha_fin' => $request->fecha_fin,
-            'url_demo' => $request->url_proyecto,
-            'url_github' => $request->url_repositorio,
-            'fecha_creacion' => now(),
-            'fecha_actualizacion' => now(),
-        ]);
-
-        $proyecto->tecnologias()->sync($request->tecnologias);
+        $proyecto = $action->execute($request->validated(), $this->getIdPortafolio());
 
         if ($proyecto) {
             $data = [
