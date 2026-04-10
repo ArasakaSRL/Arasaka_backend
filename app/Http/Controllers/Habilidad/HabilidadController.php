@@ -8,17 +8,19 @@ use App\Models\Habilidad;
 use App\Models\Tecnologia;
 use App\Http\Resources\Habilidad\HabilidadResource;
 use App\Models\Portafolio;
+use App\Actions\CreateHabilidadAction;
+use App\Actions\GetHabilidadesByPortafolio;
 
 class HabilidadController extends Controller
 {
-    public function index()
+    protected function getPortafolioId()
     {
-        $idUsuario = request()->user()->id_usuario;
-        $idPortafolio = Portafolio::where("id_usuario", $idUsuario)->value("id_portafolio");
+        return request()->user()->id_usuario->portafolio->id_portafolio;
+    }
 
-        //$habilidades = Habilidad::where("id_portafolio", $idPortafolio)->with('categoria', 'nivel')->orderBy('fecha_creacion', 'desc')->get();
-        
-        $habilidades = Habilidad::with(['categoria:id_categoria_habilidad,nombre', 'nivel:id_nivel_habilidad,nivel'])->where("id_portafolio", $idPortafolio)->orderBy('fecha_creacion', 'desc')->get();
+    public function index(GetHabilidadesByPortafolio $action)
+    {
+        $habilidades = $action->execute($this->getPortafolioId());
         //dd($habilidades);
         if ($habilidades) {
             $data = [
@@ -34,26 +36,9 @@ class HabilidadController extends Controller
         }
     }
 
-    public function store(StoreHabilidadRequest $request){
+    public function store(StoreHabilidadRequest $request, CreateHabilidadAction $action){
 
-        $idUsuario = request()->user()->id_usuario;
-        $idPortafolio = Portafolio::where("id_usuario", $idUsuario)->value("id_portafolio");
-
-        if (!$idPortafolio) {
-            return response()->json([
-                'message' => 'Debes crear un portafolio antes de agregar habilidades',
-            ], 422);
-        }
-
-        $habilidad = Habilidad::create([
-            'id_habilidad' => (string) \Illuminate\Support\Str::uuid(),
-            'id_portafolio' => $idPortafolio,
-            'id_categoria_habilidad' => $request->id_categoria_habilidad,
-            'id_nivel_habilidad' => $request->nivel,
-            'nombre' => Tecnologia::find($request->id_tecnologia)->nombre ?? $request->nombre, // Si es técnica, se asigna el nombre de la tecnología; si es blanda, se usa el nombre proporcionado 
-            'fecha_creacion' => now(),
-            'fecha_actualizacion' => now(),
-        ]);
+        $habilidad = $action->execute($request->validated(), $this->getPortafolioId());
         
         if ($habilidad) {
             $data = [
