@@ -14,8 +14,10 @@ class ProyectoService {
         ]);
     }
 
-    public function actualizar(Proyecto $proyecto, $data){
+    public function actualizar($data, $id){
+        $proyecto = Proyecto::find($id);
         $proyecto->update($data);
+        //dd($proyecto);
         return $proyecto;
     }
 
