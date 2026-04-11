@@ -53,4 +53,21 @@ class HabilidadController extends Controller
             return response()->json($data, 500);
         }   
     }
+
+    public function update(UpdateHabilidadRequest $request, String $habilidad)
+    {
+        $habilidad = $this->service->actualizar($request->validated(), $habilidad);
+        if ($habilidad) {
+            $data = [
+                'message' => 'Habilidad actualizada exitosamente',
+                'data' => new HabilidadResource($habilidad)
+            ];
+            return response()->json($data, 200);
+        } else {
+            $data = [
+                'message' => 'Error al actualizar la habilidad',
+            ];
+            return response()->json($data, 500);
+        }
+    }
 }

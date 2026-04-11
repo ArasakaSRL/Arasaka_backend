@@ -14,8 +14,9 @@ class HabilidadService{
         ]);
     }
 
-    public function actualizar(Habilidad $habilidad, $data){
-        $Habilidad->update($data);
+    public function actualizar($data, String $idHabilidad){
+        $habilidad = Habilidad::find($idHabilidad);
+        $habilidad->update($data);
         return $habilidad;
     }
 
