@@ -7,11 +7,13 @@ use Illuminate\Support\Str;
 
 class ProyectoService {
     public function crear($data ,$idPortafolio){
-        return Proyecto::create([
+        $proyecto = Proyecto::create([
             'id_proyecto' => Str::uuid(),
             'id_portafolio' => $idPortafolio,
             ...$data
         ]);
+        $proyecto->tecnologias()->sync($data['tecnologias']);
+        return $proyecto;
     }
 
     public function actualizar($data, $id){
