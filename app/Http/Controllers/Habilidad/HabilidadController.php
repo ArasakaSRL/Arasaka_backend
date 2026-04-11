@@ -8,17 +8,17 @@ use App\Models\Habilidad;
 use App\Models\Tecnologia;
 use App\Http\Resources\Habilidad\HabilidadResource;
 use App\Models\Portafolio;
-use App\Actions\CreateHabilidadAction;
-use App\Actions\GetHabilidadesByPortafolio;
+use App\Actions\Habilidad\CreateHabilidadAction;
+use App\Actions\Habilidad\GetHabilidadByPortafolioAction;
 
 class HabilidadController extends Controller
 {
     protected function getPortafolioId()
     {
-        return request()->user()->id_usuario->portafolio->id_portafolio;
+        return request()->user()->portafolio->id_portafolio;
     }
 
-    public function index(GetHabilidadesByPortafolio $action)
+    public function index(GetHabilidadByPortafolioAction $action)
     {
         $habilidades = $action->execute($this->getPortafolioId());
         //dd($habilidades);

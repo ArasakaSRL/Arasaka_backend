@@ -22,19 +22,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('{certificacion}', [CertificacionController::class, 'destroy']);
     });
 
-Route::prefix("categorias")->group(function () {
-  Route::get("/", [CategoriaCertificacionController::class, "index"]);
-  Route::post("/", [CategoriaCertificacionController::class, "store"]);
-  Route::get("/{id}", [CategoriaCertificacionController::class, "show"]);
-  Route::put("/{categoria}", [
-    CategoriaCertificacionController::class,
-    "update",
-  ]);
-  Route::delete("/{categoria}", [
-    CategoriaCertificacionController::class,
-    "destroy",
-  ]);
-});
+    Route::prefix("categorias")->group(function () {
+      Route::get("/", [CategoriaCertificacionController::class, "index"]);
+      Route::post("/", [CategoriaCertificacionController::class, "store"]);
+      Route::get("/{id}", [CategoriaCertificacionController::class, "show"]);
+      Route::put("/{categoria}", [
+        CategoriaCertificacionController::class,
+        "update",
+      ]);
+      Route::delete("/{categoria}", [
+        CategoriaCertificacionController::class,
+        "destroy",
+      ]);
+    });
 
 });
 
