@@ -8,11 +8,15 @@ use App\Models\Habilidad;
 use App\Models\Tecnologia;
 use App\Http\Resources\Habilidad\HabilidadResource;
 use App\Models\Portafolio;
-use App\Actions\Habilidad\CreateHabilidadAction;
-use App\Actions\Habilidad\GetHabilidadByPortafolioAction;
+use App\Actions\Habilidad\Habilidad\CreateHabilidadAction;
+use App\Actions\Habilidad\Habilidad\GetHabilidadByPortafolioAction;
+use App\Http\Requests\Habilidad\UpdateHabilidadRequest;
+use App\Services\Habilidad\HabilidadService;
 
 class HabilidadController extends Controller
 {
+    public function __construct(protected HabilidadService $service){}
+
     protected function getPortafolioId()
     {
         return request()->user()->portafolio->id_portafolio;
@@ -52,5 +56,22 @@ class HabilidadController extends Controller
             ];
             return response()->json($data, 500);
         }   
+    }
+
+    public function update(UpdateHabilidadRequest $request, String $habilidad)
+    {
+        $habilidad = $this->service->actualizar($request->validated(), $habilidad);
+        if ($habilidad) {
+            $data = [
+                'message' => 'Habilidad actualizada exitosamente',
+                'data' => new HabilidadResource($habilidad)
+            ];
+            return response()->json($data, 200);
+        } else {
+            $data = [
+                'message' => 'Error al actualizar la habilidad',
+            ];
+            return response()->json($data, 500);
+        }
     }
 }
