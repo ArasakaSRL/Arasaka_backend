@@ -16,6 +16,7 @@ class HabilidadService{
 
     public function actualizar($data, String $idHabilidad){
         $habilidad = Habilidad::find($idHabilidad);
+        $habilidad->fecha_actualizacion = now();
         $habilidad->update($data);
         return $habilidad;
     }

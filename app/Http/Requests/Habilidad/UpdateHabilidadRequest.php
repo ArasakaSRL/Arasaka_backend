@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Habilidad;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\CategoriaHabilidad;
 
 class UpdateHabilidadRequest extends FormRequest
 {
@@ -23,16 +24,11 @@ class UpdateHabilidadRequest extends FormRequest
     {
         $rules = [
             'id_categoria_habilidad' => 'sometimes|exists:categoria_habilidad,id_categoria_habilidad',
-            'nivel' => 'sometimes|exists:nivel_de_habilidad,id_nivel_habilidad',
+            'id_nivel_habilidad' => 'sometimes|exists:nivel_de_habilidad,id_nivel_habilidad',
+            'id_tecnologia' => 'sometimes|exists:tecnologias,id_tecnologia',
+            'nombre' => 'sometimes|string',
         ];
-
-        if ($this->id_categoria_habilidad == CategoriaHabilidad::TECNICA) {
-            $rules['id_tecnologia'] = 'sometimes|exists:tecnologias,id_tecnologia';
-        }
-
-        if ($this->id_categoria_habilidad == CategoriaHabilidad::BLANDA) {
-            $rules['nombre'] = 'sometimes|string';
-        }
+        
         return $rules;
     }
 }

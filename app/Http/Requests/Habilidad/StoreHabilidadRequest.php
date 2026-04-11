@@ -24,8 +24,7 @@ class StoreHabilidadRequest extends FormRequest
     {
         $rules = [
             'id_categoria_habilidad' => 'required|exists:categoria_habilidad,id_categoria_habilidad',
-            //'id_portafolio' => 'required|exists:portafolio,id_portafolio',
-            'nivel' => 'required|exists:nivel_de_habilidad,id_nivel_habilidad',
+            'id_nivel_habilidad' => 'required|exists:nivel_de_habilidad,id_nivel_habilidad',
         ];
 
         if ($this->id_categoria_habilidad == CategoriaHabilidad::TECNICA) {
