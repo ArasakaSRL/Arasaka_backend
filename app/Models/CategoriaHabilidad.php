@@ -8,8 +8,8 @@ class CategoriaHabilidad extends Model
 {
     use HasFactory;
 
-    const TECNICA = 'b4e21d3d-e3eb-4006-a7e8-0e720267f4c6';
-    const BLANDA = 'dc1131cc-2816-417a-a23f-f01e664f3ac1';
+    const TECNICA = '03fa2a92-4de1-4a65-95e2-4919a1cd5e50';
+    const BLANDA = 'c8d88759-b3cc-4fd9-90dc-456785ffc08e';
 
     protected $table = 'categoria_habilidad';
     protected $primaryKey = 'id_categoria_habilidad';
