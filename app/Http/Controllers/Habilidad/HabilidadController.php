@@ -8,8 +8,8 @@ use App\Models\Habilidad;
 use App\Models\Tecnologia;
 use App\Http\Resources\Habilidad\HabilidadResource;
 use App\Models\Portafolio;
-use App\Actions\Habilidad\Habilidad\CreateHabilidadAction;
-use App\Actions\Habilidad\Habilidad\GetHabilidadByPortafolioAction;
+use App\Actions\Habilidad\CreateHabilidadAction;
+use App\Actions\Habilidad\GetHabilidadByPortafolioAction;
 use App\Http\Requests\Habilidad\UpdateHabilidadRequest;
 use App\Services\Habilidad\HabilidadService;
 
