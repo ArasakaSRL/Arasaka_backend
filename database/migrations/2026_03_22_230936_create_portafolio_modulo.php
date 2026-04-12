@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('nombre',50)->nullable();
             $table->boolean('visibilidad')->nullable();
             $table->string('descripcion',550)->nullable();
+            $table->string('slug')->unique();
             $table->date('fecha_creacion')->nullable();
             $table->date('fecha_actualizacion')->nullable();
 
