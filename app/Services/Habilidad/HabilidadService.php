@@ -4,13 +4,16 @@ namespace App\Services\Habilidad;
 
 use App\Models\Habilidad;
 use Illuminate\Support\Str;
+use App\Models\Tecnologia;
 
 class HabilidadService{
     public function crear($data, $idPortafolio){
+        $nombre = $data['nombre'] ?? Tecnologia::find($data['id_tecnologia'])->nombre ?? 'Habilidad sin nombre';
         return Habilidad::create([
             'id_habilidad' => Str::uuid(),
             'id_portafolio' => $idPortafolio,
-            ...$data,
+            'nombre' => $nombre,
+            ...$data
         ]);
     }
 
