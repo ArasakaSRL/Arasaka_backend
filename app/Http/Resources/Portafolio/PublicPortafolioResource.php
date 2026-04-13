@@ -48,21 +48,36 @@ class PublicPortafolioResource extends JsonResource
                     'categoria' => $t->categoria?->nombre,
                 ]),
             ]),
-            'habilidades' => $this->habilidades -> take(8) -> map(fn($h) => [
-                'id_habilidad' => $h->id_habilidad,
-                'nombre' => $h->nombre,
-                'descripcion' => $h->descripcion,
-                'categoria' => $h->categoria?->nombre,
-                'nivel' => $h->nivel?->nombre,
-                'tecnologias' => $h->tecnologias ->map(fn($t) => [
-                    'nombre' => $t->nombre,
-                    'descripcion' => $t->descripcion,
-                    'logo' => $t->logo,
-                    'categoria' => $t->categoria?->nombre,
-                ]),
-
-            ]),
-            'experiencias' => $this->experiencias ->take(5) ->map(fn($e) => [
+            'habilidades' => [
+                 'tecnicas' => $this->habilidades
+                 ->filter(fn($h) => $h->categoria?->nombre === 'Tecnica')
+                 ->take(8)
+                 ->map(fn($h) => [
+                 'id_habilidad' => $h->id_habilidad,
+                 'nombre' => $h->nombre,
+                 'descripcion' => $h->descripcion,
+                 'nivel' => $h->nivel?->nivel,
+                 'tecnologias' => $h->tecnologias->map(fn($t) => [
+                 'nombre' => $t->nombre,
+                 'descripcion' => $t->descripcion,
+                 'logo' => $t->logo,
+                 'categoria' => $t->categoria?->nombre,
+                 ]),
+            ])
+           ->values(),
+ 
+            'blandas' => $this->habilidades
+                 ->filter(fn($h) => $h->categoria?->nombre === 'Blanda')
+                 ->take(8)
+                 ->map(fn($h) => [
+                 'id_habilidad' => $h->id_habilidad,
+                 'nombre' => $h->nombre,
+                 'descripcion' => $h->descripcion,
+                 'nivel' => $h->nivel?->nivel,
+                  ])
+           ->values(),
+            ],
+            'experiencias' => $this->experiencias ->take(4) ->map(fn($e) => [
                 'id_experiencia' => $e->id_experiencia,
                 'cargo' => $e->cargo,
                 'Nombre_empresa' => $e->nombre_organizacion,
