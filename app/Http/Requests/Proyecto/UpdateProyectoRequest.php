@@ -28,8 +28,8 @@ class UpdateProyectoRequest extends FormRequest
             'fecha_fin' => 'sometimes|nullable|date|after_or_equal:fecha_inicio',
             'tecnologias' => 'sometimes|array',
             'tecnologias.*' => 'exists:tecnologias,id_tecnologia',
-            'url_proyecto' => 'sometimes|nullable|url',
-            'url_repositorio' => 'sometimes|nullable|url',
+            'url_demo' => 'sometimes|nullable|url',
+            'url_github' => 'sometimes|nullable|url',
         ];
     }
 }
