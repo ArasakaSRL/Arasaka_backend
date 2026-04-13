@@ -11,7 +11,7 @@ class ProyectoResource extends JsonResource
             'id_proyecto' => $this->id_proyecto,
             'nombre' => $this->nombre,
             'descripcion' => $this->descripcion,
-            'url_repositorio' => $this->url_github,
+            'url_github' => $this->url_github,
             'url_demo' => $this->url_demo,
             'tecnologias' => $this->tecnologias ? $this->tecnologias->map(function ($tecnologia) {
                 return [

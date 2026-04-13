@@ -28,8 +28,8 @@ class StoreProyectoRequest extends FormRequest
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
             'tecnologias' => 'required|array||min:1',
             'tecnologias.*' => 'exists:tecnologias,id_tecnologia',
-            'url_proyecto' => 'nullable|url',
-            'url_repositorio' => 'nullable|url',
+            'url_demo' => 'nullable|url',
+            'url_github' => 'nullable|url',
         ];
     }
 }
