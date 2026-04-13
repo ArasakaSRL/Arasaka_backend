@@ -19,7 +19,7 @@ class ProyectoService {
     public function actualizar($data, $id){
         $proyecto = Proyecto::find($id);
         $proyecto->update($data);
-        //dd($proyecto);
+        $proyecto->tecnologias()->sync($data['tecnologias']);
         return $proyecto;
     }
 
