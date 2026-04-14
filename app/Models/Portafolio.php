@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str; 
 
 class Portafolio extends Model
 {
@@ -21,6 +22,7 @@ class Portafolio extends Model
         'nombre',
         'visibilidad',
         'descripcion',
+        'slug',
         'fecha_creacion',
         'fecha_actualizacion',
     ];
@@ -75,4 +77,23 @@ class Portafolio extends Model
     {
         return $this->hasMany(VisualizacionesPortafolio::class, 'id_portafolio', 'id_portafolio');
     }
+    protected static function boot()
+{
+    parent::boot();
+
+    static::creating(function ($portafolio) {
+
+        // solo si no viene slug manual
+        if (!$portafolio->slug) {
+
+            $slugBase = Str::slug($portafolio->nombre);
+
+            $count = self::where('slug', 'like', "$slugBase%")->count();
+
+            $portafolio->slug = $count
+                ? "{$slugBase}-" . ($count + 1)
+                : $slugBase;
+        }
+    });
+}
 }
