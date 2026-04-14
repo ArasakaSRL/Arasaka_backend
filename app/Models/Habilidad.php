@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CategoriaHabilidad;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str ;
@@ -19,9 +20,12 @@ class Habilidad extends Model
     
     protected $fillable = [
         'id_portafolio',
-        'id_categoria_habilidad',
         'id_nivel_habilidad',
         'nombre',
+    ];
+
+    protected $casts = [
+        'categoria_habilidad' => CategoriaHabilidad::class,
     ];
 
     protected static function boot()

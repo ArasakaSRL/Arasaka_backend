@@ -8,6 +8,7 @@ use App\Models\Tecnologia;
 
 class HabilidadService{
     public function crear($data, $idPortafolio){
+        //dd($data);
         $nombre = $data['nombre'] ?? Tecnologia::find($data['id_tecnologia'])->nombre ?? 'Habilidad sin nombre';
         return Habilidad::create([
             'id_habilidad' => Str::uuid(),
