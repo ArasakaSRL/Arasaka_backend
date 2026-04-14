@@ -10,18 +10,28 @@ class HabilidadService{
     public function crear($data, $idPortafolio){
         //dd($data);
         $nombre = $data['nombre'] ?? Tecnologia::find($data['id_tecnologia'])->nombre ?? 'Habilidad sin nombre';
-        return Habilidad::create([
+        
+        $habilidad = Habilidad::create([
             'id_habilidad' => Str::uuid(),
             'id_portafolio' => $idPortafolio,
             'nombre' => $nombre,
             ...$data
         ]);
+        $habilidad->categoria_habilidad = $data['categoria_habilidad'] ?? null;
+        $habilidad->nivel = $data['nivel'] ?? null;
+        $habilidad->save();
+        return $habilidad;
     }
 
     public function actualizar($data, String $idHabilidad){
-        $habilidad = Habilidad::find($idHabilidad);
+
+        $nombre = $data['nombre'] ?? Tecnologia::find($data['id_tecnologia'])->nombre ?? 'Habilidad sin nombre';
+        //dd($data);
+        $habilidad = Habilidad::findOrFail($idHabilidad);
         $habilidad->fecha_actualizacion = now();
+        $habilidad->nombre = $nombre;
         $habilidad->update($data);
+        //dd($habilidad);
         return $habilidad;
     }
 
