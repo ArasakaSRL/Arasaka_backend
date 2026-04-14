@@ -15,7 +15,8 @@ class HabilidadService{
             'id_habilidad' => Str::uuid(),
             'id_portafolio' => $idPortafolio,
             'nombre' => $nombre,
-            ...$data
+            'fecha_creacion' => now(),
+            'fecha_actualizacion' => now(),
         ]);
         $habilidad->categoria_habilidad = $data['categoria_habilidad'] ?? null;
         $habilidad->nivel = $data['nivel'] ?? null;
@@ -23,14 +24,16 @@ class HabilidadService{
         return $habilidad;
     }
 
-    public function actualizar($data, String $idHabilidad){
-
-        $nombre = $data['nombre'] ?? Tecnologia::find($data['id_tecnologia'])->nombre ?? 'Habilidad sin nombre';
+    public function actualizar(array $data, String $idHabilidad){
         //dd($data);
         $habilidad = Habilidad::findOrFail($idHabilidad);
-        $habilidad->fecha_actualizacion = now();
-        $habilidad->nombre = $nombre;
-        $habilidad->update($data);
+
+        $nombre = $data['nombre'] ?? Tecnologia::find($data['id_tecnologia'])->nombre ?? 'Habilidad sin nombre';
+        
+        $habilidad->update(array_merge($data, [
+            'nombre' => $nombre,
+            'fecha_actualizacion' => now(),
+        ]));
         //dd($habilidad);
         return $habilidad;
     }
