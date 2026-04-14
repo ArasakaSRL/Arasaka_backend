@@ -644,3 +644,25 @@ VALUES (
         'Framework de Java para construir aplicaciones web y microservicios',
         'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/spring/spring-original.svg'
     );
+insert into categoria_habilidad (nombre) VALUES
+(
+    'Blanda'
+),
+(
+    'Tecnica'
+);
+
+insert into nivel_de_habilidad (nivel) VALUES
+(
+    'Intermedio'
+),
+(
+    'Competente'
+),
+(
+    'Avanzado'
+),
+(
+    'Experto'
+)
+;

@@ -21,8 +21,7 @@ class PortafolioService
                 'proyectos.imagenes',
                 'proyectos.tecnologias',
 
-                'habilidades.categoria',
-                'habilidades.nivel',
+
                 'habilidades.tecnologias',
 
                 'experiencias.tipo',
