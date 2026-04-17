@@ -17,8 +17,8 @@ class HabilidadResource extends JsonResource
         return [
             'id_habilidad' => $this->id_habilidad,
             'id_portafolio' => $this->id_portafolio,
-            'categoria habilidad' => $this->categoria->nombre,
-            'nivel habilidad' => $this->nivel->nivel,
+            'categoria habilidad' => $this->categoria_habilidad?->value,
+            'nivel habilidad' => $this->nivel?->value,
             'nombre' => $this->nombre,
         ];
     }
