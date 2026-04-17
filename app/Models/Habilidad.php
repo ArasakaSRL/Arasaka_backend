@@ -22,6 +22,8 @@ class Habilidad extends Model
     protected $fillable = [
         'id_portafolio',
         'nombre',
+        'categoria_habilidad',
+        'nivel',
     ];
 
     protected $casts = [

@@ -25,7 +25,7 @@ return new class extends Migration {
             $table->uuid('id_portafolio');
             //$table->uuid('id_categoria_habilidad');
             $table->enum('categoria_habilidad', ['blanda','tecnica'])->nullable();
-            $table->enum('nivel', ['basico','intermedio', 'competente', 'avanzado'])->nullable();
+            $table->enum('nivel', ['Principiante','Intermedio', 'Competente', 'Avanzado', 'Experto'])->nullable();
             $table->string('nombre',50)->nullable();
             $table->timestamp('fecha_creacion')->nullable();
             $table->timestamp('fecha_actualizacion')->nullable();

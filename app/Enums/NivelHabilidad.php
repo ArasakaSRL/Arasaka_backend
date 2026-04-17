@@ -8,18 +8,21 @@ enum NivelHabilidad: string
 {
     use Enumutils;
 
-    case BASICO = "basico";
-    case INTERMEDIO = "intermedio";
-    case COMPETENTE = "competente";
-    case AVANZADO = "avanzado";
+    case PRINCIPIANTE = "Principiante";
+    case INTERMEDIO = "Intermedio";
+    case COMPETENTE = "Competente";
+    case AVANZADO = "Avanzado";
+
+    case EXPERTO = "Experto";
 
     public function label(): string
     {
         return match ($this) {
-            self::BASICO => 'blanda',
-            self::INTERMEDIO => 'tecnica',
-            self::COMPETENTE => 'compentente',
-            self::AVANZADO => 'avanzado',
+            self::PRINCIPIANTE => 'Principiante',
+            self::INTERMEDIO => 'Intermedio',
+            self::COMPETENTE => 'Compentente',
+            self::AVANZADO => 'Avanzado',
+            self::EXPERTO => 'Experto',
         };
     }
 }
