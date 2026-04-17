@@ -27,11 +27,10 @@ class HabilidadService{
     public function actualizar(array $data, String $idHabilidad){
         //dd($data);
         $habilidad = Habilidad::findOrFail($idHabilidad);
-
-        $nombre = $data['nombre'] ?? Tecnologia::find($data['id_tecnologia'])->nombre ?? 'Habilidad sin nombre';
-        
+        if (array_key_exists('id_tecnologia', $data)) {
+            $data['nombre'] = Tecnologia::findOrFail($data['id_tecnologia'])->nombre;
+        }
         $habilidad->update(array_merge($data, [
-            'nombre' => $nombre,
             'fecha_actualizacion' => now(),
         ]));
         //dd($habilidad);
