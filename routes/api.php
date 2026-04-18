@@ -15,7 +15,7 @@ Route::get(
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/autenticar', fn() => response()->json([
         "message" => "Autenticado correctamente",
-        "user" => request()->user(),
+        "user" => request()->user()->load(['roles', 'profesiones', 'pais', 'telefonos', 'portafolio']),
     ]));
 });
 

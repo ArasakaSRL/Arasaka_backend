@@ -53,6 +53,7 @@ class FirebaseAuthController extends Controller
                 $usuario = $usuarioPorCorreo;
             }
 
+            // Si el usuario existe pero no tiene un firebase_uid, lo actualizamos. Si no existe, lo creamos.
             if ($usuario) {
                 $usuario->update([
                     'firebase_uid' => $uid,

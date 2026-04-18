@@ -5,6 +5,7 @@
 /public/storage
 /storage/*.key
 /storage/app/firebase-credentials.json
+serve.bat
 /vendor
 .env
 .env.backup
