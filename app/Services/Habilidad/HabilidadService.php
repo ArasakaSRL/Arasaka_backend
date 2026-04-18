@@ -8,19 +8,32 @@ use App\Models\Tecnologia;
 
 class HabilidadService{
     public function crear($data, $idPortafolio){
+        //dd($data);
         $nombre = $data['nombre'] ?? Tecnologia::find($data['id_tecnologia'])->nombre ?? 'Habilidad sin nombre';
-        return Habilidad::create([
+        
+        $habilidad = Habilidad::create([
             'id_habilidad' => Str::uuid(),
             'id_portafolio' => $idPortafolio,
             'nombre' => $nombre,
-            ...$data
+            'fecha_creacion' => now(),
+            'fecha_actualizacion' => now(),
         ]);
+        $habilidad->categoria_habilidad = $data['categoria_habilidad'] ?? null;
+        $habilidad->nivel = $data['nivel'] ?? null;
+        $habilidad->save();
+        return $habilidad;
     }
 
-    public function actualizar($data, String $idHabilidad){
-        $habilidad = Habilidad::find($idHabilidad);
-        $habilidad->fecha_actualizacion = now();
-        $habilidad->update($data);
+    public function actualizar(array $data, String $idHabilidad){
+        //dd($data);
+        $habilidad = Habilidad::findOrFail($idHabilidad);
+        if (array_key_exists('id_tecnologia', $data)) {
+            $data['nombre'] = Tecnologia::findOrFail($data['id_tecnologia'])->nombre;
+        }
+        $habilidad->update(array_merge($data, [
+            'fecha_actualizacion' => now(),
+        ]));
+        //dd($habilidad);
         return $habilidad;
     }
 

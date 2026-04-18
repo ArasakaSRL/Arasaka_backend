@@ -13,6 +13,7 @@ class ConfiguracionPortafolio extends Model
     protected $primaryKey = 'id_configuracion_portafolio';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_portafolio',

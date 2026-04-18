@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Habilidad;
 
-use App\Models\CategoriaHabilidad;
+use App\Enums\CategoriaHabilidad;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
+use App\Enums\NivelHabilidad;
 
 class StoreHabilidadRequest extends FormRequest
 {
@@ -23,15 +25,15 @@ class StoreHabilidadRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'id_categoria_habilidad' => 'required|exists:categoria_habilidad,id_categoria_habilidad',
-            'id_nivel_habilidad' => 'required|exists:nivel_de_habilidad,id_nivel_habilidad',
+            'categoria_habilidad' => ['required', new Enum(CategoriaHabilidad::class)],
+            'nivel' => ['required', new Enum(NivelHabilidad::class)],
         ];
 
-        if ($this->id_categoria_habilidad == CategoriaHabilidad::TECNICA) {
+        if ($this->categoria_habilidad == CategoriaHabilidad::TECNICA->value) {
             $rules['id_tecnologia'] = 'required|exists:tecnologias,id_tecnologia';
         }
 
-        if ($this->id_categoria_habilidad == CategoriaHabilidad::BLANDA) {
+        if ($this->categoria_habilidad == CategoriaHabilidad::BLANDA->value) {
             $rules['nombre'] = 'required|string';
         }
         return $rules;

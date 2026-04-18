@@ -3,7 +3,9 @@
 namespace App\Http\Requests\Habilidad;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\CategoriaHabilidad;
+use App\Enums\CategoriaHabilidad;
+use App\Enums\NivelHabilidad;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateHabilidadRequest extends FormRequest
 {
@@ -23,8 +25,8 @@ class UpdateHabilidadRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'id_categoria_habilidad' => 'sometimes|exists:categoria_habilidad,id_categoria_habilidad',
-            'id_nivel_habilidad' => 'sometimes|exists:nivel_de_habilidad,id_nivel_habilidad',
+            'categoria_habilidad' => ['sometimes', new Enum(CategoriaHabilidad::class)],
+            'nivel' => ['sometimes', new Enum(NivelHabilidad::class)],
             'id_tecnologia' => 'sometimes|exists:tecnologias,id_tecnologia',
             'nombre' => 'sometimes|string',
         ];

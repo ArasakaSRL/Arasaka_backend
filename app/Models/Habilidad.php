@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\CategoriaHabilidad;
+use App\Enums\NivelHabilidad;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str ;
@@ -19,9 +21,14 @@ class Habilidad extends Model
     
     protected $fillable = [
         'id_portafolio',
-        'id_categoria_habilidad',
-        'id_nivel_habilidad',
         'nombre',
+        'categoria_habilidad',
+        'nivel',
+    ];
+
+    protected $casts = [
+        'categoria_habilidad' => CategoriaHabilidad::class,
+        'nivel' => NivelHabilidad::class,
     ];
 
     protected static function boot()
@@ -39,7 +46,7 @@ class Habilidad extends Model
         return $this->belongsTo(Portafolio::class, 'id_portafolio', 'id_portafolio');
     }
 
-    public function categoria()
+    /* public function categoria()
     {
         return $this->belongsTo(CategoriaHabilidad::class, 'id_categoria_habilidad', 'id_categoria_habilidad');
     }
@@ -47,7 +54,7 @@ class Habilidad extends Model
     public function nivel()
     {
         return $this->belongsTo(NivelDeHabilidad::class, 'id_nivel_habilidad', 'id_nivel_habilidad');
-    }
+    } */
 
     public function tecnologias()
 {

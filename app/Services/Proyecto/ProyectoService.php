@@ -16,10 +16,25 @@ class ProyectoService {
         return $proyecto;
     }
 
-    public function actualizar($data, $id){
-        $proyecto = Proyecto::find($id);
-        $proyecto->update($data);
-        $proyecto->tecnologias()->sync($data['tecnologias']);
+    public function actualizar(array $data, $id){
+        $proyecto = Proyecto::findOrFail($id);
+        $proyecto->update(array_merge($data,[
+            'fecha_actualizacion'=> now()
+        ]));
+        // 1. Verificamos que la llave exista
+        if (array_key_exists('tecnologias', $data) && is_array($data['tecnologias'])) {
+        
+        // 2. Limpiamos cadenas vacías, nulos o espacios en blanco
+            $tecnologiasLimpias = array_filter($data['tecnologias'], function($valor) {
+                return !empty(trim($valor)); 
+            });
+
+        // 3. Solo sincronizamos si el array NO quedó vacío tras la limpieza
+            if (!empty($tecnologiasLimpias)) {
+                $proyecto->tecnologias()->sync($tecnologiasLimpias);
+            }
+        }
+        
         return $proyecto;
     }
 
