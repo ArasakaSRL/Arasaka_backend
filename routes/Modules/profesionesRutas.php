@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Editar info del usuario
     Route::patch('/usuario/informacion', [UsuarioController::class, 'actualizarInformacion']);
+    
     Route::patch('/usuario/foto', [UsuarioController::class, 'actualizarFoto']);
 
     Route::patch('/usuario/pais', [UsuarioController::class, 'actualizarPais']);

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Portafolio;
 use App\Models\Usuario;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Kreait\Laravel\Firebase\Facades\Firebase;
 
 class FirebaseAuthController extends Controller
@@ -77,13 +79,20 @@ class FirebaseAuthController extends Controller
                     'verificacion_email' => now(),
                     'estado'             => true,
                 ]);
+                Portafolio::create([
+                    'id_portafolio'       => (string) Str::uuid(),
+                    'id_usuario'          => $usuario->id_usuario,
+                    'nombre'              => trim($nombre . ' ' . $apellido),
+                    'visibilidad'         => false,
+                    'fecha_creacion'      => now(),
+                    'fecha_actualizacion' => now(),
+                ]);
             }
 
             Auth::login($usuario);
             $request->session()->regenerate();
 
             return response()->json(['message' => 'Sesión iniciada correctamente']);
-
         } catch (\Throwable $e) {
             return response()->json(['message' => 'Token inválido', 'error' => $e->getMessage()], 401);
         }
