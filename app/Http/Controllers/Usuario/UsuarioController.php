@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Usuario;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pais;
+use App\Models\Telefono;
 use App\Services\Profesion\ProfesionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -91,6 +93,71 @@ class UsuarioController extends Controller
         $request->user()->update($data);
 
         return response()->json(['message' => 'Información actualizada correctamente', 'data' => $request->user()->fresh()]);
+    }
+
+    // PATCH /usuario/pais
+    public function actualizarPais(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'nombre' => 'required|string|max:255',
+        ]);
+
+        $pais = Pais::updateOrCreate(
+            ['id_usuario' => $request->user()->id_usuario],
+            ['nombre' => $data['nombre']]
+        );
+
+        return response()->json(['message' => 'País actualizado correctamente', 'data' => $pais]);
+    }
+
+    // GET /usuario/telefonos
+    public function getTelefonos(Request $request): JsonResponse
+    {
+        return response()->json(['data' => $request->user()->telefonos]);
+    }
+
+    // POST /usuario/telefonos
+    public function agregarTelefono(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'telefono' => 'required|string|max:20',
+        ]);
+
+        $telefono = Telefono::create([
+            'id_telefono' => (string) \Illuminate\Support\Str::uuid(),
+            'id_usuario'  => $request->user()->id_usuario,
+            'telefono'    => $data['telefono'],
+        ]);
+
+        return response()->json(['message' => 'Teléfono agregado correctamente', 'data' => $telefono], 201);
+    }
+
+    // DELETE /usuario/telefonos/{id}
+    public function eliminarTelefono(Request $request, string $id): JsonResponse
+    {
+        $telefono = Telefono::where('id_telefono', $id)
+            ->where('id_usuario', $request->user()->id_usuario)
+            ->firstOrFail();
+
+        $telefono->delete();
+
+        return response()->json(['message' => 'Teléfono eliminado correctamente']);
+    }
+
+    // PATCH /usuario/telefonos/{id}
+    public function actualizarTelefono(Request $request, string $id): JsonResponse
+    {
+        $data = $request->validate([
+            'telefono' => 'required|string|max:20',
+        ]);
+
+        $telefono = Telefono::where('id_telefono', $id)
+            ->where('id_usuario', $request->user()->id_usuario)
+            ->firstOrFail();
+
+        $telefono->update($data);
+
+        return response()->json(['message' => 'Teléfono actualizado correctamente', 'data' => $telefono->fresh()]);
     }
 
 }

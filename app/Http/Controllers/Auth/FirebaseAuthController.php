@@ -11,52 +11,59 @@ use Kreait\Laravel\Firebase\Facades\Firebase;
 
 class FirebaseAuthController extends Controller
 {
-
-/**
- * funcionando con el id_token que se obtiene del cliente después de iniciar sesión
- *  con Firebase Authentication. El controlador verifica el token, extrae la información
- *  del usuario y luego crea o actualiza un registro en la base de datos para ese usuario.
- *  Finalmente, inicia sesión al usuario en la aplicación Laravel y devuelve una respuesta
- *  JSON indicando que la sesión se ha iniciado correctamente. Si el token es inválido,
- *  devuelve una respuesta de error.
- */
     public function login(Request $request): JsonResponse
     {
         $request->validate([
             'id_token' => 'required|string',
+            'correo'   => 'nullable|string',
+            'provider' => 'nullable|string',
         ]);
 
         try {
-            $auth = Firebase::auth();
-            $verifiedToken = $auth->verifyIdToken($request->id_token);
+            $verifiedToken = Firebase::auth()->verifyIdToken($request->id_token);
 
-            $uid        = $verifiedToken->claims()->get('sub');
-            $correo     = $verifiedToken->claims()->get('email');
-            $nombre     = $verifiedToken->claims()->get('name', '');
-            $url_foto   = $verifiedToken->claims()->get('picture', null);
+            $uid      = $verifiedToken->claims()->get('sub');
+            $correo   = $verifiedToken->claims()->get('email') ?? $request->input('correo');
+            $nombre   = $verifiedToken->claims()->get('name', '');
+            $url_foto = $verifiedToken->claims()->get('picture', null);
+            $provider = $request->input('provider');
 
-            $partes  = explode(' ', trim($nombre), 2);
-            $nombre  = $partes[0] ?? '';
+            $partes   = explode(' ', trim($nombre), 2);
+            $nombre   = $partes[0] ?? '';
             $apellido = $partes[1] ?? '';
 
-            $usuario = Usuario::where('firebase_uid', $uid)->first();
+            if (!$correo) {
+                return response()->json([
+                    'message' => 'No fue posible obtener el correo electrónico de tu cuenta.'
+                ], 422);
+            }
 
-            if (!$usuario) {
-                $usuarioPorCorreo = Usuario::where('correo', $correo)->first();
+            $usuario = Usuario::where('correo', $correo)->first();
 
-                if ($usuarioPorCorreo && $usuarioPorCorreo->firebase_uid && $usuarioPorCorreo->firebase_uid !== $uid) {
+            if ($usuario) {
+                // Registrado con correo y contraseña
+                if ($usuario->password && !$usuario->provider) {
                     return response()->json([
-                        'message' => 'Este correo ya está registrado con otro proveedor de autenticación.'
+                        'message' => 'Este correo ya está registrado. Inicia sesión con tu contraseña.'
                     ], 409);
                 }
 
-                $usuario = $usuarioPorCorreo;
-            }
+                // Registrado con otro proveedor social
+                if ($usuario->provider && $usuario->provider !== $provider) {
+                    $nombres = [
+                        'google.com'   => 'Google',
+                        'github.com'   => 'GitHub',
+                        'facebook.com' => 'Facebook',
+                    ];
+                    $nombreProveedor = $nombres[$usuario->provider] ?? $usuario->provider;
+                    return response()->json([
+                        'message' => "Este correo ya está registrado con {$nombreProveedor}. Inicia sesión con {$nombreProveedor}."
+                    ], 409);
+                }
 
-            // Si el usuario existe pero no tiene un firebase_uid, lo actualizamos. Si no existe, lo creamos.
-            if ($usuario) {
                 $usuario->update([
                     'firebase_uid' => $uid,
+                    'provider'     => $provider,
                     'url_foto'     => $usuario->url_foto ?? $url_foto,
                 ]);
             } else {
@@ -65,6 +72,7 @@ class FirebaseAuthController extends Controller
                     'apellido'           => $apellido,
                     'correo'             => $correo,
                     'firebase_uid'       => $uid,
+                    'provider'           => $provider,
                     'url_foto'           => $url_foto,
                     'verificacion_email' => now(),
                     'estado'             => true,
