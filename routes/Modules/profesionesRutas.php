@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Configuracion\ConfiguracionPortafolioController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
 
 use App\Http\Controllers\Usuario\UsuarioController;
 use App\Http\Controllers\Profesion\ProfesionController;
@@ -14,7 +14,7 @@ Route::get("/profesiones/{id}", [ProfesionController::class, "show"]);
 Route::middleware('auth:sanctum')->group(function () {
 
     // Info del usuario autenticado
-    Route::get('/usuario', fn(Request $request) => $request->user());
+    Route::get('/usuario', fn(Request $request) => $request->user()->load('portafolio:id_usuario,slug'));
 
     // Profesiones del usuario
     Route::get('/usuario/profesiones', [UsuarioController::class, 'getProfesiones']);

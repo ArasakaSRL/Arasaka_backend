@@ -25,12 +25,17 @@ class Portafolio extends Model
         'slug',
         'fecha_creacion',
         'fecha_actualizacion',
+        'link_activo',
+        'fecha_expiracion_link',
+        'duracion_link',
     ];
 
     protected $casts = [
         'visibilidad' => 'boolean',
         'fecha_creacion' => 'date',
         'fecha_actualizacion' => 'date',
+        'link_activo' => 'boolean',
+        'fecha_expiracion_link' => 'datetime',
     ];
 
     public function usuario()
