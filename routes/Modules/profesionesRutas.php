@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Configuracion\ConfiguracionPortafolioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route; 
 
@@ -22,5 +23,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Editar info del usuario
     Route::patch('/usuario/informacion', [UsuarioController::class, 'actualizarInformacion']);
+    
     Route::patch('/usuario/foto', [UsuarioController::class, 'actualizarFoto']);
+
+    Route::patch('/usuario/pais', [UsuarioController::class, 'actualizarPais']);
+    Route::get('/usuario/telefonos', [UsuarioController::class, 'getTelefonos']);
+    Route::post('/usuario/telefonos', [UsuarioController::class, 'agregarTelefono']);
+    Route::patch('/usuario/telefonos/{id}', [UsuarioController::class, 'actualizarTelefono']);
+    Route::delete('/usuario/telefonos/{id}', [UsuarioController::class, 'eliminarTelefono']);
+
 });

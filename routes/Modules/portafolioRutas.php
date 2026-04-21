@@ -13,4 +13,7 @@ Route::middleware('auth:sanctum')->prefix('configuracion')->group(function () {
     Route::get('/portafolio-link', [PortafolioLinkController::class, 'show']);
     Route::post('/portafolio-link', [PortafolioLinkController::class, 'generar']);
 });
+
+Route::middleware('auth:sanctum')->get('/usuario/Miportafolio', [ConfiguracionPortafolioController::class, 'showPortafolioCompleto']);
+
 Route::get('/public/portafolio/{slug}', [PublicPortafolioController::class, 'show']);

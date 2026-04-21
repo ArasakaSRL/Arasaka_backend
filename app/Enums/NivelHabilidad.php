@@ -2,11 +2,11 @@
 
 namespace App\Enums;
 
-use App\Enums\Concerns\Enumutils;
+use App\Enums\Concerns\EnumUtils;
 
 enum NivelHabilidad: string
 {
-    use Enumutils;
+    use EnumUtils;
 
     case PRINCIPIANTE = "Principiante";
     case INTERMEDIO = "Intermedio";

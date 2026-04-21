@@ -22,7 +22,7 @@ class Usuario extends Authenticatable implements MustVerifyEmail
 
     protected $fillable = [
         'nombre', 'apellido', 'correo', 'password',
-        'biografia', 'url_foto', 'estado', 'verificacion_email', 'firebase_uid',
+        'biografia', 'url_foto', 'estado', 'verificacion_email', 'firebase_uid', 'provider',
     ];
 
     protected $hidden = ['password'];
@@ -93,7 +93,6 @@ class Usuario extends Authenticatable implements MustVerifyEmail
     }
     public function portafolio()
 {
-    return $this->hasOne(Portafolio::class, 'id_usuario', 'id_usuario')
-                ->withDefault();
+    return $this->hasOne(Portafolio::class, 'id_usuario', 'id_usuario');
 }
 }
