@@ -50,13 +50,16 @@ class RegisteredUserController extends Controller
 
         $portafolioData = $request->input('portafolio', []);
         Portafolio::create([
-            'id_portafolio'       => (string) Str::uuid(),
-            'id_usuario'          => $usuario->id_usuario,
-            'nombre'              => $portafolioData['nombre'] ?? $request->nombre . ' ' . $request->apellido,
-            'descripcion'         => $portafolioData['descripcion'] ?? null,
-            'visibilidad'         => $portafolioData['visibilidad'] ?? false,
-            'fecha_creacion'      => now(),
-            'fecha_actualizacion' => now(),
+            'id_portafolio'         => (string) Str::uuid(),
+            'id_usuario'            => $usuario->id_usuario,
+            'nombre'                => $portafolioData['nombre'] ?? $request->nombre . ' ' . $request->apellido,
+            'descripcion'           => $portafolioData['descripcion'] ?? null,
+            'visibilidad'           => $portafolioData['visibilidad'] ?? true,
+            'link_activo'           => true,
+            'duracion_link'         => 'sin_limite',
+            'fecha_expiracion_link' => null,
+            'fecha_creacion'        => now(),
+            'fecha_actualizacion'   => now(),
         ]);
 
         event(new Registered($usuario));

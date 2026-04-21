@@ -80,12 +80,15 @@ class FirebaseAuthController extends Controller
                     'estado'             => true,
                 ]);
                 Portafolio::create([
-                    'id_portafolio'       => (string) Str::uuid(),
-                    'id_usuario'          => $usuario->id_usuario,
-                    'nombre'              => trim($nombre . ' ' . $apellido),
-                    'visibilidad'         => false,
-                    'fecha_creacion'      => now(),
-                    'fecha_actualizacion' => now(),
+                    'id_portafolio'         => (string) Str::uuid(),
+                    'id_usuario'            => $usuario->id_usuario,
+                    'nombre'                => trim($nombre . ' ' . $apellido),
+                    'visibilidad'           => true,
+                    'link_activo'           => true,
+                    'duracion_link'         => 'sin_limite',
+                    'fecha_expiracion_link' => null,
+                    'fecha_creacion'        => now(),
+                    'fecha_actualizacion'   => now(),
                 ]);
             }
 

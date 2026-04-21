@@ -11,7 +11,6 @@ use Illuminate\Validation\Rule;
 
 class PortafolioLinkController extends Controller
 {
-    private const DURACIONES = ['semana', 'mes', 'anio', 'sin_limite'];
 
     public function show()
     {
@@ -26,11 +25,9 @@ class PortafolioLinkController extends Controller
 
     public function generar(Request $request)
     {
-        $request->validate([
-            'duracion' => ['required', Rule::in(self::DURACIONES)],
-        ]);
-
+       
         $usuario = Usuario::find(auth()->id());
+
         $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->first();
 
         if (!$portafolio) {
@@ -44,8 +41,8 @@ class PortafolioLinkController extends Controller
         }
 
         $portafolio->slug = $this->generarSlugUnico($slugBase, $portafolio->id_portafolio);
-        $portafolio->duracion_link = $request->duracion;
-        $portafolio->fecha_expiracion_link = $this->calcularExpiracion($request->duracion);
+        $portafolio->duracion_link = 'sin_limite';
+        $portafolio->fecha_expiracion_link = null;
         $portafolio->link_activo = true;
         $portafolio->visibilidad = true;
         $portafolio->fecha_actualizacion = now();
