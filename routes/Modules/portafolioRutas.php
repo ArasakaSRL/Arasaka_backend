@@ -8,6 +8,7 @@ use App\Http\Controllers\Configuracion\ConfiguracionPortafolioController;
 Route::middleware('auth:sanctum')->prefix('configuracion')->group(function () {
     Route::get('/', [ConfiguracionPortafolioController::class, 'show']);
     Route::put('/', [ConfiguracionPortafolioController::class, 'update']);
+    
     Route::get('/portafolio/{slug}', [PublicPortafolioController::class, 'show']);
     Route::get('/portafolio-link', [PortafolioLinkController::class, 'show']);
     Route::post('/portafolio-link', [PortafolioLinkController::class, 'generar']);
