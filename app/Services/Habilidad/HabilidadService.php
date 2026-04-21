@@ -7,22 +7,34 @@ use Illuminate\Support\Str;
 use App\Models\Tecnologia;
 
 class HabilidadService{
-    public function crear($data, $idPortafolio){
-        //dd($data);
-        $nombre = $data['nombre'] ?? Tecnologia::find($data['id_tecnologia'])->nombre ?? 'Habilidad sin nombre';
-        
-        $habilidad = Habilidad::create([
-            'id_habilidad' => Str::uuid(),
-            'id_portafolio' => $idPortafolio,
-            'nombre' => $nombre,
-            'fecha_creacion' => now(),
-            'fecha_actualizacion' => now(),
-        ]);
-        $habilidad->categoria_habilidad = $data['categoria_habilidad'] ?? null;
-        $habilidad->nivel = $data['nivel'] ?? null;
-        $habilidad->save();
-        return $habilidad;
+    public function crear($data, $idPortafolio)
+{
+    $nombre = $data['nombre'] 
+        ?? Tecnologia::find($data['id_tecnologia'])->nombre 
+        ?? 'Habilidad sin nombre';
+
+    $habilidad = Habilidad::create([
+        'id_habilidad' => Str::uuid(),
+        'id_portafolio' => $idPortafolio,
+        'nombre' => $nombre,
+        'fecha_creacion' => now(),
+        'fecha_actualizacion' => now(),
+    ]);
+
+    $habilidad->categoria_habilidad = $data['categoria_habilidad'] ?? null;
+    $habilidad->nivel = $data['nivel'] ?? null;
+    $habilidad->save();
+
+   
+    if (
+        $habilidad->categoria_habilidad?->value === 'tecnica' &&
+        !empty($data['id_tecnologia'])
+    ) {
+        $habilidad->tecnologias()->attach($data['id_tecnologia']);
     }
+
+    return $habilidad;
+}
 
     public function actualizar(array $data, String $idHabilidad){
         //dd($data);
