@@ -2,11 +2,11 @@
 
 namespace App\Enums;
 
-use App\Enums\Concerns\Enumutils;
+use App\Enums\Concerns\EnumUtils;
 
 enum CategoriaHabilidad: string
 {
-    use Enumutils;
+    use EnumUtils;
 
     case BLANDA = 'blanda';
     case TECNICA = 'tecnica';
