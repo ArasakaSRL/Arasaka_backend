@@ -22,6 +22,7 @@ class UpdateProyectoRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id_portafolio' => "required|string|exists:portafolio,id_portafolio",
             'nombre' => 'sometimes|string|max:255',
             'descripcion' => 'sometimes|nullable|string',
             'fecha_inicio' => 'sometimes|date',

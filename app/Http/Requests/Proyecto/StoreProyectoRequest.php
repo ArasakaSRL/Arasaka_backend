@@ -22,6 +22,7 @@ class StoreProyectoRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id_portafolio' => "required|string|exists:portafolio,id_portafolio",
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'fecha_inicio' => 'required|date',

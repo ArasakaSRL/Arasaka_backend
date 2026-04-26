@@ -17,13 +17,13 @@ class ProyectoController extends Controller
 {
     public function __construct(protected ProyectoService $service){}
 
-    private function getIdPortafolio(){
+    /* private function getIdPortafolio(){
         return request()->user()->portafolio->id_portafolio;
-    }
+    } */
 
-    public function index(GetProyectosByPortafolio $action)
+    public function index(GetProyectosByPortafolio $action, string $idPortafolio)
     {
-        $proyectos = $action->execute($this->getIdPortafolio());
+        $proyectos = $action->execute($idPortafolio);
         //dd(ProyectoResource::collection($proyectos));
         if ($proyectos) {
             $data = [
@@ -39,9 +39,9 @@ class ProyectoController extends Controller
         }
     }
 
-    public function store(StoreProyectoRequest $request, CreateProyectoAction $action)
+    public function store(StoreProyectoRequest $request, CreateProyectoAction $action, string $idPortafolio)
     {
-        $proyecto = $action->execute($request->validated(), $this->getIdPortafolio());
+        $proyecto = $action->execute($request->validated(), $idPortafolio);
 
         if ($proyecto) {
             $data = [
@@ -66,9 +66,9 @@ class ProyectoController extends Controller
             return response()->json(['message' => 'Proyecto no encontrado'], 404);
         }
 
-        if ($proyecto->id_portafolio !== $this->getIdPortafolio()) {
+        /* if ($proyecto->id_portafolio !== $this->getIdPortafolio()) {
             return response()->json(['message' => 'No autorizado para ver este proyecto'], 403);
-        }
+        } */
 
         return response()->json(['data' => new ProyectoResource($proyecto)], 200);
     }
@@ -99,9 +99,9 @@ class ProyectoController extends Controller
                 return response()->json(['message' => 'Proyecto no encontrado'], 404);
             }
     
-            if ($proyecto->id_portafolio !== $this->getIdPortafolio()) {
+            /* if ($proyecto->id_portafolio !== $this->getIdPortafolio()) {
                 return response()->json(['message' => 'No autorizado para eliminar este proyecto'], 403);
-            }
+            } */
     
             $proyecto->delete();
     
