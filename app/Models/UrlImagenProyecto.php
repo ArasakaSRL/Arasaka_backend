@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class UrlImagenProyecto extends Model
 {
     use HasFactory;
+    public $timestamps = false;
 
     protected $table = 'url_imagen_proyecto';
     protected $primaryKey = 'id_url_imagen_proyecto';

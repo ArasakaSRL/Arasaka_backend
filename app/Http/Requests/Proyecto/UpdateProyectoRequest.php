@@ -22,13 +22,15 @@ class UpdateProyectoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_portafolio' => "required|string|exists:portafolio,id_portafolio",
+            //'id_portafolio' => "required|string|exists:portafolio,id_portafolio",
             'nombre' => 'sometimes|string|max:255',
             'descripcion' => 'sometimes|nullable|string',
             'fecha_inicio' => 'sometimes|date',
             'fecha_fin' => 'sometimes|nullable|date|after_or_equal:fecha_inicio',
             'tecnologias' => 'sometimes|array',
             'tecnologias.*' => 'exists:tecnologias,id_tecnologia',
+            'url_imagen'=> 'sometimes|array|min:1',
+            'url_imagen.*'=> 'url',
             'url_demo' => 'sometimes|nullable|url',
             'url_github' => 'sometimes|nullable|url',
         ];

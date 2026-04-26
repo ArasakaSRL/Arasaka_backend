@@ -39,8 +39,9 @@ class ProyectoController extends Controller
         }
     }
 
-    public function store(StoreProyectoRequest $request, CreateProyectoAction $action, string $idPortafolio)
+    public function store(StoreProyectoRequest $request, CreateProyectoAction $action, String $idPortafolio)
     {
+        //dd($request, $idPortafolio);
         $proyecto = $action->execute($request->validated(), $idPortafolio);
 
         if ($proyecto) {
