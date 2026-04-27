@@ -40,4 +40,30 @@ class PublicPortafolioController extends Controller
 
         return new PublicPortafolioResource($portafolio);
     }
+
+    //devolver todos los portafolios publicos activos
+    public function index(){
+        $portafolios = Portafolio::where('link_activo', true)
+            ->whereHas('usuario', function ($query) {
+                $query->where('estado', true);
+            })
+            ->with([
+                'usuario.telefonos',
+                'usuario.pais',
+                'usuario.profesiones',
+                'usuario.idiomas',
+                'proyectos.estados',
+                'proyectos.imagenes',
+                'proyectos.tecnologias.categorias',
+                'habilidades.tecnologias.categorias',
+                'experiencias.tipo',
+                'servicios',
+                'certificaciones.categoria',
+                'redesProfesionales',
+                'configuracion',
+            ])
+            ->get();
+
+        return PublicPortafolioResource::collection($portafolios);
+    }
 }

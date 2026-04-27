@@ -82,6 +82,11 @@ return [
             ],
         ],
 
+        'brevo' => [
+            'transport' => 'smtp',
+            'url'       => env('BREVO_DSN'),
+        ],
+
     ],
 
     /*

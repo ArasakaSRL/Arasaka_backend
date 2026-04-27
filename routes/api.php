@@ -27,3 +27,4 @@ require __DIR__ . "/Modules/tecnologiasRutas.php";
 require __DIR__ . "/Modules/certificacionesRutas.php";
 require __DIR__ . "/Modules/experienciaRutas.php";
 require __DIR__ . "/Modules/portafolioRutas.php";
+require __DIR__ . "/Modules/sendGmail.php";
