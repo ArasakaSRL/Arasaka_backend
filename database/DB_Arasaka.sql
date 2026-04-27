@@ -235,3 +235,6 @@ CREATE TABLE redes_profesionales (
     url TEXT,
     FOREIGN KEY (id_portafolio) REFERENCES portafolio (id_portafolio)
 );
+
+SELECT * FROM tecnologias LIMIT 5;
+SELECT * FROM habilidad LIMIT 5;SELECT * FROM habilidades_tiene_tecnologias;

@@ -58,11 +58,11 @@ class PublicPortafolioResource extends JsonResource
                 'descripcion' => $h->descripcion,
                 'nivel' => $h->nivel?->value,
                 'tecnologias' => $h->tecnologias->map(fn($t) => [
-                'nombre' => $t->nombre,
-                'descripcion' => $t->descripcion,
-                'logo' => $t->logo,
-                'categoria' => $t->categorias?->nombre,
-            ]),
+                    'nombre' => $t->nombre,
+                    'descripcion' => $t->descripcion,
+                    'logo' => $t->logo,
+                    'categoria' => $t->categoria?->nombre,
+                ]),
            ])
         ->values(),
 
