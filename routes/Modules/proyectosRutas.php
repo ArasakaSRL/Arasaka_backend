@@ -8,9 +8,9 @@ use App\Http\Controllers\Proyecto\ProyectoController;
 // Rutas para elementos relacionados a portafolios
 Route::prefix("/portafolios")->group(function () { // Autenticacion pendiente
     //proyectos
-    Route::get("/{idPortafolio}/proyectos", [ProyectoController::class, "index"])->middleware('auth:sanctum')->name('proyectos.index');
-    //Route::get("/proyectos/{id}", [ProyectoController::class, "show"])->middleware('auth:sanctum')->name('proyectos.show');
-    Route::post("/{idPortafolio}/proyectos", [ProyectoController::class, "store"])->middleware('auth:sanctum')->name('proyectos.store');
+    Route::get("/{idPortafolio?}/proyectos", [ProyectoController::class, "index"])->middleware('auth:sanctum')->name('proyectos.index');
+    Route::get("/proyectos/{id}", [ProyectoController::class, "show"])->middleware('auth:sanctum')->name('proyectos.show');
+    Route::post("/{idPortafolio?}/proyectos", [ProyectoController::class, "store"])->middleware('auth:sanctum')->name('proyectos.store');
     Route::put("/proyectos/{id}", [ProyectoController::class, "update"])->middleware('auth:sanctum')->name('proyectos.update');
     Route::delete("/proyectos/{id}", [ProyectoController::class, "destroy"])->middleware('auth:sanctum')->name('proyectos.destroy');
 

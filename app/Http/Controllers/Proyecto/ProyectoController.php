@@ -17,13 +17,13 @@ class ProyectoController extends Controller
 {
     public function __construct(protected ProyectoService $service){}
 
-    /* private function getIdPortafolio(){
+    private function getIdPortafolio(){
         return request()->user()->portafolio->id_portafolio;
-    } */
+    } 
 
-    public function index(GetProyectosByPortafolio $action, string $idPortafolio)
+    public function index(GetProyectosByPortafolio $action, $idPortafolio = null)
     {
-        $proyectos = $action->execute($idPortafolio);
+        $proyectos = $idPortafolio ? $action->execute($idPortafolio) : $action->execute($this->getIdPortafolio());
         //dd(ProyectoResource::collection($proyectos));
         if ($proyectos) {
             $data = [
@@ -39,10 +39,10 @@ class ProyectoController extends Controller
         }
     }
 
-    public function store(StoreProyectoRequest $request, CreateProyectoAction $action, String $idPortafolio)
+    public function store(StoreProyectoRequest $request, CreateProyectoAction $action, $idPortafolio = null)
     {
         //dd($request, $idPortafolio);
-        $proyecto = $action->execute($request->validated(), $idPortafolio);
+        $proyecto = $idPortafolio ? $action->execute($request->validated(), $idPortafolio) : $action->execute($request->validated(), $this->getIdPortafolio());
 
         if ($proyecto) {
             $data = [

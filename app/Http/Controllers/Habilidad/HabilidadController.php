@@ -17,14 +17,14 @@ class HabilidadController extends Controller
 {
     public function __construct(protected HabilidadService $service){}
 
-    /* protected function getPortafolioId()
+    protected function getPortafolioId()
     {
         return request()->user()->portafolio->id_portafolio;
-    } */
+    } 
 
-    public function index(GetHabilidadByPortafolioAction $action, string $idPortafolio)
+    public function index(GetHabilidadByPortafolioAction $action, $idPortafolio = null)
     {
-        $habilidades = $action->execute($idPortafolio);
+        $habilidades = $idPortafolio? $action->execute($idPortafolio) : $action->execute($this->getPortafolioId());
         //dd($habilidades);
         if ($habilidades) {
             $data = [
@@ -40,9 +40,9 @@ class HabilidadController extends Controller
         }
     }
 
-    public function store(StoreHabilidadRequest $request, CreateHabilidadAction $action, string $idPortafolio){
+    public function store(StoreHabilidadRequest $request, CreateHabilidadAction $action, $idPortafolio = null){
 
-        $habilidad = $action->execute($request->validated(), $idPortafolio);
+        $habilidad = $idPortafolio? $action->execute($request->validated(), $idPortafolio) : $action->execute($request->validated(), $this->getPortafolioId());
         
         if ($habilidad) {
             $data = [
