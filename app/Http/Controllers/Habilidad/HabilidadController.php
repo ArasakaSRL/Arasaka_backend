@@ -74,4 +74,8 @@ class HabilidadController extends Controller
             return response()->json($data, 500);
         }
     }
+
+    public function destroy(string $id){
+        return $this->service->eliminar(Habilidad::findOrFail($id));
+    }
 }
