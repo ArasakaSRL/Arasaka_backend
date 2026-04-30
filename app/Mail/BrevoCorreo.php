@@ -16,7 +16,7 @@ class BrevoCorreo extends Mailable
 
     public function build()
     {
-        $mail = $this->from(env('BREVO_FROM_ADDRESS'), env('BREVO_FROM_NAME'))
+        $mail = $this->from(env('BREVO_FROM_ADDRESS', 'arasakasrl@gmail.com'), env('BREVO_FROM_NAME', 'Arazaka-SRL'))
                     ->replyTo($this->remitente, $this->nombreRemitente)
                     ->subject($this->nombreRemitente . ' te envió un mensaje')
                     ->view('emails.personalizado')

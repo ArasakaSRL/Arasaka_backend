@@ -46,15 +46,22 @@ class EnviarCorreoBrevo extends Controller
             $request->file('adjuntos') ?? []
         );
 
-        Mail::mailer('brevo')
-            ->to($request->to)
-            ->send(new BrevoCorreo(
-                $request->from,
-                $nombreRemitente,
-                $request->subject,
-                $request->content,
-                $request->file('adjuntos') ?? []
-            ));
+        try {
+            Mail::mailer('brevo')
+                ->to($request->to)
+                ->send(new BrevoCorreo(
+                    $request->from,
+                    $nombreRemitente,
+                    $request->subject,
+                    $request->content,
+                    $request->file('adjuntos') ?? []
+                ));
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Correo guardado pero no pudo enviarse: ' . $e->getMessage(),
+                'mensaje' => new MensajeResource($mensaje),
+            ], 500);
+        }
 
         return response()->json([
             'message' => 'Correo enviado correctamente',
