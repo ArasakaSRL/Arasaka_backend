@@ -37,14 +37,48 @@ return new class extends Migration {
         });
 
         Schema::create('visualizaciones_portafolio', function (Blueprint $table) {
-            $table->uuid('id_visualizacion_portafolio')->primary()->default(DB::raw('gen_random_uuid()'));
-            $table->uuid('id_portafolio');
-            $table->integer('numero')->nullable();
-            $table->date('fecha')->nullable();
-            $table->text('ip_vista')->nullable();
-            $table->decimal('clics_redes')->nullable();
 
-            $table->foreign('id_portafolio')->references('id_portafolio')->on('portafolio');
+           
+            $table->uuid('id_visualizacion_portafolio')
+                ->primary()
+                ->default(DB::raw('gen_random_uuid()'));
+
+          
+            $table->uuid('id_portafolio');
+
+         
+            $table->date('fecha');
+
+          
+            $table->unsignedInteger('vistas')->default(0);
+
+           
+            $table->unsignedInteger('clics_linkedin')->default(0);
+            $table->unsignedInteger('clics_github')->default(0);
+            $table->unsignedInteger('clics_otros')->default(0);
+
+         
+            $table->unsignedInteger('intentos_contacto')->default(0);
+
+          
+            $table->unsignedInteger('visitas_proyectos')->default(0);
+            $table->unsignedInteger('visitas_habilidades')->default(0);
+
+           
+            $table->unsignedInteger('visitas_unicas')->default(0);
+            $table->unsignedInteger('rebotes')->default(0);
+
+            $table->timestamps();
+
+       
+            $table->unique(['id_portafolio', 'fecha']);
+
+     
+            $table->foreign('id_portafolio')
+                ->references('id_portafolio')
+                ->on('portafolio')
+                ->onDelete('cascade');
+      
         });
 
         Schema::create('reporte', function (Blueprint $table) {

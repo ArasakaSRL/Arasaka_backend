@@ -5,7 +5,11 @@ use App\Http\Controllers\Portafolio\PublicPortafolioController;
 use App\Http\Controllers\Portafolio\PortafolioPreviewController;
 use App\Http\Controllers\Portafolio\PortafolioLinkController;
 use App\Http\Controllers\Configuracion\ConfiguracionPortafolioController;
+use App\Http\Controllers\Portafolio\ReporteController;
 
+Route::get('/reportes', [ReporteController::class, 'index'])
+    ->middleware('auth:sanctum');
+    
 Route::middleware('auth:sanctum')->prefix('configuracion')->group(function () {
     Route::get('/', [ConfiguracionPortafolioController::class, 'show']);
     Route::put('/', [ConfiguracionPortafolioController::class, 'update']);
