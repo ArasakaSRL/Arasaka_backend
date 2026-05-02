@@ -76,6 +76,6 @@ class HabilidadController extends Controller
     }
 
     public function destroy(string $id){
-        return $this->service->eliminar(Habilidad::findOrFail($id));
+        return $this->service->eliminar(Habilidad::findOrFail($id))? response()->json(["message"=>"Error al eliminar habilidad"],500) :  response()->json(["message"=>"Habilidad eliminada correctamente"], 200);
     }
 }
