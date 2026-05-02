@@ -8,6 +8,7 @@ use App\Models\Telefono;
 use App\Services\Profesion\ProfesionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class UsuarioController extends Controller
 {
@@ -72,10 +73,23 @@ class UsuarioController extends Controller
     public function actualizarFoto(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'url_foto' => 'required|url|max:500',
+            'foto_perfil' => 'required|image|max:500',
         ]);
 
-        $request->user()->update(['url_foto' => $data['url_foto']]);
+        //subir a cloudinary
+        $result = Cloudinary::uploadApi()->upload($data['foto_perfil']->getRealPath(), [
+            'folder' => 'portafolios/usuarios',
+            'public_id' => 'foto_' . $request->user()->id_usuario . '_' . time(),
+            'overwrite' => true,
+        ]);
+
+        $url = $result['secure_url'];
+        $publicId = $result['public_id'];
+
+        $request->user()->update([
+            'url_foto' => $url,
+            'public_id' => $publicId
+        ]);
 
         return response()->json(['message' => 'Foto actualizada correctamente', 'data' => $request->user()->fresh()]);
     }
@@ -86,8 +100,8 @@ class UsuarioController extends Controller
         $data = $request->validate([
             'nombre'   => 'sometimes|required|string|max:50',
             'apellido' => 'sometimes|required|string|max:50',
-            'biografia'=> 'sometimes|required|string|max:550',
-            'correo'    =>'sometimes|required|email|max:255',
+            'biografia' => 'sometimes|required|string|max:550',
+            'correo'    => 'sometimes|required|email|max:255',
         ]);
 
         $request->user()->update($data);
@@ -159,5 +173,4 @@ class UsuarioController extends Controller
 
         return response()->json(['message' => 'Teléfono actualizado correctamente', 'data' => $telefono->fresh()]);
     }
-
 }
