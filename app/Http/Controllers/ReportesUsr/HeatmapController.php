@@ -75,4 +75,69 @@ class HeatmapController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    public function trackHabilidadBlanda(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'visitor_id'     => 'required|uuid',
+            'portfolio_slug' => 'required|string',
+            'id_habilidad'   => 'required|uuid',
+            'campo'          => 'required|string',
+            'valor'          => 'required|integer|min:1',
+        ]);
+
+        $campo = $data['campo'];
+
+        // ── Boolean — manejo especial ──
+        if ($campo === 'fue_visible') {
+            DB::statement("
+                INSERT INTO interaccion_habilidad_blanda
+                    (id_visitante, id_habilidad, fue_visible)
+                SELECT v.id_visitante, ?, true
+                FROM visitante v
+                JOIN portafolio p ON p.id_portafolio = v.id_portafolio
+                WHERE v.visitor_id = ?
+                AND p.slug       = ?
+                ON CONFLICT (id_visitante, id_habilidad)
+                DO UPDATE SET
+                    fue_visible        = true,
+                    ultima_interaccion = NOW()
+            ", [
+                $data['id_habilidad'],
+                $data['visitor_id'],
+                $data['portfolio_slug'],
+            ]);
+
+            return response()->json(['ok' => true]);
+        }
+
+        // ── Numéricos ──
+        $permitidos = ['hover_count', 'hover_ms'];
+
+        if (!in_array($campo, $permitidos)) {
+            return response()->json(['ok' => true]);
+        }
+
+        DB::statement("
+            INSERT INTO interaccion_habilidad_blanda
+                (id_visitante, id_habilidad, {$campo})
+            SELECT v.id_visitante, ?, ?
+            FROM visitante v
+            JOIN portafolio p ON p.id_portafolio = v.id_portafolio
+            WHERE v.visitor_id = ?
+            AND p.slug       = ?
+            ON CONFLICT (id_visitante, id_habilidad)
+            DO UPDATE SET
+                {$campo}           = interaccion_habilidad_blanda.{$campo} + ?,
+                ultima_interaccion = NOW()
+        ", [
+            $data['id_habilidad'],
+            $data['valor'],
+            $data['visitor_id'],
+            $data['portfolio_slug'],
+            $data['valor'],
+        ]);
+
+        return response()->json(['ok' => true]);
+    }
 }
