@@ -329,4 +329,28 @@ class HeatmapController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    public function getVisitantes(Request $request): JsonResponse
+    {
+        $usuario = $request->user();  // ← faltaba el punto y coma
+
+        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)
+            ->firstOrFail();
+
+        $datos = DB::select("
+            SELECT
+                COUNT(*)                                          AS total_visitantes,
+                COUNT(CASE WHEN primera_visita = ultima_visita
+                    THEN 1 END)                                AS visitantes_nuevos,
+                COUNT(CASE WHEN primera_visita != ultima_visita
+                    THEN 1 END)                                AS visitantes_recurrentes,
+                MAX(ultima_visita)                               AS ultima_visita
+            FROM visitante
+            WHERE id_portafolio = ?
+        ", [$portafolio->id_portafolio]);
+
+        return response()->json($datos[0]);
+    }
+
 }
+
