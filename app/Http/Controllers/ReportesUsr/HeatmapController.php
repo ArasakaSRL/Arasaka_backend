@@ -140,4 +140,44 @@ class HeatmapController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    public function trackHabilidadTecnica(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'visitor_id'     => 'required|uuid',
+            'portfolio_slug' => 'required|string',
+            'id_habilidad'   => 'required|uuid',
+            'campo'          => 'required|string',
+            'valor'          => 'required|integer|min:1',
+        ]);
+
+        $campo     = $data['campo'];
+        $permitidos = ['clic_expandir', 'clic_cerrar'];
+
+        if (!in_array($campo, $permitidos)) {
+            return response()->json(['ok' => true]);
+        }
+
+        DB::statement("
+            INSERT INTO interaccion_habilidad_tecnica
+                (id_visitante, id_habilidad, {$campo})
+            SELECT v.id_visitante, ?, ?
+            FROM visitante v
+            JOIN portafolio p ON p.id_portafolio = v.id_portafolio
+            WHERE v.visitor_id = ?
+            AND p.slug       = ?
+            ON CONFLICT (id_visitante, id_habilidad)
+            DO UPDATE SET
+                {$campo}           = interaccion_habilidad_tecnica.{$campo} + ?,
+                ultima_interaccion = NOW()
+        ", [
+            $data['id_habilidad'],
+            $data['valor'],
+            $data['visitor_id'],
+            $data['portfolio_slug'],
+            $data['valor'],
+        ]);
+
+        return response()->json(['ok' => true]);
+    }
 }
