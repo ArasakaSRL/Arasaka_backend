@@ -30,6 +30,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             "verified" => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'api/public/*',  // ← agregar solo esto
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
 
