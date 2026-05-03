@@ -9,4 +9,5 @@ Route::prefix('public')->group(function () {
     Route::post('/heatmap/habilidades-blandas/track',      [HeatmapController::class, 'trackHabilidadBlanda']);
     Route::post('/heatmap/habilidades-tecnicas/track',    [HeatmapController::class, 'trackHabilidadTecnica']);
     Route::post('/heatmap/experiencia/track',             [HeatmapController::class, 'trackExperiencia']);
+    Route::post('/heatmap/proyecto/track',                [HeatmapController::class, 'trackProyecto']);
 });

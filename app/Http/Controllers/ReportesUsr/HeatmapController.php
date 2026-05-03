@@ -246,4 +246,44 @@ class HeatmapController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    public function trackProyecto(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'visitor_id'     => 'required|uuid',
+            'portfolio_slug' => 'required|string',
+            'id_proyecto'    => 'required|uuid',
+            'campo'          => 'required|string',
+            'valor'          => 'required|integer|min:1',
+        ]);
+
+        $campo     = $data['campo'];
+        $permitidos = ['hover_count', 'hover_ms', 'clic_github', 'clic_demo', 'clic_detalle'];
+
+        if (!in_array($campo, $permitidos)) {
+            return response()->json(['ok' => true]);
+        }
+
+        DB::statement("
+            INSERT INTO interaccion_proyecto
+                (id_visitante, id_proyecto, {$campo})
+            SELECT v.id_visitante, ?, ?
+            FROM visitante v
+            JOIN portafolio p ON p.id_portafolio = v.id_portafolio
+            WHERE v.visitor_id = ?
+            AND p.slug       = ?
+            ON CONFLICT (id_visitante, id_proyecto)
+            DO UPDATE SET
+                {$campo}           = interaccion_proyecto.{$campo} + ?,
+                ultima_interaccion = NOW()
+        ", [
+            $data['id_proyecto'],
+            $data['valor'],
+            $data['visitor_id'],
+            $data['portfolio_slug'],
+            $data['valor'],
+        ]);
+
+        return response()->json(['ok' => true]);
+    }
 }
