@@ -16,5 +16,6 @@ Route::prefix('public/heatmap')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('reportesUsr')->group(function () {
         Route::get('/heatmap/visitantes', [HeatmapController::class, 'getVisitantes']);
+        Route::get('/heatmap/perfil',     [HeatmapController::class, 'getInteraccionesPerfil']);
     });
 });

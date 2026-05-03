@@ -352,5 +352,40 @@ class HeatmapController extends Controller
         return response()->json($datos[0]);
     }
 
+    public function getInteraccionesPerfil(Request $request): JsonResponse
+    {
+        $usuario = $request->user();
+
+        \Log::info('Usuario autenticado:', [
+            'id_usuario' => $usuario->id_usuario,
+            'nombre'     => $usuario->nombre,
+        ]);
+
+        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)
+            ->firstOrFail();
+
+        \Log::info('Portfolio encontrado:', [
+            'id_portafolio' => $portafolio->id_portafolio,
+        ]);
+
+        $datos = DB::select("
+            SELECT
+                SUM(ip.hover_foto_count)    AS hover_foto_count,
+                SUM(ip.hover_foto_ms)       AS hover_foto_ms,
+                SUM(ip.hover_correo_count)  AS hover_correo_count,
+                SUM(ip.hover_correo_ms)     AS hover_correo_ms,
+                SUM(ip.clic_foto_perfil)    AS clic_foto_perfil,
+                SUM(ip.clic_correo)         AS clic_correo,
+                SUM(ip.clic_linkedin)       AS clic_linkedin,
+                SUM(ip.clic_github)         AS clic_github,
+                SUM(ip.clic_contactar)      AS clic_contactar,
+                SUM(ip.clic_descargar_cv)   AS clic_descargar_cv
+            FROM interaccion_perfil ip
+            JOIN visitante v ON v.id_visitante = ip.id_visitante
+            WHERE v.id_portafolio = ?
+        ", [$portafolio->id_portafolio]);
+
+        return response()->json($datos[0] ?? []);
+    }
 }
 
