@@ -286,4 +286,47 @@ class HeatmapController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    public function trackCertificacion(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'visitor_id'       => 'required|uuid',
+            'portfolio_slug'   => 'required|string',
+            'id_certificacion' => 'required|uuid',
+            'campo'            => 'required|string',
+            'valor'            => 'required|integer|min:1',
+        ]);
+
+        $campo      = $data['campo'];
+        $permitidos = [
+            'hover_count', 'hover_ms',
+            'clic_abrir_modal', 'clic_ver_credencial', 'clic_cerrar_modal'
+        ];
+
+        if (!in_array($campo, $permitidos)) {
+            return response()->json(['ok' => true]);
+        }
+
+        DB::statement("
+            INSERT INTO interaccion_certificacion
+                (id_visitante, id_certificacion, {$campo})
+            SELECT v.id_visitante, ?, ?
+            FROM visitante v
+            JOIN portafolio p ON p.id_portafolio = v.id_portafolio
+            WHERE v.visitor_id = ?
+            AND p.slug       = ?
+            ON CONFLICT (id_visitante, id_certificacion)
+            DO UPDATE SET
+                {$campo}           = interaccion_certificacion.{$campo} + ?,
+                ultima_interaccion = NOW()
+        ", [
+            $data['id_certificacion'],
+            $data['valor'],
+            $data['visitor_id'],
+            $data['portfolio_slug'],
+            $data['valor'],
+        ]);
+
+        return response()->json(['ok' => true]);
+    }
 }
