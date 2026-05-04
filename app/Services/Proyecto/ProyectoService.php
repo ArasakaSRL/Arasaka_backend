@@ -30,17 +30,14 @@ class ProyectoService {
         
         // 1. Verificamos que la llave exista
         if (array_key_exists('tecnologias', $data) && is_array($data['tecnologias'])) {
-            $proyecto->tecnologias()->delete();
         
         // 2. Limpiamos cadenas vacías, nulos o espacios en blanco
             $tecnologiasLimpias = array_filter($data['tecnologias'], function($valor) {
                 return !empty(trim($valor)); 
             });
 
-        // 3. Solo sincronizamos si el array NO quedó vacío tras la limpieza
-            if (!empty($tecnologiasLimpias)) {
-                $proyecto->tecnologias()->sync($tecnologiasLimpias);
-            }
+        // 3. Sincronizamos las tecnologías (elimina las no presentes, añade las nuevas)
+            $proyecto->tecnologias()->sync($tecnologiasLimpias);
         }
         /* ACTUALIZAR IMAGENES */
         if (array_key_exists('url_imagen', $data) && is_array($data['url_imagen'])) {
