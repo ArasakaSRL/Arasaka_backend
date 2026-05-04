@@ -387,5 +387,22 @@ class HeatmapController extends Controller
 
         return response()->json($datos[0] ?? []);
     }
+
+    public function getInteraccionesHabilidadesTecnicas(Request $request): JsonResponse
+    {
+        $usuario    = $request->user();
+        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+
+        $datos = DB::select("
+            SELECT
+                SUM(iht.clic_expandir) AS clic_expandir,
+                SUM(iht.clic_cerrar)   AS clic_cerrar
+            FROM interaccion_habilidad_tecnica iht
+            JOIN visitante v ON v.id_visitante = iht.id_visitante
+            WHERE v.id_portafolio = ?
+        ", [$portafolio->id_portafolio]);
+
+        return response()->json($datos[0] ?? []);
+    }
 }
 
