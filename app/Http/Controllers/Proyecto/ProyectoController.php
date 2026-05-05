@@ -19,11 +19,11 @@ class ProyectoController extends Controller
 
     private function getIdPortafolio(){
         return request()->user()->portafolio->id_portafolio;
-    }
+    } 
 
-    public function index(GetProyectosByPortafolio $action)
+    public function index(GetProyectosByPortafolio $action, $idPortafolio = null)
     {
-        $proyectos = $action->execute($this->getIdPortafolio());
+        $proyectos = $idPortafolio ? $action->execute($idPortafolio) : $action->execute($this->getIdPortafolio());
         //dd(ProyectoResource::collection($proyectos));
         if ($proyectos) {
             $data = [
@@ -39,9 +39,10 @@ class ProyectoController extends Controller
         }
     }
 
-    public function store(StoreProyectoRequest $request, CreateProyectoAction $action)
+    public function store(StoreProyectoRequest $request, CreateProyectoAction $action, $idPortafolio = null)
     {
-        $proyecto = $action->execute($request->validated(), $this->getIdPortafolio());
+        //dd($request, $idPortafolio);
+        $proyecto = $idPortafolio ? $action->execute($request->validated(), $idPortafolio) : $action->execute($request->validated(), $this->getIdPortafolio());
 
         if ($proyecto) {
             $data = [
@@ -66,9 +67,9 @@ class ProyectoController extends Controller
             return response()->json(['message' => 'Proyecto no encontrado'], 404);
         }
 
-        if ($proyecto->id_portafolio !== $this->getIdPortafolio()) {
+        /* if ($proyecto->id_portafolio !== $this->getIdPortafolio()) {
             return response()->json(['message' => 'No autorizado para ver este proyecto'], 403);
-        }
+        } */
 
         return response()->json(['data' => new ProyectoResource($proyecto)], 200);
     }
@@ -99,9 +100,9 @@ class ProyectoController extends Controller
                 return response()->json(['message' => 'Proyecto no encontrado'], 404);
             }
     
-            if ($proyecto->id_portafolio !== $this->getIdPortafolio()) {
+            /* if ($proyecto->id_portafolio !== $this->getIdPortafolio()) {
                 return response()->json(['message' => 'No autorizado para eliminar este proyecto'], 403);
-            }
+            } */
     
             $proyecto->delete();
     

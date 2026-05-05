@@ -25,6 +25,7 @@ class StoreHabilidadRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
+            //'id_portafolio' => "required|string|exists:portafolio,id_portafolio",
             'categoria_habilidad' => ['required', new Enum(CategoriaHabilidad::class)],
             'nivel' => ['required', new Enum(NivelHabilidad::class)],
         ];

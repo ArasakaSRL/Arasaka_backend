@@ -22,12 +22,15 @@ class StoreProyectoRequest extends FormRequest
     public function rules(): array
     {
         return [
+            //'id_portafolio' => "required|string|exists:portafolio,id_portafolio",
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
             'tecnologias' => 'required|array||min:1',
             'tecnologias.*' => 'exists:tecnologias,id_tecnologia',
+            'url_imagen'=> 'array|min:1',
+            'url_imagen.*'=> 'url',
             'url_demo' => 'nullable|url',
             'url_github' => 'nullable|url',
         ];

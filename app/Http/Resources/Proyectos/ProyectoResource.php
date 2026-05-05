@@ -20,6 +20,13 @@ class ProyectoResource extends JsonResource
                     'logo' => $tecnologia->logo,
                 ];
             }) : [],
+            'url_imagen' => $this->imagenes ? $this->imagenes->map(function ($url_imagen) {
+                return [
+                    'id_tecnologia' => $url_imagen->id_url_imagen_proyecto,
+                    'nombre' => $url_imagen->id_proyecto,
+                    'logo' => $url_imagen->url_imagen,
+                ];
+            }) : [],
             'fecha_inicio' => $this->fecha_inicio?->format('d-m-Y'),
             'fecha_fin' => $this->fecha_fin?->format('d-m-Y'),
         ];

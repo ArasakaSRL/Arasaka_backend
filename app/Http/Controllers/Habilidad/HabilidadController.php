@@ -20,11 +20,11 @@ class HabilidadController extends Controller
     protected function getPortafolioId()
     {
         return request()->user()->portafolio->id_portafolio;
-    }
+    } 
 
-    public function index(GetHabilidadByPortafolioAction $action)
+    public function index(GetHabilidadByPortafolioAction $action, $idPortafolio = null)
     {
-        $habilidades = $action->execute($this->getPortafolioId());
+        $habilidades = $idPortafolio? $action->execute($idPortafolio) : $action->execute($this->getPortafolioId());
         //dd($habilidades);
         if ($habilidades) {
             $data = [
@@ -40,9 +40,9 @@ class HabilidadController extends Controller
         }
     }
 
-    public function store(StoreHabilidadRequest $request, CreateHabilidadAction $action){
+    public function store(StoreHabilidadRequest $request, CreateHabilidadAction $action, $idPortafolio = null){
 
-        $habilidad = $action->execute($request->validated(), $this->getPortafolioId());
+        $habilidad = $idPortafolio? $action->execute($request->validated(), $idPortafolio) : $action->execute($request->validated(), $this->getPortafolioId());
         
         if ($habilidad) {
             $data = [
@@ -73,5 +73,9 @@ class HabilidadController extends Controller
             ];
             return response()->json($data, 500);
         }
+    }
+
+    public function destroy(string $id){
+        return $this->service->eliminar(Habilidad::findOrFail($id))? response()->json(["message"=>"Error al eliminar habilidad"],500) :  response()->json(["message"=>"Habilidad eliminada correctamente"], 200);
     }
 }
