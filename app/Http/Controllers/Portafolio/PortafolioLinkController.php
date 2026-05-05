@@ -87,7 +87,7 @@ class PortafolioLinkController extends Controller
         return [
             'slug' => $portafolio->slug,
             'url' => $portafolio->link_activo
-                ? rtrim($frontendUrl, '/') . '/portfolio/' . $portafolio->slug
+                ? rtrim($frontendUrl, '/') . '/portafolio/' . $portafolio->slug
                 : null,
             'link_activo' => (bool) $portafolio->link_activo,
             'duracion' => $portafolio->duracion_link,
