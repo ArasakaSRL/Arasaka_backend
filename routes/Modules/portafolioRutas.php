@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Portafolio\PublicPortafolioController;
 use App\Http\Controllers\Portafolio\PortafolioPreviewController;
 use App\Http\Controllers\Portafolio\PortafolioLinkController;
+use App\Http\Controllers\Portafolio\ImageProxyController;
 use App\Http\Controllers\Configuracion\ConfiguracionPortafolioController;
 
 Route::middleware('auth:sanctum')->prefix('configuracion')->group(function () {
@@ -18,3 +19,5 @@ Route::middleware('auth:sanctum')->prefix('configuracion')->group(function () {
 Route::middleware('auth:sanctum')->get('/usuario/Miportafolio', [ConfiguracionPortafolioController::class, 'showPortafolioCompleto']);
 
 Route::get('/public/portafolio/{slug}', [PublicPortafolioController::class, 'show']);
+
+Route::get('/public/image-proxy', [ImageProxyController::class, 'fetch']);
