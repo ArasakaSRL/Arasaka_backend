@@ -20,5 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/heatmap/perfil',     [HeatmapController::class, 'getInteraccionesPerfil']);
         Route::get('/heatmap/habilidades-tecnicas',   [HeatmapController::class, 'getInteraccionesHabilidadesTecnicas']);
         Route::get('/heatmap/perfil/clics', [HeatmapController::class, 'getClicsPerfil']);
+        Route::get('/visitas-por-mes',              [HeatmapController::class, 'getVisitasPorMes']);        
+        Route::get('/crecimiento-mensual',          [HeatmapController::class, 'getCrecimientoMensual']);  
     });
 });

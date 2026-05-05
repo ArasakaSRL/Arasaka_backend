@@ -450,5 +450,48 @@ class HeatmapController extends Controller
 
         return response()->json($clics);
     }
+
+    public function getVisitasPorMes(Request $request): JsonResponse
+    {
+        $usuario    = $request->user();
+        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+
+        $datos = DB::select("
+            SELECT
+                TO_CHAR(primera_visita, 'Mon') AS mes,
+                TO_CHAR(primera_visita, 'MM')  AS mes_num,
+                TO_CHAR(primera_visita, 'YYYY') AS anio,
+                COUNT(*)                        AS visitas
+            FROM visitante
+            WHERE id_portafolio = ?
+            AND primera_visita >= NOW() - INTERVAL '6 months'
+            GROUP BY mes, mes_num, anio
+            ORDER BY anio, mes_num
+        ", [$portafolio->id_portafolio]);
+
+        return response()->json($datos);
+    }
+
+    public function getCrecimientoMensual(Request $request): JsonResponse
+    {
+        $usuario    = $request->user();
+        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+
+        // visitantes únicos acumulados por mes
+        $datos = DB::select("
+            SELECT
+                TO_CHAR(primera_visita, 'Mon') AS mes,
+                TO_CHAR(primera_visita, 'MM')  AS mes_num,
+                TO_CHAR(primera_visita, 'YYYY') AS anio,
+                COUNT(*)                        AS total
+            FROM visitante
+            WHERE id_portafolio = ?
+            AND primera_visita >= NOW() - INTERVAL '7 months'
+            GROUP BY mes, mes_num, anio
+            ORDER BY anio, mes_num
+        ", [$portafolio->id_portafolio]);
+
+        return response()->json($datos);
+    }
 }
 
