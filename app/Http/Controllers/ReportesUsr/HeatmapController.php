@@ -404,5 +404,51 @@ class HeatmapController extends Controller
 
         return response()->json($datos[0] ?? []);
     }
+
+    public function trackClicCoords(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'visitor_id'     => 'required|uuid',
+            'portfolio_slug' => 'required|string',
+            'campo'          => 'required|string',
+            'x'              => 'required|numeric|between:0,1',
+            'y'              => 'required|numeric|between:0,1',
+        ]);
+
+        DB::statement("
+            INSERT INTO clic_perfil (id_visitante, campo, x, y)
+            SELECT v.id_visitante, ?, ?, ?
+            FROM visitante v
+            JOIN portafolio p ON p.id_portafolio = v.id_portafolio
+            WHERE v.visitor_id = ?
+            AND p.slug       = ?
+        ", [
+            $data['campo'],
+            $data['x'],
+            $data['y'],
+            $data['visitor_id'],
+            $data['portfolio_slug'],
+        ]);
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function getClicsPerfil(Request $request): JsonResponse
+    {
+        $usuario    = $request->user();
+        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)
+            ->firstOrFail();
+
+        $clics = DB::select("
+            SELECT cp.campo, cp.x, cp.y, COUNT(*) as intensidad
+            FROM clic_perfil cp
+            JOIN visitante v ON v.id_visitante = cp.id_visitante
+            WHERE v.id_portafolio = ?
+            GROUP BY cp.campo, cp.x, cp.y
+            ORDER BY intensidad DESC
+        ", [$portafolio->id_portafolio]);
+
+        return response()->json($clics);
+    }
 }
 
