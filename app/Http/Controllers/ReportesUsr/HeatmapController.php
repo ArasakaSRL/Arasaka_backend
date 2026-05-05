@@ -152,7 +152,7 @@ class HeatmapController extends Controller
         ]);
 
         $campo     = $data['campo'];
-        $permitidos = ['clic_expandir', 'clic_cerrar'];
+        $permitidos = ['clic_expandir', 'clic_cerrar','clic_general'];
 
         if (!in_array($campo, $permitidos)) {
             return response()->json(['ok' => true]);
@@ -405,6 +405,205 @@ class HeatmapController extends Controller
         return response()->json($datos[0] ?? []);
     }
 
+
+    public function getVisitasPorMes(Request $request): JsonResponse
+    {
+        $usuario    = $request->user();
+        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+
+        $datos = DB::select("
+            SELECT
+                TO_CHAR(primera_visita, 'Mon') AS mes,
+                TO_CHAR(primera_visita, 'MM')  AS mes_num,
+                TO_CHAR(primera_visita, 'YYYY') AS anio,
+                COUNT(*)                        AS visitas
+            FROM visitante
+            WHERE id_portafolio = ?
+            AND primera_visita >= NOW() - INTERVAL '6 months'
+            GROUP BY mes, mes_num, anio
+            ORDER BY anio, mes_num
+        ", [$portafolio->id_portafolio]);
+
+        return response()->json($datos);
+    }
+
+    public function getCrecimientoMensual(Request $request): JsonResponse
+    {
+        $usuario    = $request->user();
+        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+
+        // visitantes únicos acumulados por mes
+        $datos = DB::select("
+            SELECT
+                TO_CHAR(primera_visita, 'Mon') AS mes,
+                TO_CHAR(primera_visita, 'MM')  AS mes_num,
+                TO_CHAR(primera_visita, 'YYYY') AS anio,
+                COUNT(*)                        AS total
+            FROM visitante
+            WHERE id_portafolio = ?
+            AND primera_visita >= NOW() - INTERVAL '7 months'
+            GROUP BY mes, mes_num, anio
+            ORDER BY anio, mes_num
+        ", [$portafolio->id_portafolio]);
+
+        return response()->json($datos);
+    }
+
+    // Método genérico reutilizable
+    private function insertClicCoords(
+        string $tabla,
+        string $campoId,
+        array  $data,
+        ?string $idEntidad = null
+    ): void {
+        $idEntidadSql = $idEntidad ? ', ' . $campoId : '';
+        $idEntidadVal = $idEntidad ? ', ?' : '';
+
+        $params = $idEntidad
+            ? [$data['campo'], $idEntidad, $data['x'], $data['y'], $data['visitor_id'], $data['portfolio_slug']]
+            : [$data['campo'], $data['x'], $data['y'], $data['visitor_id'], $data['portfolio_slug']];
+
+        DB::statement("
+            INSERT INTO {$tabla} (id_visitante, campo{$idEntidadSql}, x, y)
+            SELECT v.id_visitante, ?{$idEntidadVal}, ?, ?
+            FROM visitante v
+            JOIN portafolio p ON p.id_portafolio = v.id_portafolio
+            WHERE v.visitor_id = ?
+            AND p.slug       = ?
+        ", $params);
+    }
+
+
+    // Habilidades Técnicas
+    public function trackClicCoordsTecnicas(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'visitor_id'     => 'required|uuid',
+            'portfolio_slug' => 'required|string',
+            'id_habilidad'   => 'nullable|uuid',
+            'campo'          => 'required|string',
+            'x'              => 'required|numeric|between:0,1',
+            'y'              => 'required|numeric|between:0,1',
+        ]);
+
+        $this->insertClicCoords('clic_habilidad_tecnica', 'id_habilidad', $data, $data['id_habilidad'] ?? null);
+        return response()->json(['ok' => true]);
+    }
+
+    // Habilidades Blandas
+    public function trackClicCoordsBlandas(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'visitor_id'     => 'required|uuid',
+            'portfolio_slug' => 'required|string',
+            'id_habilidad'   => 'nullable|uuid',
+            'campo'          => 'required|string',
+            'x'              => 'required|numeric|between:0,1',
+            'y'              => 'required|numeric|between:0,1',
+        ]);
+
+        $this->insertClicCoords('clic_habilidad_blanda', 'id_habilidad', $data, $data['id_habilidad'] ?? null);
+        return response()->json(['ok' => true]);
+    }
+
+    // Experiencia
+    public function trackClicCoordsExperiencia(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'visitor_id'     => 'required|uuid',
+            'portfolio_slug' => 'required|string',
+            'id_experiencia' => 'nullable|uuid',
+            'campo'          => 'required|string',
+            'x'              => 'required|numeric|between:0,1',
+            'y'              => 'required|numeric|between:0,1',
+        ]);
+
+        $this->insertClicCoords('clic_experiencia', 'id_experiencia', $data, $data['id_experiencia'] ?? null);
+        return response()->json(['ok' => true]);
+    }
+
+    // Proyecto
+    public function trackClicCoordsProyecto(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'visitor_id'     => 'required|uuid',
+            'portfolio_slug' => 'required|string',
+            'id_proyecto'    => 'nullable|uuid',
+            'campo'          => 'required|string',
+            'x'              => 'required|numeric|between:0,1',
+            'y'              => 'required|numeric|between:0,1',
+        ]);
+
+        $this->insertClicCoords('clic_proyecto', 'id_proyecto', $data, $data['id_proyecto'] ?? null);
+        return response()->json(['ok' => true]);
+    }
+
+    // Certificacion
+    public function trackClicCoordsCertificacion(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'visitor_id'       => 'required|uuid',
+            'portfolio_slug'   => 'required|string',
+            'id_certificacion' => 'nullable|uuid',
+            'campo'            => 'required|string',
+            'x'                => 'required|numeric|between:0,1',
+            'y'                => 'required|numeric|between:0,1',
+        ]);
+
+        $this->insertClicCoords('clic_certificacion', 'id_certificacion', $data, $data['id_certificacion'] ?? null);
+        return response()->json(['ok' => true]);
+    }
+
+    // Método genérico reutilizable
+    private function getClicsFromTable(string $tabla, string $idPortafolio): array
+    {
+        return DB::select("
+            SELECT
+                c.campo,
+                c.x,
+                c.y,
+                COUNT(*) AS intensidad
+            FROM {$tabla} c
+            JOIN visitante v ON v.id_visitante = c.id_visitante
+            WHERE v.id_portafolio = ?
+            AND c.x IS NOT NULL
+            AND c.y IS NOT NULL
+            GROUP BY c.campo, c.x, c.y
+            ORDER BY intensidad DESC
+        ", [$idPortafolio]);
+    }
+
+
+    public function getClicsTecnicas(Request $request): JsonResponse
+    {
+        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        return response()->json($this->getClicsFromTable('clic_habilidad_tecnica', $portafolio->id_portafolio));
+    }
+
+    public function getClicsBlandas(Request $request): JsonResponse
+    {
+        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        return response()->json($this->getClicsFromTable('clic_habilidad_blanda', $portafolio->id_portafolio));
+    }
+
+    public function getClicsExperiencia(Request $request): JsonResponse
+    {
+        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        return response()->json($this->getClicsFromTable('clic_experiencia', $portafolio->id_portafolio));
+    }
+
+    public function getClicsProyecto(Request $request): JsonResponse
+    {
+        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        return response()->json($this->getClicsFromTable('clic_proyecto', $portafolio->id_portafolio));
+    }
+
+    public function getClicsCertificacion(Request $request): JsonResponse
+    {
+        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        return response()->json($this->getClicsFromTable('clic_certificacion', $portafolio->id_portafolio));
+    }
+
     public function trackClicCoords(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -449,49 +648,6 @@ class HeatmapController extends Controller
         ", [$portafolio->id_portafolio]);
 
         return response()->json($clics);
-    }
-
-    public function getVisitasPorMes(Request $request): JsonResponse
-    {
-        $usuario    = $request->user();
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
-
-        $datos = DB::select("
-            SELECT
-                TO_CHAR(primera_visita, 'Mon') AS mes,
-                TO_CHAR(primera_visita, 'MM')  AS mes_num,
-                TO_CHAR(primera_visita, 'YYYY') AS anio,
-                COUNT(*)                        AS visitas
-            FROM visitante
-            WHERE id_portafolio = ?
-            AND primera_visita >= NOW() - INTERVAL '6 months'
-            GROUP BY mes, mes_num, anio
-            ORDER BY anio, mes_num
-        ", [$portafolio->id_portafolio]);
-
-        return response()->json($datos);
-    }
-
-    public function getCrecimientoMensual(Request $request): JsonResponse
-    {
-        $usuario    = $request->user();
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
-
-        // visitantes únicos acumulados por mes
-        $datos = DB::select("
-            SELECT
-                TO_CHAR(primera_visita, 'Mon') AS mes,
-                TO_CHAR(primera_visita, 'MM')  AS mes_num,
-                TO_CHAR(primera_visita, 'YYYY') AS anio,
-                COUNT(*)                        AS total
-            FROM visitante
-            WHERE id_portafolio = ?
-            AND primera_visita >= NOW() - INTERVAL '7 months'
-            GROUP BY mes, mes_num, anio
-            ORDER BY anio, mes_num
-        ", [$portafolio->id_portafolio]);
-
-        return response()->json($datos);
     }
 }
 
