@@ -45,7 +45,7 @@ class PublicPortafolioResource extends JsonResource
                     'nombre' => $t->nombre,
                     'descripcion' => $t->descripcion,
                     'logo' => $t->logo,
-                    'categoria' => $t->categoria?->nombre,
+                    'categoria' => $t->categorias?->nombre,
                 ]),
             ]),
              'habilidades' => [
