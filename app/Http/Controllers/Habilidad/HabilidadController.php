@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Controllers\Habilidad;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Habilidad\StoreHabilidadRequest;
+use App\Models\Habilidad;
+use App\Models\Tecnologia;
+use App\Http\Resources\Habilidad\HabilidadResource;
+use App\Models\Portafolio;
+use App\Actions\Habilidad\CreateHabilidadAction;
+use App\Actions\Habilidad\GetHabilidadByPortafolioAction;
+use App\Http\Requests\Habilidad\UpdateHabilidadRequest;
+use App\Services\Habilidad\HabilidadService;
+
+class HabilidadController extends Controller
+{
+    public function __construct(protected HabilidadService $service){}
+
+    protected function getPortafolioId()
+    {
+        return request()->user()->portafolio->id_portafolio;
+    } 
+
+    public function index(GetHabilidadByPortafolioAction $action, $idPortafolio = null)
+    {
+        $habilidades = $idPortafolio? $action->execute($idPortafolio) : $action->execute($this->getPortafolioId());
+        //dd($habilidades);
+        if ($habilidades) {
+            $data = [
+                "message" => "Habilidades obtenidas exitosamente",
+                "data" => HabilidadResource::collection($habilidades),
+            ];
+            return response()->json($data, 200);
+        } else {
+            $data = [
+                "message" => "Error al obtener las habilidades",
+            ];
+            return response()->json($data, 500);
+        }
+    }
+
+    public function store(StoreHabilidadRequest $request, CreateHabilidadAction $action, $idPortafolio = null){
+
+        $habilidad = $idPortafolio? $action->execute($request->validated(), $idPortafolio) : $action->execute($request->validated(), $this->getPortafolioId());
+        
+        if ($habilidad) {
+            $data = [
+                'message' => 'Habilidad creada exitosamente',
+                'data' => HabilidadResource::collection([$habilidad])
+            ];
+            return response()->json($data, 201);
+        } else {
+            $data = [
+                'message' => 'Error al crear la habilidad',
+            ];
+            return response()->json($data, 500);
+        }   
+    }
+
+    public function update(UpdateHabilidadRequest $request, String $habilidad)
+    {
+        $habilidad = $this->service->actualizar($request->validated(), $habilidad);
+        if ($habilidad) {
+            $data = [
+                'message' => 'Habilidad actualizada exitosamente',
+                'data' => new HabilidadResource($habilidad)
+            ];
+            return response()->json($data, 200);
+        } else {
+            $data = [
+                'message' => 'Error al actualizar la habilidad',
+            ];
+            return response()->json($data, 500);
+        }
+    }
+
+    public function destroy(string $id){
+        return $this->service->eliminar(Habilidad::findOrFail($id))? response()->json(["message"=>"Error al eliminar habilidad"],500) :  response()->json(["message"=>"Habilidad eliminada correctamente"], 200);
+    }
+}

@@ -83,7 +83,6 @@ return new class extends Migration {
             $table->uuid('id_usuario');
             $table->uuid('id_idioma');
             $table->primary(['id_usuario','id_idioma']);
-
             $table->foreign('id_usuario')->references('id_usuario')->on('usuario')->cascadeOnDelete();
             $table->foreign('id_idioma')->references('id_idioma')->on('idioma')->cascadeOnDelete();
         });

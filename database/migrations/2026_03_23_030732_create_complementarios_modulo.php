@@ -35,6 +35,7 @@ return new class extends Migration {
             $table->string('institucion_emisora',150)->nullable();
             $table->date('fecha_obtencion')->nullable();
             $table->text('url_archivo')->nullable();
+            $table->string('orientacion_imagen',100)->nullable();
 
             $table->foreign('id_portafolio')->references('id_portafolio')->on('portafolio');
             $table->foreign('id_categoria_certificacion')->references('id_categoria_certificacion')->on('categoria_certificacion');

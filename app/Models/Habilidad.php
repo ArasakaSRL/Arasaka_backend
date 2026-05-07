@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\CategoriaHabilidad;
+use App\Enums\NivelHabilidad;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Str ;
 class Habilidad extends Model
 {
     use HasFactory;
@@ -14,19 +16,37 @@ class Habilidad extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    const CREATED_AT = 'fecha_creacion';
+    const UPDATED_AT = 'fecha_actualizacion';
+    
     protected $fillable = [
         'id_portafolio',
-        'id_categoria_habilidad',
-        'id_nivel_habilidad',
         'nombre',
+        'categoria_habilidad',
+        'nivel',
     ];
 
+    protected $casts = [
+        'categoria_habilidad' => CategoriaHabilidad::class,
+        'nivel' => NivelHabilidad::class,
+    ];
+
+    protected static function boot()
+{
+    parent::boot();
+
+    static::creating(function ($model) {
+        if (!$model->id_habilidad) {
+            $model->id_habilidad = (string) Str::uuid();
+        }
+    });
+}
     public function portafolio()
     {
         return $this->belongsTo(Portafolio::class, 'id_portafolio', 'id_portafolio');
     }
 
-    public function categoria()
+    /* public function categoria()
     {
         return $this->belongsTo(CategoriaHabilidad::class, 'id_categoria_habilidad', 'id_categoria_habilidad');
     }
@@ -34,10 +54,15 @@ class Habilidad extends Model
     public function nivel()
     {
         return $this->belongsTo(NivelDeHabilidad::class, 'id_nivel_habilidad', 'id_nivel_habilidad');
-    }
+    } */
 
     public function tecnologias()
-    {
-        return $this->hasMany(Tecnologia::class, 'id_habilidad', 'id_habilidad');
-    }
+{
+    return $this->belongsToMany(
+        Tecnologia::class,
+        'habilidades_tiene_tecnologias',
+        'id_habilidad',
+        'id_tecnologia'
+    );
+}
 }

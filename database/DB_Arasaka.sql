@@ -223,7 +223,9 @@ CREATE TABLE certificacion (
     institucion_emisora VARCHAR(150),
     fecha_obtencion DATE,
     url_archivo TEXT,
-    FOREIGN KEY (id_portafolio) REFERENCES portafolio (id_portafolio)
+    id_categoria_certificacion UUID,
+    FOREIGN KEY (id_portafolio) REFERENCES portafolio (id_portafolio),
+    FOREIGN KEY (id_categoria_certificacion) REFERENCES categoria_certificacion (id_categoria_certificacion)
 );
 
 CREATE TABLE redes_profesionales (
@@ -233,3 +235,6 @@ CREATE TABLE redes_profesionales (
     url TEXT,
     FOREIGN KEY (id_portafolio) REFERENCES portafolio (id_portafolio)
 );
+
+SELECT * FROM tecnologias LIMIT 5;
+SELECT * FROM habilidad LIMIT 5;SELECT * FROM habilidades_tiene_tecnologias;

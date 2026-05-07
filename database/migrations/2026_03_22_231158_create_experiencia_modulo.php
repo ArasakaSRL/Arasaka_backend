@@ -17,7 +17,7 @@ return new class extends Migration {
         Schema::create('experiencia', function (Blueprint $table) {
             $table->uuid('id_experiencia')->primary()->default(DB::raw('gen_random_uuid()'));
             $table->uuid('id_portafolio');
-            $table->uuid('id_tipo_experiencia');
+            $table->uuid('id_tipo_experiencia')->nullable();
             $table->string('cargo',100)->nullable();
             $table->string('nombre_organizacion',255)->nullable();
             $table->string('descripcion',550)->nullable();

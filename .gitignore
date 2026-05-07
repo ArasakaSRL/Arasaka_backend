@@ -4,6 +4,8 @@
 /public/hot
 /public/storage
 /storage/*.key
+/storage/app/firebase-credentials.json
+serve.bat
 /vendor
 .env
 .env.backup
@@ -17,3 +19,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/postman
+.env.example
+/.postman

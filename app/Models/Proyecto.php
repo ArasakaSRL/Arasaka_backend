@@ -14,7 +14,11 @@ class Proyecto extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    const CREATED_AT = 'fecha_creacion';
+    const UPDATED_AT = 'fecha_actualizacion';
+
     protected $fillable = [
+        'id_proyecto',
         'id_portafolio',
         'nombre',
         'descripcion',
@@ -25,11 +29,13 @@ class Proyecto extends Model
         'destacado',
     ];
 
-    protected $casts = [
-        'destacado' => 'boolean',
-        'fecha_inicio' => 'date',
-        'fecha_fin' => 'date',
-    ];
+    protected function casts(): array {
+        return [
+            'destacado' => 'boolean',
+            'fecha_inicio' => 'date',
+            'fecha_fin' => 'date',
+        ];
+    }
 
     public function portafolio()
     {
@@ -46,8 +52,13 @@ class Proyecto extends Model
         return $this->hasMany(UrlImagenProyecto::class, 'id_proyecto', 'id_proyecto');
     }
 
-    public function tecnologias()
-    {
-        return $this->hasMany(Tecnologia::class, 'id_proyecto', 'id_proyecto');
-    }
+   public function tecnologias()
+{
+    return $this->belongsToMany(
+        Tecnologia::class,
+        'proyecto_tecnologia',
+        'id_proyecto',
+        'id_tecnologia'
+    );
+}
 }
