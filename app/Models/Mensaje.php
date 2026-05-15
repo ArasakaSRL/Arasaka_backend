@@ -52,4 +52,9 @@ class Mensaje extends Model
     {
         return $this->hasMany(AdjuntoMensaje::class, 'id_mensaje', 'id_mensaje');
     }
+
+    public function destacados()
+    {
+        return $this->hasMany(MensajeDestacado::class, 'id_mensaje', 'id_mensaje');
+    }
 }

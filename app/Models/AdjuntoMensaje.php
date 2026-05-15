@@ -20,6 +20,7 @@ class AdjuntoMensaje extends Model
         'id_mensaje',
         'nombre_archivo',
         'url_archivo',
+        'public_id',
         'tipo_mime',
     ];
 

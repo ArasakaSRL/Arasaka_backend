@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Mensaje;
 
+use App\Models\MensajeDestacado;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,6 +22,9 @@ class MensajeResource extends JsonResource
             'asunto'      => $this->asunto,
             'contenido'   => $this->contenido,
             'leido'       => $this->leido,
+            'destacado'   => MensajeDestacado::where('id_usuario', $request->user()?->id_usuario)
+                                ->where('id_mensaje', $this->id_mensaje)
+                                ->exists(),
             'fecha_envio' => $this->fecha_envio?->toDateTimeString(),
             'adjuntos'    => $this->adjuntos->map(fn($a) => [
                 'nombre' => $a->nombre_archivo,

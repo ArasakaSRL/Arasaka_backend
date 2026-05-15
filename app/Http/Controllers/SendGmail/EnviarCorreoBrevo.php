@@ -85,6 +85,20 @@ class EnviarCorreoBrevo extends Controller
         return MensajeResource::collection($mensajes);
     }
 
+    public function destacar(Request $request, Mensaje $mensaje)
+    {
+        $idUsuario = $request->user()->id_usuario;
+        $destacado = $this->mensajeService->toggleDestacado($mensaje, $idUsuario);
+
+        return response()->json(['destacado' => $destacado]);
+    }
+
+    public function destacados(Request $request)
+    {
+        $mensajes = $this->mensajeService->destacados($request->user()->id_usuario);
+        return MensajeResource::collection($mensajes);
+    }
+
     public function show(Request $request, string $id)
     {
         if ($id === 'undefined' || !preg_match('/^[0-9a-f-]{36}$/i', $id)) {
