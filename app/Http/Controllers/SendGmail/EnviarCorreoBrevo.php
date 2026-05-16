@@ -18,18 +18,18 @@ class EnviarCorreoBrevo extends Controller
     public function enviarCorreo(Request $request)
     {
         $request->validate([
-            'to'         => 'required|email',
-            'from'       => 'required|email',
-            'subject'    => 'required|string',
-            'content'    => 'required|string',
-            'adjuntos'   => 'nullable|array',
-            'adjuntos.*' => 'file|max:10240',
+            'to'               => 'required|email',
+            'from'             => 'required|email',
+            'subject'          => 'required|string',
+            'content'          => 'required|string',
+            'nombre_remitente' => 'nullable|string|max:100',
+            'adjuntos'         => 'nullable|array',
+            'adjuntos.*'       => 'file|max:10240',
         ]);
 
         $usuario = $request->user();
-        $nombreRemitente = $usuario
-            ? trim($usuario->nombre . ' ' . $usuario->apellido)
-            : $request->input('nombre_remitente', 'Usuario externo');
+        $nombreRemitente = $request->input('nombre_remitente')
+            ?? ($usuario ? trim($usuario->nombre . ' ' . $usuario->apellido) : 'Usuario externo');
 
         $destinatario = Usuario::where('correo', $request->to)->first();
 
