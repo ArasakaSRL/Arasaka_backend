@@ -14,10 +14,10 @@ class ProyectoService {
             ...$data
         ]);
         $proyecto->tecnologias()->sync($data['tecnologias']);
-        $url_imagen = collect($data['url_imagen'])->map(fn($url_imagen) => [
+        /* $url_imagen = collect($data['url_imagen'])->map(fn($url_imagen) => [
             'url_imagen' => $url_imagen
         ])->toArray();
-        $proyecto->imagenes()->createMany($url_imagen);
+        $proyecto->imagenes()->createMany($url_imagen); */
         return $proyecto;
     }
 
