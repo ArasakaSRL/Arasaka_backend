@@ -3,9 +3,43 @@
 namespace App\Services\Portafolio;
 
 use App\Models\Portafolio;
-
+use App\Actions\Portafolio\CrearPortafolioAction;
+use App\Actions\Portafolio\EliminarPortafolioAction;
+use App\Actions\Portafolio\ActualizarPortafolioAction;
 class PortafolioService
 {
+    
+    public function __construct(
+        protected CrearPortafolioAction $crearAction,
+        protected ActualizarPortafolioAction $actualizarAction,
+        protected EliminarPortafolioAction $eliminarAction,
+    ) {}
+
+    public function crear(
+        array $datos,
+        string $idUsuario
+    ): Portafolio {
+
+        return $this->crearAction
+            ->ejecutar($datos, $idUsuario);
+    }
+
+    public function actualizar(
+        Portafolio $portafolio,
+        array $datos
+    ): Portafolio {
+
+        return $this->actualizarAction
+            ->ejecutar($portafolio, $datos);
+    }
+
+    public function eliminar(
+        Portafolio $portafolio
+    ): void {
+
+        $this->eliminarAction
+            ->ejecutar($portafolio);
+    }
     public function obtenerPublicoPorSlug(string $slug)
     {
         return Portafolio::query()
@@ -46,4 +80,6 @@ class PortafolioService
             'configuracion',
         ];
     }
+
+    
 }
