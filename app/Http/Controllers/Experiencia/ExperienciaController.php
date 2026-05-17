@@ -7,7 +7,7 @@ use App\Http\Requests\experiencia\ExperienciaRequest;
 use App\Http\Resources\ExperienciaResource;
 use App\Services\Experiencia\ExperienciaService;
 use Illuminate\Http\JsonResponse;
-
+use App\Http\Requests\experiencia\EliminarExperienciaRequest;
 class ExperienciaController extends Controller
 {
     protected ExperienciaService $service;
@@ -72,6 +72,17 @@ class ExperienciaController extends Controller
             'data' => new ExperienciaResource($exp)
         ]);
     }
+    public function destroyMultiple(EliminarExperienciaRequest $request): JsonResponse
+    {
+    $totalEliminadas = $this->service->deleteMultiple(
+        $request->ids
+    );
+
+    return response()->json([
+        'message' => 'Experiencias eliminadas correctamente',
+        'total_eliminadas' => $totalEliminadas
+    ]);
+    } 
 
     public function destroy(string $id): JsonResponse
     {

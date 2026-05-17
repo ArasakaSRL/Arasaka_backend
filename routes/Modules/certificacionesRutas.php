@@ -19,6 +19,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('{certificacion}', [CertificacionController::class, 'show']);
         Route::put('{certificacion}', [CertificacionController::class, 'update']);
+          
+        Route::delete('/multiple', [CertificacionController::class,'destroyMultiple'
+    ]);
         Route::delete('{certificacion}', [CertificacionController::class, 'destroy']);
     });
 
