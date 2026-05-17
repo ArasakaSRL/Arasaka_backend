@@ -12,6 +12,7 @@ use App\Services\Proyecto\ProyectoService;
 use Mews\Purifier\Facades\Purifier;
 use App\Actions\Proyecto\GetProyectosByPortafolio;
 use App\Http\Requests\Proyecto\UpdateProyectoRequest;
+use Illuminate\Support\Facades\DB;
 
 class ProyectoController extends Controller
 {
@@ -104,8 +105,10 @@ class ProyectoController extends Controller
                 return response()->json(['message' => 'No autorizado para eliminar este proyecto'], 403);
             } */
     
+            DB::table('interaccion_proyecto')->where('id_proyecto', $id)->delete();
+
             $proyecto->delete();
-    
+
             return response()->json(['message' => 'Proyecto eliminado exitosamente'], 200);
         }
 }
