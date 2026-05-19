@@ -11,7 +11,7 @@ Route::prefix("/portafolios")->group(function () { // Autenticacion pendiente
     Route::get("/proyectos", [ProyectoController::class, "index"])->middleware('auth:sanctum')->name('proyectos.index.default');
     Route::get("/{idPortafolio?}/proyectos", [ProyectoController::class, "index"])->middleware('auth:sanctum')->name('proyectos.index.byIdPortafolio');
 
-    Route::get("/proyectos/{id}", [ProyectoController::class, "show"])->middleware('auth:sanctum')->name('proyectos.show');
+    Route::get("/proyectos/{id}", [ProyectoController::class, "show"])->name('proyectos.show');
 
     Route::post("/proyectos", [ProyectoController::class, "store"])->middleware('auth:sanctum')->name('proyectos.store.default');
     Route::post("/{idPortafolio?}/proyectos", [ProyectoController::class, "store"])->middleware('auth:sanctum')->name('proyectos.store.byIdPortafolio');
