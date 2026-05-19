@@ -4,6 +4,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Tecnologia\TecnologiaController;
+use App\Http\Controllers\Tecnologia\TecnologiasController;
 
-// Rutas para tecnologías
+Route::prefix('tecnologia')->group(function () {
+
+    Route::get('/', [TecnologiasController::class, 'index']);
+    Route::post('/', [TecnologiasController::class, 'store']);
+    Route::get('/{id}', [TecnologiasController::class, 'show']);
+    Route::put('/{id}', [TecnologiasController::class, 'update']);
+    Route::delete('/{id}', [TecnologiasController::class, 'destroy']);
+
+});
+
 Route::get("/tecnologias", [TecnologiaController::class, "index"]);
