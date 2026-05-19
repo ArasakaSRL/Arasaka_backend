@@ -114,6 +114,8 @@ class PublicPortafolioResource extends JsonResource
                 'mostrar_servicios' => $this->configuracion->mostrar_servicios,
                 'mostrar_certificaciones' => $this->configuracion->mostrar_certificaciones,
                 'mostrar_redes_profesionales' => $this->configuracion->mostrar_redes_profesionales,
+                'mostrar_cv' => $this->configuracion->mostrar_cv,
+                'mostrar_contacto' => $this->configuracion->mostrar_contacto,
                 'paleta_colores' => $this->configuracion->paleta_colores,
             ] : null,
         ];

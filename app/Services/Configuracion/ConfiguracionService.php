@@ -17,6 +17,9 @@ class ConfiguracionService
                 'mostrar_experiencia' => true,
                 'mostrar_certificaciones' => true,
                 'mostrar_servicios' => true,
+                'mostrar_redes_profesionales' => true,
+                'mostrar_cv' => true,
+                'mostrar_contacto' => true,
             ]
         );
     }

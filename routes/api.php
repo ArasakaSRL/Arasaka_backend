@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 Route::get(
   "/ping",
   fn() => response()->json([
@@ -30,3 +29,4 @@ require __DIR__ . "/Modules/portafolioRutas.php";
 require __DIR__ . "/Modules/sendGmail.php";
 require __DIR__ . "/Modules/reportesRutas.php";
 require __DIR__ . "/Modules/asistenteRutas.php";
+require __DIR__ . "/Modules/portafoliosRutas.php";

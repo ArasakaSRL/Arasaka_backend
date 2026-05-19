@@ -18,7 +18,8 @@ class CertificacionService {
         return $certificacion;
     }
 
-    public function eliminar(Certificacion $certificacion){
-        $certificacion->delete();
-    }
+    public function eliminar(array $ids)
+   {
+    return Certificacion::whereIn('id_certificacion', $ids)->delete();
+   }    
 }
