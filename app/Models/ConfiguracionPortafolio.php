@@ -22,6 +22,9 @@ class ConfiguracionPortafolio extends Model
         'mostrar_experiencia',
         'mostrar_certificaciones',
         'mostrar_servicios',
+        'mostrar_redes_profesionales',
+        'mostrar_cv',
+        'mostrar_contacto',
         'paleta_colores',
     ];
 
@@ -31,6 +34,9 @@ class ConfiguracionPortafolio extends Model
         'mostrar_experiencia' => 'boolean',
         'mostrar_certificaciones' => 'boolean',
         'mostrar_servicios' => 'boolean',
+        'mostrar_redes_profesionales' => 'boolean',
+        'mostrar_cv' => 'boolean',
+        'mostrar_contacto' => 'boolean',
     ];
 
     public function portafolio()

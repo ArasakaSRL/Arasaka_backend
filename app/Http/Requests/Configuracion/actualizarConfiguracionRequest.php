@@ -20,6 +20,8 @@ class actualizarConfiguracionRequest extends FormRequest
             'mostrar_servicios' => 'sometimes|boolean',
             'mostrar_certificaciones' => 'sometimes|boolean',
             'mostrar_redes_profesionales' => 'sometimes|boolean',
+            'mostrar_cv' => 'sometimes|boolean',
+            'mostrar_contacto' => 'sometimes|boolean',
             'paleta_colores' => 'nullable|string',
             'visibilidad' => 'sometimes|boolean',
         ];
