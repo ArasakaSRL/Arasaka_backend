@@ -1,37 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Portafolio\PortafolioController;
-
-Route::middleware('auth:sanctum')
-    ->prefix('portafolios')
-    ->group(function () {
-
-        Route::get(
-            '/',
-            [PortafolioController::class, 'listar']
-        );
-
-        Route::post(
-            '/',
-            [PortafolioController::class, 'crear']
-        );
-
-        Route::get(
-            '/{portafolio}',
-            [PortafolioController::class, 'mostrar']
-        );
-
-        Route::put(
-            '/{portafolio}',
-            [PortafolioController::class, 'actualizar']
-        );
-
-        Route::delete(
-            '/{portafolio}',
-            [PortafolioController::class, 'eliminar']
-        );
-    });
 Route::get(
   "/ping",
   fn() => response()->json([
@@ -59,3 +28,4 @@ require __DIR__ . "/Modules/experienciaRutas.php";
 require __DIR__ . "/Modules/portafolioRutas.php";
 require __DIR__ . "/Modules/sendGmail.php";
 require __DIR__ . "/Modules/reportesRutas.php";
+require __DIR__ . "/Modules/portafoliosRutas.php";
