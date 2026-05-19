@@ -11,6 +11,7 @@ Route::prefix("experiencias")
         Route::get("{id}", [ExperienciaController::class, "show"]);
         Route::post("/", [ExperienciaController::class, "store"]);
         Route::put("{id}", [ExperienciaController::class, "update"]);
+        Route::delete("/multiple", [ExperienciaController::class,"destroyMultiple"]);
         Route::delete("{id}", [ExperienciaController::class, "destroy"]);
     });
 

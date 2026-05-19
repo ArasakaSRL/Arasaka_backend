@@ -39,4 +39,11 @@ class ExperienciaService
     {
         $exp->delete();
     }
+    public function deleteMultiple(array $ids)
+{
+    return Experiencia::whereIn(
+        'id_experiencia',
+        $ids
+    )->delete();
+}
 }
