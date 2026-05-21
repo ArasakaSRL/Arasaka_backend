@@ -8,6 +8,7 @@ use App\Models\Usuario;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Kreait\Laravel\Firebase\Facades\Firebase;
 
@@ -69,10 +70,21 @@ class FirebaseAuthController extends Controller
                     'url_foto'     => $usuario->url_foto ?? $url_foto,
                 ]);
             } else {
+                $base = preg_replace('/[^a-z]/', '', Str::lower(iconv('UTF-8', 'ASCII//TRANSLIT', $nombre . $apellido)));
+                $username = $base;
+                $i = 1;
+                while (Usuario::where('username', $username)->exists()) {
+                    $username = $base . $i;
+                    $i++;
+                }
+                $password = Str::password(16);
+
                 $usuario = Usuario::create([
                     'nombre'             => $nombre,
                     'apellido'           => $apellido,
+                    'username'           => $username,
                     'correo'             => $correo,
+                    'password'           => Hash::make($password),
                     'firebase_uid'       => $uid,
                     'provider'           => $provider,
                     'url_foto'           => $url_foto,

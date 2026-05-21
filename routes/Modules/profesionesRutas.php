@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route; 
 
 use App\Http\Controllers\Usuario\UsuarioController;
+use App\Http\Controllers\Usuario\CambiarCorreoController;
 use App\Http\Controllers\Profesion\ProfesionController;
 
 // Rutas para profesiones
@@ -31,5 +32,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/usuario/telefonos', [UsuarioController::class, 'agregarTelefono']);
     Route::patch('/usuario/telefonos/{id}', [UsuarioController::class, 'actualizarTelefono']);
     Route::delete('/usuario/telefonos/{id}', [UsuarioController::class, 'eliminarTelefono']);
+    Route::patch('/usuario/contrasena', [UsuarioController::class, 'cambiarContrasena']);
+    Route::post('/usuario/correo/verificar', [CambiarCorreoController::class, 'verificar']);
+    Route::post('/usuario/correo/confirmar', [CambiarCorreoController::class, 'confirmar']);
 
 });
