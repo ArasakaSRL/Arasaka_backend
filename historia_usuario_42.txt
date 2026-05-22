@@ -1,0 +1,44 @@
+HISTORIA DE USUARIO #42 — ASISTIR AL USUARIO CON IA
+
+─────────────────────────────────────────────────────────────
+
+ID:          42
+Título:      Asistir al usuario con IA
+Estimación:  20
+Prioridad:   Media
+Versión:     1
+Depende de:  Autenticación de usuarios
+
+─────────────────────────────────────────────────────────────
+
+DESCRIPCIÓN:
+
+Como usuario autenticado en la plataforma Arasaka,
+quiero interactuar con un asistente virtual inteligente mediante lenguaje natural,
+para gestionar y consultar toda la información de mi perfil y portafolio profesional
+sin necesidad de navegar manualmente por la plataforma.
+
+─────────────────────────────────────────────────────────────
+
+CRITERIOS DE ACEPTACIÓN:
+
+1. Se responden preguntas generales sobre la plataforma Arasaka sin consultar
+   la base de datos.
+
+2. Se muestran los proyectos del usuario cuando se consulta por ellos.
+
+3. Se muestran las habilidades del usuario cuando se consulta por ellas.
+
+4. Se muestran las experiencias laborales del usuario cuando se consulta por ellas.
+
+5. Se listan y muestran los mensajes recibidos del usuario junto a su contenido.
+
+6. Se envía un correo en nombre del usuario cuando se indica el destinatario,
+   asunto y contenido.
+
+7. El endpoint /api/asistente requiere autenticación y rechaza peticiones sin
+   token válido.
+
+8. Las respuestas se generan siempre en español.
+
+─────────────────────────────────────────────────────────────

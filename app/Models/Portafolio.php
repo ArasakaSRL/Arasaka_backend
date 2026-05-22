@@ -77,6 +77,10 @@ class Portafolio extends Model
     {
         return $this->hasOne(ConfiguracionPortafolio::class, 'id_portafolio', 'id_portafolio');
     }
+    public function getRouteKeyName()
+{
+    return 'id_portafolio';
+}
 
     public function visualizaciones()
     {

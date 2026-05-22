@@ -7,7 +7,7 @@ use App\Http\Requests\Certificacion\StoreCertificacionRequest;
 use App\Http\Resources\CertificacionResource;
 use App\Models\Certificacion;
 use App\Services\Certificacion\CertificacionService;
-
+use App\Http\Requests\Certificacion\DeleteCertificacionRequest;
 class CertificacionController {
 
     public function __construct(
@@ -48,6 +48,17 @@ class CertificacionController {
         $this->service->eliminar($certificacion);
         return response()->json(['message' => 'Certificación eliminada correctamente']);
     }
+    public function destroyMultiple(DeleteCertificacionRequest $request)
+   {
+    $ids = $request->ids;
+
+    $totalEliminadas = $this->service->eliminar($ids);
+
+    return response()->json([
+        'message' => 'Certificaciones eliminadas correctamente',
+        'total_eliminadas' => $totalEliminadas
+    ]);
+  }
     
     public function byCategoria($idCategoria)
     {

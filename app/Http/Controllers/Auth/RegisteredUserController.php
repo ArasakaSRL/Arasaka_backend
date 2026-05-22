@@ -37,9 +37,12 @@ class RegisteredUserController extends Controller
             'portafolio.visibilidad'    => ['nullable', 'boolean'],
         ]);
 
+        $username = $this->generarUsername($request->nombre, $request->apellido);
+
         $usuario = Usuario::create([
             'nombre'             => $request->nombre,
             'apellido'           => $request->apellido,
+            'username'           => $username,
             'correo'             => $request->correo,
             'password'           => Hash::make($request->string('password')),
             'biografia'          => $request->biografia,
@@ -64,12 +67,22 @@ class RegisteredUserController extends Controller
 
         event(new Registered($usuario));
 
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
         Auth::login($usuario);
 
         return response()->noContent();
+    }
+
+    private function generarUsername(string $nombre, string $apellido): string
+    {
+        $base = Str::lower(preg_replace('/[^a-z]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $nombre . $apellido)));
+        $username = $base;
+        $i = 1;
+
+        while (Usuario::where('username', $username)->exists()) {
+            $username = $base . $i;
+            $i++;
+        }
+
+        return $username;
     }
 }
