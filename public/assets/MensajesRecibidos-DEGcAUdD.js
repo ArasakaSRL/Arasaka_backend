@@ -1,0 +1,1 @@
+import"./DashboardLayout-CYm_BIcm.js";import"./chunk-LFPYN7LY-B46Ym_5q.js";import"./jsx-runtime-DOlcsXOY.js";import"./external-link-DJgBi2cB.js";import"./BandejaMensajes-CiFnCuQH.js";import"./authStore-CPGiW93t.js";import"./api-ySZdBSX7.js";import"./sendGmail-SZ_-UHFi.js";import"./PageHeader-PbooBHjI.js";import{l as e}from"./index-DOI0R4Ps.js";export{e as default};
