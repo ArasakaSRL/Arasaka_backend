@@ -15,8 +15,8 @@ class Idioma extends Model
 
     protected $fillable = ['nombre'];
 
-    public function usuarios()
+    public function portafolios()
     {
-        return $this->belongsToMany(Usuario::class, 'usuario_idioma', 'id_idioma', 'id_usuario');
+        return $this->belongsToMany(Portafolio::class, 'portafolio_idioma', 'id_idioma', 'id_portafolio');
     }
 }

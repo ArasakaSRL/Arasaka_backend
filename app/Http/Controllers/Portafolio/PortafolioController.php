@@ -26,6 +26,10 @@ class PortafolioController extends Controller
         ->with([
             'configuracion',
             'visualizaciones',
+            'informacionBasica',
+            'telefonos',
+            'profesiones',
+            'idiomas',
         ])
         ->latest('fecha_creacion')
         ->get();
@@ -47,10 +51,18 @@ class PortafolioController extends Controller
     ): JsonResponse {
 
         try {
+            /** @var \App\Models\Usuario $user */
+            $user = auth()->user();
+
+            $datos = $request->validated();
+            $datos['nombre_completo'] = $datos['nombre_completo'] ?? ($user->nombre . ' ' . $user->apellido);
+            $datos['gmail']           = $datos['gmail']           ?? $user->correo;
+            $datos['contrasena']      = $datos['contrasena']      ?? \Illuminate\Support\Str::password(16);
+            $datos['pais']            = $datos['pais']            ?? null;
 
             $portafolio = $this->service->crear(
-                $request->validated(),
-                auth()->user()->id_usuario
+                $datos,
+                $user->id_usuario
             );
 
             return response()->json([

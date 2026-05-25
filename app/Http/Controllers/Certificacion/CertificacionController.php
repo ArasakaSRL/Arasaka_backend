@@ -14,20 +14,15 @@ class CertificacionController {
         protected CertificacionService $service, 
     ) {}
 
-    private function getPortafolioId()
-    {
-        return auth()->user()->portafolio->id_portafolio;
-    }
-
-    public function index(GetCertificacionesByPortafolio $action){
-        $certificaciones = $action->execute($this->getPortafolioId());
+    public function index(GetCertificacionesByPortafolio $action, string $idPortafolio){
+        $certificaciones = $action->execute($idPortafolio);
         return CertificacionResource::collection($certificaciones);
     }
 
-    public function store(StoreCertificacionRequest $request, CreateCertificacion $action){
+    public function store(StoreCertificacionRequest $request, CreateCertificacion $action, string $idPortafolio){
         $certificacion = $action->execute(
             $request->validated(),
-            $this->getPortafolioId()
+            $idPortafolio
         );
 
         return new CertificacionResource($certificacion);
@@ -60,21 +55,21 @@ class CertificacionController {
     ]);
   }
     
-    public function byCategoria($idCategoria)
+    public function byCategoria(string $idPortafolio, $idCategoria)
     {
         $certificaciones = \App\Models\Certificacion::with('categoria')
-            ->where('id_portafolio', $this->getPortafolioId())
+            ->where('id_portafolio', $idPortafolio)
             ->where('id_categoria_certificacion', $idCategoria)
             ->get();
 
         return CertificacionResource::collection($certificaciones);
     }
 
-    public function deleteByPortafolio()
+    public function deleteByPortafolio(string $idPortafolio)
     {
         $total = \App\Models\Certificacion::where(
             'id_portafolio',
-            $this->getPortafolioId()
+            $idPortafolio
         )->delete();
 
         return response()->json([

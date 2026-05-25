@@ -330,12 +330,23 @@ class HeatmapController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    private function resolverPortafolio(Request $request): Portafolio
+    {
+        $usuario = $request->user();
+        $idPortafolio = $request->query('id_portafolio');
+
+        if ($idPortafolio) {
+            return Portafolio::where('id_portafolio', $idPortafolio)
+                ->where('id_usuario', $usuario->id_usuario)
+                ->firstOrFail();
+        }
+
+        return Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+    }
+
     public function getVisitantes(Request $request): JsonResponse
     {
-        $usuario = $request->user();  // ← faltaba el punto y coma
-
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)
-            ->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
 
         $datos = DB::select("
             SELECT
@@ -354,19 +365,7 @@ class HeatmapController extends Controller
 
     public function getInteraccionesPerfil(Request $request): JsonResponse
     {
-        $usuario = $request->user();
-
-        \Log::info('Usuario autenticado:', [
-            'id_usuario' => $usuario->id_usuario,
-            'nombre'     => $usuario->nombre,
-        ]);
-
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)
-            ->firstOrFail();
-
-        \Log::info('Portfolio encontrado:', [
-            'id_portafolio' => $portafolio->id_portafolio,
-        ]);
+        $portafolio = $this->resolverPortafolio($request);
 
         $datos = DB::select("
             SELECT
@@ -390,8 +389,7 @@ class HeatmapController extends Controller
 
     public function getInteraccionesHabilidadesTecnicas(Request $request): JsonResponse
     {
-        $usuario    = $request->user();
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
 
         $datos = DB::select("
             SELECT
@@ -408,8 +406,7 @@ class HeatmapController extends Controller
 
     public function getVisitasPorMes(Request $request): JsonResponse
     {
-        $usuario    = $request->user();
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
 
         $datos = DB::select("
             SELECT
@@ -429,8 +426,7 @@ class HeatmapController extends Controller
 
     public function getCrecimientoMensual(Request $request): JsonResponse
     {
-        $usuario    = $request->user();
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
 
         // visitantes únicos acumulados por mes
         $datos = DB::select("
@@ -576,31 +572,31 @@ class HeatmapController extends Controller
 
     public function getClicsTecnicas(Request $request): JsonResponse
     {
-        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
         return response()->json($this->getClicsFromTable('clic_habilidad_tecnica', $portafolio->id_portafolio));
     }
 
     public function getClicsBlandas(Request $request): JsonResponse
     {
-        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
         return response()->json($this->getClicsFromTable('clic_habilidad_blanda', $portafolio->id_portafolio));
     }
 
     public function getClicsExperiencia(Request $request): JsonResponse
     {
-        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
         return response()->json($this->getClicsFromTable('clic_experiencia', $portafolio->id_portafolio));
     }
 
     public function getClicsProyecto(Request $request): JsonResponse
     {
-        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
         return response()->json($this->getClicsFromTable('clic_proyecto', $portafolio->id_portafolio));
     }
 
     public function getClicsCertificacion(Request $request): JsonResponse
     {
-        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
         return response()->json($this->getClicsFromTable('clic_certificacion', $portafolio->id_portafolio));
     }
 
@@ -634,9 +630,7 @@ class HeatmapController extends Controller
 
     public function getClicsPerfil(Request $request): JsonResponse
     {
-        $usuario    = $request->user();
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)
-            ->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
 
         $clics = DB::select("
             SELECT cp.campo, cp.x, cp.y, COUNT(*) as intensidad

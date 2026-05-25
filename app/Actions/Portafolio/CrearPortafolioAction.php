@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\DB;
 use App\Models\ConfiguracionPortafolio;
 use App\Models\VisualizacionesPortafolio;
 use App\Models\RedesProfesionales;
+use App\Models\InformacionBasica;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str as StrAlias;
 class CrearPortafolioAction
 {
     public function ejecutar(
@@ -38,7 +41,7 @@ class CrearPortafolioAction
 
                 'fecha_actualizacion' => now(),
 
-                'link_activo' => false,
+                'link_activo' => true,
             ]);
 
             ConfiguracionPortafolio::create([
@@ -83,10 +86,21 @@ class CrearPortafolioAction
     }
 }
 
+            InformacionBasica::create([
+                'id_informacion_basica' => StrAlias::uuid(),
+                'id_portafolio' => $portafolio->id_portafolio,
+                'nombre_completo' => $datos['nombre_completo'],
+                'gmail' => $datos['gmail'],
+                'contrasena' => Hash::make($datos['contrasena']),
+                'pais' => $datos['pais'] ?? null,
+                'foto_perfil' => $datos['foto_perfil'] ?? null,
+            ]);
+
             return $portafolio->load([
                 'configuracion',
                 'visualizaciones',
                 'redesProfesionales',
+                'informacionBasica',
             ]);
         });
     }

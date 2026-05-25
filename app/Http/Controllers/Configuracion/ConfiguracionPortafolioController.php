@@ -7,6 +7,7 @@ use App\Http\Requests\Configuracion\actualizarConfiguracionRequest;
 use App\Http\Resources\ConfiguracionPortafolioResource;
 use App\Models\Portafolio;
 use App\Services\Configuracion\ConfiguracionService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ConfiguracionPortafolioController extends Controller
@@ -15,28 +16,35 @@ class ConfiguracionPortafolioController extends Controller
         protected ConfiguracionService $service
     ) {}
 
-    private function getPortafolioId()
+    private function resolverPortafolioId(Request $request): string
     {
-        return \App\Models\Portafolio::where('id_usuario', Auth::id())
+        $idPortafolio = $request->query('id_portafolio');
+
+        if ($idPortafolio) {
+            return Portafolio::where('id_portafolio', $idPortafolio)
+                ->where('id_usuario', Auth::id())
+                ->value('id_portafolio')
+                ?? abort(404, 'Portafolio no encontrado');
+        }
+
+        return Portafolio::where('id_usuario', Auth::id())
             ->value('id_portafolio')
             ?? abort(404, 'Portafolio no encontrado');
     }
 
-
-    public function show()
+    public function show(Request $request)
     {
         $config = $this->service->getByPortafolio(
-            $this->getPortafolioId()
+            $this->resolverPortafolioId($request)
         );
 
         return new ConfiguracionPortafolioResource($config);
     }
 
-
     public function update(actualizarConfiguracionRequest $request)
     {
         $config = $this->service->update(
-            $this->getPortafolioId(),
+            $this->resolverPortafolioId($request),
             $request->validated()
         );
 

@@ -22,13 +22,13 @@ class VerifyEmailController extends Controller
         }
 
         if ($usuario->hasVerifiedEmail()) {
-            return redirect(config('app.frontend_url') . '/dashboard?verified=1');
+            return redirect(config('app.frontend_url') . '/Dashboard/perfil/General?verified=1');
         }
 
         if ($usuario->markEmailAsVerified()) {
             event(new Verified($usuario));
         }
 
-        return redirect(config('app.frontend_url') . '/dashboard?verified=1');
+        return redirect(config('app.frontend_url') . '/Dashboard/perfil/General?verified=1');
     }
 }

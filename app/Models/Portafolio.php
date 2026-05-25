@@ -77,6 +77,26 @@ class Portafolio extends Model
     {
         return $this->hasOne(ConfiguracionPortafolio::class, 'id_portafolio', 'id_portafolio');
     }
+
+    public function informacionBasica()
+    {
+        return $this->hasOne(InformacionBasica::class, 'id_portafolio', 'id_portafolio');
+    }
+
+    public function telefonos()
+    {
+        return $this->hasMany(Telefono::class, 'id_portafolio', 'id_portafolio');
+    }
+
+    public function idiomas()
+    {
+        return $this->belongsToMany(Idioma::class, 'portafolio_idioma', 'id_portafolio', 'id_idioma');
+    }
+
+    public function profesiones()
+    {
+        return $this->belongsToMany(Profesion::class, 'portafolio_profesion', 'id_portafolio', 'id_profesion');
+    }
     public function getRouteKeyName()
 {
     return 'id_portafolio';
