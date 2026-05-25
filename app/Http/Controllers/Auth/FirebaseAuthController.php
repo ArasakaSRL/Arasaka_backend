@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ConfiguracionPortafolio;
+use App\Models\InformacionBasica;
 use App\Models\Portafolio;
 use App\Models\Usuario;
+use App\Models\VisualizacionesPortafolio;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -91,8 +94,10 @@ class FirebaseAuthController extends Controller
                     'verificacion_email' => now(),
                     'estado'             => true,
                 ]);
+                $idPortafolio = (string) Str::uuid();
+
                 Portafolio::create([
-                    'id_portafolio'         => (string) Str::uuid(),
+                    'id_portafolio'         => $idPortafolio,
                     'id_usuario'            => $usuario->id_usuario,
                     'nombre'                => trim($nombre . ' ' . $apellido),
                     'visibilidad'           => true,
@@ -101,6 +106,35 @@ class FirebaseAuthController extends Controller
                     'fecha_expiracion_link' => null,
                     'fecha_creacion'        => now(),
                     'fecha_actualizacion'   => now(),
+                ]);
+
+                ConfiguracionPortafolio::create([
+                    'id_portafolio'           => $idPortafolio,
+                    'mostrar_proyecto'        => true,
+                    'mostrar_habilidades'     => true,
+                    'mostrar_experiencia'     => true,
+                    'mostrar_certificaciones' => true,
+                    'mostrar_servicios'       => true,
+                    'paleta_colores'          => json_encode([
+                        'primary'   => '#000000',
+                        'secondary' => '#ffffff',
+                    ]),
+                ]);
+
+                VisualizacionesPortafolio::create([
+                    'id_portafolio' => $idPortafolio,
+                    'fecha'         => now()->toDateString(),
+                ]);
+
+                InformacionBasica::create([
+                    'id_informacion_basica' => (string) Str::uuid(),
+                    'id_portafolio'         => $idPortafolio,
+                    'nombre_completo'       => trim($nombre . ' ' . $apellido),
+                    'gmail'                 => $correo,
+                    'contrasena'            => Hash::make($password),
+                    'pais'                  => null,
+                    'foto_perfil'           => $url_foto,
+                    'biografia'             => null,
                 ]);
             }
 

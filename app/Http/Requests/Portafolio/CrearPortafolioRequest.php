@@ -32,6 +32,38 @@ class CrearPortafolioRequest extends FormRequest
             'boolean'
         ],
 
+        // INFORMACION BASICA (opcionales — se toman del usuario si no vienen)
+
+        'nombre_completo' => [
+            'nullable',
+            'string',
+            'max:150'
+        ],
+
+        'gmail' => [
+            'nullable',
+            'email',
+            'max:150'
+        ],
+
+        'contrasena' => [
+            'nullable',
+            'string',
+            'min:8'
+        ],
+
+        'pais' => [
+            'nullable',
+            'string',
+            'max:100'
+        ],
+
+        'foto_perfil' => [
+            'nullable',
+            'string',
+            'max:500'
+        ],
+
         // REDES PROFESIONALES
 
         'redes_profesionales' => [
@@ -75,6 +107,13 @@ class CrearPortafolioRequest extends FormRequest
                 'La URL de la red profesional es obligatoria.',
             'redes_profesionales.*.url.url' =>
                 'La URL de la red profesional debe ser una URL válida.',
+
+            'nombre_completo.required' => 'El nombre completo es obligatorio.',
+            'gmail.required' => 'El gmail es obligatorio.',
+            'gmail.email' => 'El gmail debe ser un correo válido.',
+            'contrasena.required' => 'La contraseña es obligatoria.',
+            'contrasena.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'pais.required' => 'El país es obligatorio.',
         ];
     }
 }

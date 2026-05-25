@@ -94,9 +94,13 @@ class MensajeService
         return true;
     }
 
-    public function destacados(string $idUsuario, int $perPage = 15)
+    public function destacados(string $idUsuario, ?string $correo = null, int $perPage = 15)
     {
         return Mensaje::whereHas('destacados', fn($q) => $q->where('id_usuario', $idUsuario))
+            ->when($correo, fn($q) => $q->where(fn($q2) =>
+                $q2->where('correo_destinatario', $correo)
+                   ->orWhere('correo_remitente', $correo)
+            ))
             ->with('adjuntos')
             ->orderByDesc('fecha_envio')
             ->paginate($perPage);

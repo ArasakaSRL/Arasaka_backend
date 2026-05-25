@@ -17,15 +17,9 @@ class HabilidadController extends Controller
 {
     public function __construct(protected HabilidadService $service){}
 
-    protected function getPortafolioId()
+    public function index(GetHabilidadByPortafolioAction $action, $idPortafolio)
     {
-        return request()->user()->portafolio->id_portafolio;
-    } 
-
-    public function index(GetHabilidadByPortafolioAction $action, $idPortafolio = null)
-    {
-        $habilidades = $idPortafolio? $action->execute($idPortafolio) : $action->execute($this->getPortafolioId());
-        //dd($habilidades);
+        $habilidades = $action->execute($idPortafolio);
         if ($habilidades) {
             $data = [
                 "message" => "Habilidades obtenidas exitosamente",
@@ -40,9 +34,9 @@ class HabilidadController extends Controller
         }
     }
 
-    public function store(StoreHabilidadRequest $request, CreateHabilidadAction $action, $idPortafolio = null){
+    public function store(StoreHabilidadRequest $request, CreateHabilidadAction $action, $idPortafolio){
 
-        $habilidad = $idPortafolio? $action->execute($request->validated(), $idPortafolio) : $action->execute($request->validated(), $this->getPortafolioId());
+        $habilidad = $action->execute($request->validated(), $idPortafolio);
         
         if ($habilidad) {
             $data = [

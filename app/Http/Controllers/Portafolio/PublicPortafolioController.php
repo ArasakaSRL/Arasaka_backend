@@ -48,10 +48,11 @@ class PublicPortafolioController extends Controller
                 $query->where('estado', true);
             })
             ->with([
-                'usuario.telefonos',
-                'usuario.pais',
-                'usuario.profesiones',
-                'usuario.idiomas',
+                'usuario',
+                'informacionBasica',
+                'telefonos',
+                'profesiones',
+                'idiomas',
                 'proyectos.estados',
                 'proyectos.imagenes',
                 'proyectos.tecnologias.categorias',

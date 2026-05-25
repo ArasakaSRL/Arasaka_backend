@@ -18,14 +18,9 @@ class ProyectoController extends Controller
 {
     public function __construct(protected ProyectoService $service){}
 
-    private function getIdPortafolio(){
-        return request()->user()->portafolio->id_portafolio;
-    } 
-
-    public function index(GetProyectosByPortafolio $action, $idPortafolio = null)
+    public function index(GetProyectosByPortafolio $action, $idPortafolio)
     {
-        $proyectos = $idPortafolio ? $action->execute($idPortafolio) : $action->execute($this->getIdPortafolio());
-        //dd(ProyectoResource::collection($proyectos));
+        $proyectos = $action->execute($idPortafolio);
         if ($proyectos) {
             $data = [
                 'message' => 'Proyectos obtenidos exitosamente',
@@ -40,10 +35,9 @@ class ProyectoController extends Controller
         }
     }
 
-    public function store(StoreProyectoRequest $request, CreateProyectoAction $action, $idPortafolio = null)
+    public function store(StoreProyectoRequest $request, CreateProyectoAction $action, $idPortafolio)
     {
-        //dd($request, $idPortafolio);
-        $proyecto = $idPortafolio ? $action->execute($request->validated(), $idPortafolio) : $action->execute($request->validated(), $this->getIdPortafolio());
+        $proyecto = $action->execute($request->validated(), $idPortafolio);
 
         if ($proyecto) {
             $data = [

@@ -34,6 +34,11 @@ class PortafolioResource extends JsonResource
             'duracion_link' =>
                 $this->duracion_link,
 
+            'informacion_basica' => $this->whenLoaded('informacionBasica'),
+            'telefonos'          => $this->whenLoaded('telefonos'),
+            'profesiones'        => $this->whenLoaded('profesiones'),
+            'idiomas'            => $this->whenLoaded('idiomas'),
+
         ];
     }
 }

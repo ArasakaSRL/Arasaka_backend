@@ -71,7 +71,7 @@ class EnviarCorreoBrevo extends Controller
 
     public function recibidos(Request $request)
     {
-        $correo = $request->user()->correo;
+        $correo = $this->resolverCorreo($request);
         $mensajes = $this->mensajeService->recibidos($correo);
 
         return MensajeResource::collection($mensajes);
@@ -79,10 +79,28 @@ class EnviarCorreoBrevo extends Controller
 
     public function enviados(Request $request)
     {
-        $correo = $request->user()->correo;
+        $correo = $this->resolverCorreo($request);
         $mensajes = $this->mensajeService->enviados($correo);
 
         return MensajeResource::collection($mensajes);
+    }
+
+    private function resolverCorreo(Request $request): string
+    {
+        $idPortafolio = $request->query('id_portafolio');
+
+        if ($idPortafolio) {
+            $portafolio = \App\Models\Portafolio::where('id_portafolio', $idPortafolio)
+                ->where('id_usuario', $request->user()->id_usuario)
+                ->with('informacionBasica')
+                ->first();
+
+            if ($portafolio && $portafolio->informacionBasica?->gmail) {
+                return $portafolio->informacionBasica->gmail;
+            }
+        }
+
+        return $request->user()->correo;
     }
 
     public function destacar(Request $request, Mensaje $mensaje)
@@ -95,7 +113,8 @@ class EnviarCorreoBrevo extends Controller
 
     public function destacados(Request $request)
     {
-        $mensajes = $this->mensajeService->destacados($request->user()->id_usuario);
+        $correo = $this->resolverCorreo($request);
+        $mensajes = $this->mensajeService->destacados($request->user()->id_usuario, $correo);
         return MensajeResource::collection($mensajes);
     }
 

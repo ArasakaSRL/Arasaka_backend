@@ -13,10 +13,10 @@ class Telefono extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
-    protected $fillable = ['id_usuario', 'telefono'];
+    protected $fillable = ['id_portafolio', 'telefono'];
 
-    public function usuario()
+    public function portafolio()
     {
-        return $this->belongsTo(Usuario::class, 'id_usuario');
+        return $this->belongsTo(Portafolio::class, 'id_portafolio', 'id_portafolio');
     }
 }

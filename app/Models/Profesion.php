@@ -15,8 +15,8 @@ class Profesion extends Model
 
     protected $fillable = ['nombre', 'descripcion'];
 
-    public function usuarios()
+    public function portafolios()
     {
-        return $this->belongsToMany(Usuario::class, 'usuario_profesion', 'id_profesion', 'id_usuario');
+        return $this->belongsToMany(Portafolio::class, 'portafolio_profesion', 'id_profesion', 'id_portafolio');
     }
 }
