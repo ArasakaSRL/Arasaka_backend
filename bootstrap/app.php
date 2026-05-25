@@ -32,8 +32,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->validateCsrfTokens(except: [
-            'api/public/*',  // ← agregar solo esto
+            'api/public/*',
         ]);
+
+        $middleware->redirectGuestsTo(fn (Request $request) => null);
     })
     ->withExceptions(function (Exceptions $exceptions) {
 
@@ -44,6 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 $allowed = [
                     'https://frontend-arasaka-frontend.b5lsqc.easypanel.host',
                     'http://localhost:5173',
+                    'http://devlinked.tis.cs.umss.edu.bo',
                 ];
 
                 $response = response()->json([
