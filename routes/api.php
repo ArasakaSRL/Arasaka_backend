@@ -11,21 +11,26 @@ Route::get(
   ])
 );
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/autenticar', function () {
-        $user = request()->user()->load([
-            'roles',
-            'portafolios.informacionBasica',
-            'portafolios.telefonos',
-            'portafolios.profesiones',
-            'portafolios.idiomas',
-            'portafolios.configuracion',
-        ]);
+Route::get('/autenticar', function () {
+    $user = request()->user('sanctum');
+    if (!$user) {
         return response()->json([
-            "message" => "Autenticado correctamente",
-            "user" => $user,
+            "message" => "No autenticado",
+            "user" => null,
         ]);
-    });
+    }
+    $user->load([
+        'roles',
+        'portafolios.informacionBasica',
+        'portafolios.telefonos',
+        'portafolios.profesiones',
+        'portafolios.idiomas',
+        'portafolios.configuracion',
+    ]);
+    return response()->json([
+        "message" => "Autenticado correctamente",
+        "user" => $user,
+    ]);
 });
 
 require __DIR__ . "/auth.php";
