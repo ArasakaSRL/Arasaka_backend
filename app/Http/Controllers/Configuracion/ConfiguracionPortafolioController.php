@@ -52,11 +52,17 @@ class ConfiguracionPortafolioController extends Controller
     }
 
     //Obtener datos del portafolio con sus relaciones para mostrar en la vista de configuración
-    public function showPortafolioCompleto()
+    public function showPortafolioCompleto(Request $request)
     {
-        $portafolio = Portafolio::with(['proyectos', 'habilidades', 'experiencias.tipo', 'servicios'])
-            ->where('id_usuario', Auth::id())
-            ->first();
+        $query = Portafolio::with(['proyectos', 'habilidades', 'experiencias.tipo', 'servicios'])
+            ->where('id_usuario', Auth::id());
+
+        $idPortafolio = $request->query('id_portafolio');
+        if ($idPortafolio) {
+            $query->where('id_portafolio', $idPortafolio);
+        }
+
+        $portafolio = $query->first();
 
         if (!$portafolio) {
             return response()->json(null);
