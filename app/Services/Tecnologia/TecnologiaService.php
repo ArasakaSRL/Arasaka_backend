@@ -3,7 +3,7 @@
 namespace App\Services\Tecnologia;
 
 use App\Models\Tecnologia;
-
+use Illuminate\Http\Exceptions\HttpResponseException;
 class TecnologiaService
 {
     public function listar($cantidad = 9)
@@ -14,6 +14,17 @@ class TecnologiaService
 
     public function crear(array $data)
     {
+        $existe = Tecnologia::whereRaw(
+            'LOWER(nombre) = ?',
+            [strtolower(trim($data['nombre']))]
+        )->exists();
+        if ($existe) {
+            throw new HttpResponseException(response()->json([
+                'success' => false,
+                'message' => 'El nombre de la tecnología ya está en uso.',
+                'data' => null
+            ], 422));  
+        }
         Tecnologia::create($data);
 
         return Tecnologia::orderBy('nombre', 'asc')
