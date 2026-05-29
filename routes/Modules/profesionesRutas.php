@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/usuario/telefonos/{id}', [UsuarioController::class, 'actualizarTelefono']);
     Route::delete('/usuario/telefonos/{id}', [UsuarioController::class, 'eliminarTelefono']);
     Route::patch('/usuario/contrasena', [UsuarioController::class, 'cambiarContrasena']);
+    Route::patch('/usuario/tour', [UsuarioController::class, 'completarTour']);
     Route::post('/usuario/correo/verificar', [CambiarCorreoController::class, 'verificar']);
     Route::post('/usuario/correo/confirmar', [CambiarCorreoController::class, 'confirmar']);
 

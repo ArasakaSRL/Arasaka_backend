@@ -197,4 +197,11 @@ class UsuarioController extends Controller
 
         return response()->json(['message' => 'Contraseña actualizada correctamente']);
     }
+
+    // PATCH /usuario/tour
+    public function completarTour(Request $request): JsonResponse
+    {
+        $request->user()->update(['tour_completado' => true]);
+        return response()->json(['message' => 'Tour completado.']);
+    }
 }
