@@ -6,6 +6,7 @@ use App\Models\Portafolio;
 use App\Actions\Portafolio\CrearPortafolioAction;
 use App\Actions\Portafolio\EliminarPortafolioAction;
 use App\Actions\Portafolio\ActualizarPortafolioAction;
+use Illuminate\Http\Exceptions\HttpResponseException;
 class PortafolioService
 {
     
@@ -19,7 +20,17 @@ class PortafolioService
         array $datos,
         string $idUsuario
     ): Portafolio {
-
+         $existe = Portafolio::whereRaw(
+            'LOWER(nombre) = ? AND id_usuario = ?',
+            [strtolower(trim($datos['nombre'])), $idUsuario]
+        )->exists();
+        if ($existe) {
+            throw new HttpResponseException(response()->json([
+                'success' => false,
+                'message' => 'Ya tienes un portafolio con ese nombre. Por favor elige otro nombre.',
+                'data' => null
+            ], 422));
+        }
         return $this->crearAction
             ->ejecutar($datos, $idUsuario);
     }
