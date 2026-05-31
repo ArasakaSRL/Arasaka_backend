@@ -45,3 +45,4 @@ require __DIR__ . "/Modules/sendGmail.php";
 require __DIR__ . "/Modules/reportesRutas.php";
 require __DIR__ . "/Modules/asistenteRutas.php";
 require __DIR__ . "/Modules/portafoliosRutas.php";
+require __DIR__ . "/Modules/AdminRutas.php";
