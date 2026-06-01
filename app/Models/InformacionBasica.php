@@ -20,16 +20,13 @@ class InformacionBasica extends Model
         'id_portafolio',
         'nombre_completo',
         'gmail',
-        'contrasena',
         'pais',
         'foto_perfil',
         'foto_perfil_public_id',
         'biografia',
     ];
 
-    protected $hidden = [
-        'contrasena',
-    ];
+    protected $hidden = [];
 
     public function portafolio()
     {

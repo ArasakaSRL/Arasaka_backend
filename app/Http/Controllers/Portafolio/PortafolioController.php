@@ -57,7 +57,6 @@ class PortafolioController extends Controller
             $datos = $request->validated();
             $datos['nombre_completo'] = $datos['nombre_completo'] ?? ($user->nombre . ' ' . $user->apellido);
             $datos['gmail']           = $datos['gmail']           ?? $user->correo;
-            $datos['contrasena']      = $datos['contrasena']      ?? \Illuminate\Support\Str::password(16);
             $datos['pais']            = $datos['pais']            ?? null;
 
             $portafolio = $this->service->crear(

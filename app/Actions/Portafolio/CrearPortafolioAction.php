@@ -9,7 +9,6 @@ use App\Models\ConfiguracionPortafolio;
 use App\Models\VisualizacionesPortafolio;
 use App\Models\RedesProfesionales;
 use App\Models\InformacionBasica;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str as StrAlias;
 class CrearPortafolioAction
 {
@@ -91,7 +90,6 @@ class CrearPortafolioAction
                 'id_portafolio' => $portafolio->id_portafolio,
                 'nombre_completo' => $datos['nombre_completo'],
                 'gmail' => $datos['gmail'],
-                'contrasena' => Hash::make($datos['contrasena']),
                 'pais' => $datos['pais'] ?? null,
                 'foto_perfil' => $datos['foto_perfil'] ?? null,
             ]);

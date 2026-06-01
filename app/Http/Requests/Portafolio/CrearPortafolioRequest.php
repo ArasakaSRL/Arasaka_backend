@@ -46,12 +46,6 @@ class CrearPortafolioRequest extends FormRequest
             'max:150'
         ],
 
-        'contrasena' => [
-            'nullable',
-            'string',
-            'min:8'
-        ],
-
         'pais' => [
             'nullable',
             'string',
@@ -111,8 +105,6 @@ class CrearPortafolioRequest extends FormRequest
             'nombre_completo.required' => 'El nombre completo es obligatorio.',
             'gmail.required' => 'El gmail es obligatorio.',
             'gmail.email' => 'El gmail debe ser un correo válido.',
-            'contrasena.required' => 'La contraseña es obligatoria.',
-            'contrasena.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'pais.required' => 'El país es obligatorio.',
         ];
     }

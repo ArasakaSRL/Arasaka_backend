@@ -11,7 +11,6 @@ use App\Models\VisualizacionesPortafolio;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Kreait\Laravel\Firebase\Facades\Firebase;
 
@@ -73,21 +72,12 @@ class FirebaseAuthController extends Controller
                     'url_foto'     => $usuario->url_foto ?? $url_foto,
                 ]);
             } else {
-                $base = preg_replace('/[^a-z]/', '', Str::lower(iconv('UTF-8', 'ASCII//TRANSLIT', $nombre . $apellido)));
-                $username = $base;
-                $i = 1;
-                while (Usuario::where('username', $username)->exists()) {
-                    $username = $base . $i;
-                    $i++;
-                }
-                $password = Str::password(16);
-
                 $usuario = Usuario::create([
                     'nombre'             => $nombre,
                     'apellido'           => $apellido,
-                    'username'           => $username,
+                    'username'           => null,
                     'correo'             => $correo,
-                    'password'           => Hash::make($password),
+                    'password'           => null,
                     'firebase_uid'       => $uid,
                     'provider'           => $provider,
                     'url_foto'           => $url_foto,
@@ -131,7 +121,6 @@ class FirebaseAuthController extends Controller
                     'id_portafolio'         => $idPortafolio,
                     'nombre_completo'       => trim($nombre . ' ' . $apellido),
                     'gmail'                 => $correo,
-                    'contrasena'            => Hash::make($password),
                     'pais'                  => null,
                     'foto_perfil'           => $url_foto,
                     'biografia'             => null,

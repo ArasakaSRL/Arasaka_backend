@@ -15,7 +15,19 @@ Route::get("/profesiones/{id}", [ProfesionController::class, "show"]);
 Route::middleware('auth:sanctum')->group(function () {
 
     // Info del usuario autenticado
-    Route::get('/usuario', fn(Request $request) => $request->user()->load('portafolio:id_usuario,slug'));
+    Route::get('/usuario', function (Request $request) {
+        $user = $request->user()->load('portafolio:id_usuario,slug');
+        $tienePassword  = !is_null($user->password);
+        $perfilCompleto = !is_null($user->password) && !is_null($user->username);
+
+        if ($perfilCompleto && !$user->tour_completado) {
+            $user->update(['tour_completado' => true]);
+        }
+
+        $user->tiene_password  = $tienePassword;
+        $user->perfil_completo = $perfilCompleto;
+        return $user;
+    });
 
     // Profesiones del usuario
     Route::get('/usuario/profesiones', [UsuarioController::class, 'getProfesiones']);
@@ -33,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/usuario/telefonos/{id}', [UsuarioController::class, 'actualizarTelefono']);
     Route::delete('/usuario/telefonos/{id}', [UsuarioController::class, 'eliminarTelefono']);
     Route::patch('/usuario/contrasena', [UsuarioController::class, 'cambiarContrasena']);
+    Route::post('/usuario/completar-perfil', [UsuarioController::class, 'completarPerfil']);
     Route::patch('/usuario/tour', [UsuarioController::class, 'completarTour']);
     Route::post('/usuario/correo/verificar', [CambiarCorreoController::class, 'verificar']);
     Route::post('/usuario/correo/confirmar', [CambiarCorreoController::class, 'confirmar']);

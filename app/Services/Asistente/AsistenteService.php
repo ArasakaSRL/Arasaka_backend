@@ -133,7 +133,6 @@ Usuario actual:
 - Nombre: {$usuario->nombre} {$usuario->apellido}
 - Correo: {$usuario->correo}
 - Portafolio: " . ($portafolio->nombre ?? 'sin portafolio') . "
-- Biografía: " . ($usuario->biografia ?? 'no definida') . "
 
 Instrucciones:
 - Responde siempre en español.
