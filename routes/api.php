@@ -30,10 +30,6 @@ Route::get('/autenticar', function () {
     $tienePassword  = !is_null($user->password);
     $perfilCompleto = !is_null($user->password) && !is_null($user->username);
 
-    if ($perfilCompleto && !$user->tour_completado) {
-        $user->update(['tour_completado' => true]);
-    }
-
     $user->tiene_password  = $tienePassword;
     $user->perfil_completo = $perfilCompleto;
 

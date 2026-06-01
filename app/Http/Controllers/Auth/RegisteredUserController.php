@@ -53,6 +53,7 @@ class RegisteredUserController extends Controller
             'url_foto'           => $request->url_foto,
             'estado'             => $request->estado,
             'verificacion_email' => null,
+            'tour_completado'    => false,
         ]);
 
         $portafolioData = $request->input('portafolio', []);
