@@ -15,8 +15,8 @@ class AdminController extends Controller
             "order" => "nullable|in:asc,desc"
         ]);
 
-        $sortBy = $validated['sorrtBy'] ?? 'created_at';
-        $order = $validated['order'] ?? 'desc';
+        $sortBy = $validated['sorrtBy'] ?? 'nombre';
+        $order = $validated['order'] ?? 'asc';
 
         $usuarios = $action->execute($sortBy, $order);
         
