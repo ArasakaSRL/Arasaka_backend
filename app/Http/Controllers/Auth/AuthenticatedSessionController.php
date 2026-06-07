@@ -25,6 +25,16 @@ class AuthenticatedSessionController extends Controller
 
         /** @var Usuario $user */
         $user = Auth::user();
+
+        if ($user->suspendido && $user->suspendido_hasta?->isFuture()) {
+            Auth::guard('web')->logout();
+            return response()->json([
+                'suspended'       => true,
+                'message'         => 'Tu cuenta está suspendida.',
+                'suspendido_hasta' => $user->suspendido_hasta->toIso8601String(),
+            ], 403);
+        }
+
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([

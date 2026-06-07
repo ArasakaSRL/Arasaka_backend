@@ -22,10 +22,15 @@ class Usuario extends Authenticatable implements MustVerifyEmail
 
     protected $fillable = [
         'nombre', 'apellido', 'username', 'correo', 'password',
-        'url_foto', 'public_id', 'estado', 'tour_completado', 'verificacion_email', 'firebase_uid', 'provider',
+        'url_foto', 'public_id', 'estado', 'suspendido', 'suspendido_hasta', 'tour_completado', 'verificacion_email', 'firebase_uid', 'provider',
     ];
 
     protected $hidden = ['password'];
+
+    protected $casts = [
+        'suspendido'       => 'boolean',
+        'suspendido_hasta' => 'datetime',
+    ];
 
     protected static function boot()
     {
@@ -35,6 +40,11 @@ class Usuario extends Authenticatable implements MustVerifyEmail
                 $model->id_usuario = (string) Str::uuid();
             }
         });
+    }
+
+    public function routeNotificationForMail(): string
+    {
+        return $this->correo;
     }
 
     public function sendEmailVerificationNotification()

@@ -83,6 +83,7 @@ class FirebaseAuthController extends Controller
                     'url_foto'           => $url_foto,
                     'verificacion_email' => now(),
                     'estado'             => true,
+                    'suspendido'         => false,
                 ]);
                 $idPortafolio = (string) Str::uuid();
 
@@ -125,6 +126,14 @@ class FirebaseAuthController extends Controller
                     'foto_perfil'           => $url_foto,
                     'biografia'             => null,
                 ]);
+            }
+
+            if ($usuario->suspendido && $usuario->suspendido_hasta?->isFuture()) {
+                return response()->json([
+                    'suspended'        => true,
+                    'message'          => 'Tu cuenta está suspendida.',
+                    'suspendido_hasta' => $usuario->suspendido_hasta->toIso8601String(),
+                ], 403);
             }
 
             Auth::login($usuario);

@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libxml2-dev \
     libpq-dev \
+    cron \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql pgsql zip mbstring xml gd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -67,4 +68,9 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 # Exponer puerto
 EXPOSE 8080
 
-CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} -t public"]
+# Registrar cron para el scheduler de Laravel
+RUN echo "* * * * * www-data php /var/www/html/artisan schedule:run >> /var/log/laravel-scheduler.log 2>&1" > /etc/cron.d/laravel-scheduler \
+    && chmod 0644 /etc/cron.d/laravel-scheduler \
+    && crontab /etc/cron.d/laravel-scheduler
+
+CMD ["sh", "-c", "cron && php -S 0.0.0.0:${PORT:-8080} -t public"]

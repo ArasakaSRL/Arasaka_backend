@@ -1,11 +1,17 @@
 <?php
 
+use App\Http\Controllers\Portafolio\DenunciarPortafolioController;
 use App\Http\Controllers\Portafolio\InformacionBasicaController;
 use App\Http\Controllers\Portafolio\PortafolioController;
 use App\Http\Controllers\Portafolio\PortafolioIdiomaController;
 use App\Http\Controllers\Portafolio\PortafolioProfesionController;
 use App\Http\Controllers\Portafolio\PortafolioTelefonoController;
 use Illuminate\Support\Facades\Route;
+
+Route::prefix('portafolios')->group(function () {
+    Route::get('/etiquetas-denuncia', [DenunciarPortafolioController::class, 'etiquetas']);
+    Route::post('/{portafolio}/denunciar', [DenunciarPortafolioController::class, 'store']);
+});
 
 Route::middleware('auth:sanctum')
     ->prefix('portafolios')
@@ -61,4 +67,5 @@ Route::middleware('auth:sanctum')
         Route::get('/{portafolio}/profesiones', [PortafolioProfesionController::class, 'index']);
         Route::post('/{portafolio}/profesiones', [PortafolioProfesionController::class, 'asignar']);
         Route::delete('/{portafolio}/profesiones/{idProfesion}', [PortafolioProfesionController::class, 'desasignar']);
+
     });
