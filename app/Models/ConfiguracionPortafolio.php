@@ -26,6 +26,7 @@ class ConfiguracionPortafolio extends Model
         'mostrar_cv',
         'mostrar_contacto',
         'paleta_colores',
+        'plantilla',
     ];
 
     protected $casts = [
