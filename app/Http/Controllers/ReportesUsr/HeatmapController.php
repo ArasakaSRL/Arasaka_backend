@@ -11,6 +11,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReporteAnaliticasMail;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class HeatmapController extends Controller
 {
