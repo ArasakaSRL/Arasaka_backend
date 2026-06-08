@@ -3,6 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportesUsr\HeatmapController;
 
+Route::middleware('auth:sanctum')
+    ->post(
+        '/reportes/enviar-pdf',
+        [HeatmapController::class, 'enviarReportePdf']
+    );
 Route::prefix('public/heatmap')->group(function () {
     Route::post('/iniciar',                       [HeatmapController::class, 'iniciar']);
     Route::post('/perfil/track',                  [HeatmapController::class, 'track']); 

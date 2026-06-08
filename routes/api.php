@@ -1,28 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FormacionAcademicaController;
-use App\Http\Controllers\ReportesUsr\HeatmapController;
-Route::middleware('auth:sanctum')
-    ->post(
-        '/reportes/enviar-pdf',
-        [HeatmapController::class, 'enviarReportePdf']
-    );
-Route::prefix('formacion-academica')->group(function () {
-
-    Route::post('/', [FormacionAcademicaController::class, 'store']);
-
-    Route::get('/', [FormacionAcademicaController::class, 'index']);
-    Route::get(
-    '/portafolio/{id_portafolio}',
-    [FormacionAcademicaController::class, 'obtenerPorPortafolio']
-);
-    Route::get('/{id}', [FormacionAcademicaController::class, 'show']);
-
-    Route::put('/{id}', [FormacionAcademicaController::class, 'update']);
-
-    Route::delete('/{id}', [FormacionAcademicaController::class, 'destroy']);
-});
 Route::get(
   "/ping",
   fn() => response()->json([
@@ -74,3 +52,4 @@ require __DIR__ . "/Modules/reportesRutas.php";
 require __DIR__ . "/Modules/asistenteRutas.php";
 require __DIR__ . "/Modules/portafoliosRutas.php";
 require __DIR__ . "/Modules/AdminRutas.php";
+require __DIR__ . "/Modules/formacionAcademica.php";
