@@ -22,6 +22,7 @@ class ConfiguracionPortafolioResource extends JsonResource
         'paleta_colores' => $this->paleta_colores,
 
         'visibilidad' => $this->portafolio?->visibilidad,
+        'plantilla' => $this->plantilla,
     ];
 }
 }

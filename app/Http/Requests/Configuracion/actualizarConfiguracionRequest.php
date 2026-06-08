@@ -24,6 +24,7 @@ class actualizarConfiguracionRequest extends FormRequest
             'mostrar_contacto' => 'sometimes|boolean',
             'paleta_colores' => 'nullable|string',
             'visibilidad' => 'sometimes|boolean',
+            'plantilla' => 'sometimes|string|in:predeterminado,minimalista,profesional,stiloPastel',
         ];
     }
 }
