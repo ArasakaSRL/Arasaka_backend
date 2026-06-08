@@ -7,6 +7,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Portafolio;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReporteAnaliticasMail;
+use App\Models\Usuario;
 
 class HeatmapController extends Controller
 {
@@ -643,5 +647,79 @@ class HeatmapController extends Controller
 
         return response()->json($clics);
     }
+    public function enviarReportePdf(Request $request)
+{
+    $portafolio = $this->resolverPortafolio($request);
+
+    $visitantes = DB::selectOne("
+        SELECT
+            COUNT(*) AS total_visitantes,
+            COUNT(
+                CASE
+                    WHEN primera_visita = ultima_visita
+                    THEN 1
+                END
+            ) AS visitantes_nuevos,
+            COUNT(
+                CASE
+                    WHEN primera_visita <> ultima_visita
+                    THEN 1
+                END
+            ) AS visitantes_recurrentes
+        FROM visitante
+        WHERE id_portafolio = ?
+    ", [$portafolio->id_portafolio]);
+
+    $perfil = DB::selectOne("
+        SELECT
+            COALESCE(SUM(clic_linkedin),0) AS clic_linkedin,
+            COALESCE(SUM(clic_github),0) AS clic_github,
+            COALESCE(SUM(clic_correo),0) AS clic_correo,
+            COALESCE(SUM(clic_descargar_cv),0) AS clic_descargar_cv
+        FROM interaccion_perfil ip
+        JOIN visitante v
+            ON v.id_visitante = ip.id_visitante
+        WHERE v.id_portafolio = ?
+    ", [$portafolio->id_portafolio]);
+
+    $tecnicas = DB::selectOne("
+        SELECT
+            COALESCE(SUM(clic_expandir),0) AS clic_expandir,
+            COALESCE(SUM(clic_cerrar),0) AS clic_cerrar
+        FROM interaccion_habilidad_tecnica iht
+        JOIN visitante v
+            ON v.id_visitante = iht.id_visitante
+        WHERE v.id_portafolio = ?
+    ", [$portafolio->id_portafolio]);
+
+    $pdf = Pdf::loadView(
+        'reportes.analiticas',
+        compact(
+            'visitantes',
+            'perfil',
+            'tecnicas'
+        )
+    );
+
+    $fileName = 'reporte_' . now()->timestamp . '.pdf';
+
+    $path = storage_path(
+        'app/public/' . $fileName
+    );
+
+    $pdf->save($path);
+
+    $usuario = $request->user();
+
+    Mail::to($usuario->correo)
+        ->send(
+            new ReporteAnaliticasMail($path)
+        );
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Reporte enviado correctamente al correo.',
+    ]);
+}
 }
 
