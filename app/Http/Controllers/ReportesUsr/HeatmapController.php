@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Portafolio;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Usuario;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReporteAnaliticasMail;
-use App\Models\Usuario;
 
 class HeatmapController extends Controller
 {
@@ -647,79 +647,109 @@ class HeatmapController extends Controller
 
         return response()->json($clics);
     }
-    public function enviarReportePdf(Request $request)
+ public function enviarReportePdf(Request $request)
 {
     $portafolio = $this->resolverPortafolio($request);
+    $id_portafolio = $portafolio->id_portafolio;
 
+    // 1. Resumen general de visitantes
     $visitantes = DB::selectOne("
         SELECT
             COUNT(*) AS total_visitantes,
-            COUNT(
-                CASE
-                    WHEN primera_visita = ultima_visita
-                    THEN 1
-                END
-            ) AS visitantes_nuevos,
-            COUNT(
-                CASE
-                    WHEN primera_visita <> ultima_visita
-                    THEN 1
-                END
-            ) AS visitantes_recurrentes
-        FROM visitante
-        WHERE id_portafolio = ?
-    ", [$portafolio->id_portafolio]);
+            COUNT(CASE WHEN primera_visita = ultima_visita THEN 1 END) AS visitantes_nuevos,
+            COUNT(CASE WHEN primera_visita <> ultima_visita THEN 1 END) AS visitantes_recurrentes,
+            MAX(ultima_visita) AS ultima_visita
+        FROM visitante WHERE id_portafolio = ?
+    ", [$id_portafolio]);
 
+    // 2. Métricas de interacciones del Perfil (Tiempos de hover y clics)
     $perfil = DB::selectOne("
         SELECT
-            COALESCE(SUM(clic_linkedin),0) AS clic_linkedin,
-            COALESCE(SUM(clic_github),0) AS clic_github,
-            COALESCE(SUM(clic_correo),0) AS clic_correo,
-            COALESCE(SUM(clic_descargar_cv),0) AS clic_descargar_cv
+            COALESCE(SUM(ip.hover_foto_count),0) AS hover_foto_count,
+            COALESCE(SUM(ip.hover_foto_ms),0) AS hover_foto_ms,
+            COALESCE(SUM(ip.hover_correo_count),0) AS hover_correo_count,
+            COALESCE(SUM(ip.hover_correo_ms),0) AS hover_correo_ms,
+            COALESCE(SUM(ip.clic_foto_perfil),0) AS clic_foto_perfil,
+            COALESCE(SUM(ip.clic_correo),0) AS clic_correo,
+            COALESCE(SUM(ip.clic_linkedin),0) AS clic_linkedin,
+            COALESCE(SUM(ip.clic_github),0) AS clic_github,
+            COALESCE(SUM(ip.clic_contactar),0) AS clic_contactar,
+            COALESCE(SUM(ip.clic_descargar_cv),0) AS clic_descargar_cv
         FROM interaccion_perfil ip
-        JOIN visitante v
-            ON v.id_visitante = ip.id_visitante
+        JOIN visitante v ON v.id_visitante = ip.id_visitante
         WHERE v.id_portafolio = ?
-    ", [$portafolio->id_portafolio]);
+    ", [$id_portafolio]);
 
+    // 3. Interacciones generales de Habilidades Técnicas
     $tecnicas = DB::selectOne("
         SELECT
-            COALESCE(SUM(clic_expandir),0) AS clic_expandir,
-            COALESCE(SUM(clic_cerrar),0) AS clic_cerrar
+            COALESCE(SUM(iht.clic_expandir),0) AS clic_expandir,
+            COALESCE(SUM(iht.clic_cerrar),0) AS clic_cerrar
         FROM interaccion_habilidad_tecnica iht
-        JOIN visitante v
-            ON v.id_visitante = iht.id_visitante
+        JOIN visitante v ON v.id_visitante = iht.id_visitante
         WHERE v.id_portafolio = ?
-    ", [$portafolio->id_portafolio]);
+    ", [$id_portafolio]);
 
-    $pdf = Pdf::loadView(
-        'reportes.analiticas',
-        compact(
-            'visitantes',
-            'perfil',
-            'tecnicas'
-        )
-    );
+    // 4. Historial de visitas últimos meses
+    $visitasMensuales = DB::select("
+        SELECT
+            TO_CHAR(primera_visita, 'Mon YYYY') AS mes,
+            COUNT(*) AS visitas
+        FROM visitante
+        WHERE id_portafolio = ? AND primera_visita >= NOW() - INTERVAL '6 months'
+        GROUP BY TO_CHAR(primera_visita, 'YYYY-MM'), TO_CHAR(primera_visita, 'Mon YYYY')
+        ORDER BY TO_CHAR(primera_visita, 'YYYY-MM')
+    ", [$id_portafolio]);
 
-    $fileName = 'reporte_' . now()->timestamp . '.pdf';
+    // 5. Top de zonas calientes
+    $clicsPerfil = DB::select("
+        SELECT campo, COUNT(*) as intensidad
+        FROM clic_perfil cp
+        JOIN visitante v ON v.id_visitante = cp.id_visitante
+        WHERE v.id_portafolio = ? GROUP BY campo ORDER BY intensidad DESC LIMIT 5
+    ", [$id_portafolio]);
 
-    $path = storage_path(
-        'app/public/' . $fileName
-    );
+    $clicsProyectos = DB::select("
+        SELECT campo, COUNT(*) as intensidad
+        FROM clic_proyecto cp
+        JOIN visitante v ON v.id_visitante = cp.id_visitante
+        WHERE v.id_portafolio = ? GROUP BY campo ORDER BY intensidad DESC LIMIT 5
+    ", [$id_portafolio]);
 
-    $pdf->save($path);
+    // 6. Generar el objeto PDF a través de DomPDF
+    $pdf = Pdf::loadView('reportes.analiticas', compact(
+        'portafolio', 
+        'visitantes', 
+        'perfil', 
+        'tecnicas', 
+        'visitasMensuales', 
+        'clicsPerfil', 
+        'clicsProyectos'
+    ));
 
-    $usuario = $request->user();
+    $fileName = 'reporte_devlinked_analytics_' . now()->format('Ymd_His') . '.pdf';
 
-    Mail::to($usuario->correo)
-        ->send(
-            new ReporteAnaliticasMail($path)
-        );
+    // NUEVO: Verificar si la petición solicita enviar por correo electrónico
+    if ($request->has('enviar_email') && $request->input('enviar_email') == 'true') {
+        
+        // Obtener el correo al que se enviará (puede venir del request o del usuario autenticado)
+        $destinatario = $request->input('email', auth()->user()->email ?? null);
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Reporte enviado correctamente al correo.',
-    ]);
+        if (!$destinatario) {
+            return response()->json(['error' => 'No se especificó un correo electrónico válido.'], 422);
+        }
+
+        // Extraer los bytes binarios del PDF para no guardarlo físicamente en el disco duro
+        $pdfData = $pdf->output();
+
+        // Despachar el envío vía SMTP (Gmail)
+        Mail::to($destinatario)->send(new ReporteAnaliticasMail($portafolio, $pdfData, $fileName));
+
+        return response()->json(['success' => 'El reporte analítico ha sido enviado con éxito a ' . $destinatario]);
+    }
+
+    // Si no pide email, mantiene tu comportamiento original de descarga directa 10/10
+    return $pdf->download($fileName);
 }
 }
 

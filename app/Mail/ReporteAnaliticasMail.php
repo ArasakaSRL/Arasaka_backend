@@ -2,25 +2,59 @@
 
 namespace App\Mail;
 
+use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Queue\SerializesModels;
 
 class ReporteAnaliticasMail extends Mailable
 {
-    public string $pdfPath;
+    use Queueable, SerializesModels;
 
-    public function __construct(string $pdfPath)
+    public $portafolio;
+    protected $pdfData;
+    protected $fileName;
+
+    /**
+     * Crear una nueva instancia del mensaje.
+     */
+    public function __construct($portafolio, $pdfData, $fileName)
     {
-        $this->pdfPath = $pdfPath;
+        $this->portafolio = $portafolio;
+        $this->pdfData = $pdfData;
+        $this->fileName = $fileName;
     }
 
-    public function build()
+    /**
+     * Definir el asunto y remitente del correo.
+     */
+    public function envelope(): Envelope
     {
-        return $this
-            ->subject('Reporte de Analíticas del Portafolio')
-            ->view('emails.reporte')
-            ->attach($this->pdfPath, [
-                'as' => 'reporte-analiticas.pdf',
-                'mime' => 'application/pdf',
-            ]);
+        return new Envelope(
+            subject: 'Reporte Analítico de Portafolio - ' . ($this->portafolio->nombre ?? $this->portafolio->slug),
+        );
+    }
+
+    /**
+     * Vincular la vista del cuerpo del correo.
+     */
+    public function content(): Content
+    {
+        return new Content(
+            view: 'emails.reporte_notificacion',
+        );
+    }
+
+    /**
+     * Adjuntar el archivo PDF generado en memoria.
+     */
+    public function attachments(): array
+    {
+        return [
+            Attachment::fromData(fn () => $this->pdfData, $this->fileName)
+                ->withMime('application/pdf'),
+        ];
     }
 }
