@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -28,11 +29,15 @@ class ReporteAnaliticasMail extends Mailable
     }
 
     /**
-     * Definir el asunto y remitente del correo.
+     * Definir el asunto y forzar el remitente configurado de tu servicio de correos (Brevo/Gmail).
      */
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: new Address(
+                env('BREVO_FROM_ADDRESS', 'arasakasrl@gmail.com'), 
+                env('BREVO_FROM_NAME', 'Arasaka-SRL')
+            ),
             subject: 'Reporte Analítico de Portafolio - ' . ($this->portafolio->nombre ?? $this->portafolio->slug),
         );
     }
@@ -48,7 +53,7 @@ class ReporteAnaliticasMail extends Mailable
     }
 
     /**
-     * Adjuntar el archivo PDF generado en memoria.
+     * Adjuntar el archivo PDF generado en memoria (Evita llenar el disco de basura).
      */
     public function attachments(): array
     {
