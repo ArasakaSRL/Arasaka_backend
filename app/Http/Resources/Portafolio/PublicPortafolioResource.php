@@ -117,6 +117,7 @@ class PublicPortafolioResource extends JsonResource
                 'mostrar_cv' => $this->configuracion->mostrar_cv,
                 'mostrar_contacto' => $this->configuracion->mostrar_contacto,
                 'paleta_colores' => $this->configuracion->paleta_colores,
+                'plantilla' => $this->configuracion->plantilla ?? 'predeterminado',
             ] : null,
         ];
     }
