@@ -42,7 +42,7 @@
         <p>Hola,</p>
         <p>Adjunto a este correo encontrarás el reporte analítico detallado de tu portafolio <strong>{{ $portafolio->nombre ?? $portafolio->slug }}</strong> gestionado en la plataforma.</p>
         <p>El documento incluye el resumen general de tráfico, interacciones de perfil, clics en coordenadas y el análisis de tus secciones de habilidades técnicas.</p>
-        <p>Si tienes alguna pregunta o requieres asistencia adicional, no dudes en responder a este mensaje.</p>
+
         
         <div class="footer">
             Este es un correo automatizado enviado por el sistema de monitoreo de Devlinked.
