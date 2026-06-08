@@ -22,6 +22,8 @@ class PortafolioResource extends JsonResource
 
             'visibilidad' => $this->visibilidad,
 
+            'suspendido' => $this->suspendido,
+
             'fecha_creacion' => $this->fecha_creacion,
 
             'fecha_actualizacion' => $this->fecha_actualizacion,

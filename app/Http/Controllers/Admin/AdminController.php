@@ -5,12 +5,21 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Actions\Admin\GetAllSystemUsersAction;
 use App\Http\Resources\UsuariosResource;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function indexAllUsuarios(GetAllSystemUsersAction $action){
-        $usuarios = $action->execute();
-        //dd($usuarios);
+    public function indexAllUsuarios(GetAllSystemUsersAction $action, Request $request){
+        $validated = $request->validate([
+            "sortBy" => "nullable|in:nombre,created_at",
+            "order" => "nullable|in:asc,desc"
+        ]);
+
+        $sortBy = $validated['sorrtBy'] ?? 'nombre';
+        $order = $validated['order'] ?? 'asc';
+
+        $usuarios = $action->execute($sortBy, $order);
+        
         $count = $usuarios->count();
         if($usuarios){
             $data = [

@@ -6,9 +6,8 @@ use App\Models\Usuario;
 
 class GetAllSystemUsersAction{
 
-    public function execute(){
-
-        return Usuario::get();
+    public function execute($orderBy, $orderDirection){
+        return Usuario::orderBy($orderBy, $orderDirection)->get();
     }
 
 }
