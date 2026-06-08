@@ -648,108 +648,129 @@ class HeatmapController extends Controller
         return response()->json($clics);
     }
 public function enviarReportePdf(Request $request)
-    {
-        $portafolio = $this->resolverPortafolio($request);
-        $id_portafolio = $portafolio->id_portafolio;
+{
+    $portafolio = $this->resolverPortafolio($request);
+    $id_portafolio = $portafolio->id_portafolio;
 
-        // 1. Resumen general de visitantes
+    // 1. Capturar la fecha en formato 'd-m-Y' (por ejemplo: 08-06-2026)
+    $fechaInput = $request->input('fecha_corte');
+
+    if ($fechaInput) {
+        // Parsear la fecha asegurando el formato exacto del front
+        $fechaObjeto = \Carbon\Carbon::createFromFormat('d-m-Y', $fechaInput);
+    } else {
+        $fechaObjeto = now();
+    }
+
+    // Definir estrictamente los límites del mes elegido (Evita mezclar datos de otros meses)
+    $fechaInicio = $fechaObjeto->copy()->startOfMonth()->startOfDay(); 
+    $fechaFin    = $fechaObjeto->copy()->endOfMonth()->endOfDay();     
+
+    // Capturar los switches del Frontend
+    $filtros = [
+        'vistas'    => $request->input('incluir_vistas', true),
+        'proyectos' => $request->input('incluir_proyectos', true),
+        'mensajes'  => $request->input('incluir_mensajes', true),
+        'cv'        => $request->input('incluir_cv', true),
+    ];
+
+    // 2. Resumen General de Tráfico (Vistas) ESTRICTAMENTE de ese mes
+    $visitantes = null;
+    if ($filtros['vistas']) {
         $visitantes = DB::selectOne("
             SELECT
                 COUNT(*) AS total_visitantes,
                 COUNT(CASE WHEN primera_visita = ultima_visita THEN 1 END) AS visitantes_nuevos,
                 COUNT(CASE WHEN primera_visita <> ultima_visita THEN 1 END) AS visitantes_recurrentes,
                 MAX(ultima_visita) AS ultima_visita
-            FROM visitante WHERE id_portafolio = ?
-        ", [$id_portafolio]);
+            FROM visitante 
+            WHERE id_portafolio = ? 
+              AND primera_visita BETWEEN ? AND ?
+        ", [$id_portafolio, $fechaInicio, $fechaFin]);
+    }
 
-        // 2. Métricas de interacciones del Perfil (Tiempos de hover y clics)
-        $perfil = DB::selectOne("
-            SELECT
-                COALESCE(SUM(ip.hover_foto_count),0) AS hover_foto_count,
-                COALESCE(SUM(ip.hover_foto_ms),0) AS hover_foto_ms,
-                COALESCE(SUM(ip.hover_correo_count),0) AS hover_correo_count,
-                COALESCE(SUM(ip.hover_correo_ms),0) AS hover_correo_ms,
-                COALESCE(SUM(ip.clic_foto_perfil),0) AS clic_foto_perfil,
-                COALESCE(SUM(ip.clic_correo),0) AS clic_correo,
-                COALESCE(SUM(ip.clic_linkedin),0) AS clic_linkedin,
-                COALESCE(SUM(ip.clic_github),0) AS clic_github,
-                COALESCE(SUM(ip.clic_contactar),0) AS clic_contactar,
-                COALESCE(SUM(ip.clic_descargar_cv),0) AS clic_descargar_cv
-            FROM interaccion_perfil ip
-            JOIN visitante v ON v.id_visitante = ip.id_visitante
-            WHERE v.id_portafolio = ?
-        ", [$id_portafolio]);
+    // 3. Métricas de Perfil ESTRICTAMENTE de ese mes
+    $perfil = DB::selectOne("
+        SELECT
+            COALESCE(SUM(ip.hover_foto_count),0) AS hover_foto_count,
+            COALESCE(SUM(ip.hover_foto_ms),0) AS hover_foto_ms,
+            COALESCE(SUM(ip.hover_correo_count),0) AS hover_correo_count,
+            COALESCE(SUM(ip.hover_correo_ms),0) AS hover_correo_ms,
+            COALESCE(SUM(ip.clic_foto_perfil),0) AS clic_foto_perfil,
+            COALESCE(SUM(ip.clic_correo),0) AS clic_correo,
+            COALESCE(SUM(ip.clic_linkedin),0) AS clic_linkedin,
+            COALESCE(SUM(ip.clic_github),0) AS clic_github,
+            COALESCE(SUM(ip.clic_contactar),0) AS clic_contactar,
+            COALESCE(SUM(ip.clic_descargar_cv),0) AS clic_descargar_cv
+        FROM interaccion_perfil ip
+        JOIN visitante v ON v.id_visitante = ip.id_visitante
+        WHERE v.id_portafolio = ? 
+          AND v.primera_visita BETWEEN ? AND ?
+    ", [$id_portafolio, $fechaInicio, $fechaFin]);
 
-        // 3. Interacciones generales de Habilidades Técnicas
+    // 4. Datos de Proyectos y Habilidades (Zonas Calientes) ESTRICTAMENTE de ese mes
+    $clicsProyectos = [];
+    $tecnicas = null;
+    if ($filtros['proyectos']) {
         $tecnicas = DB::selectOne("
             SELECT
                 COALESCE(SUM(iht.clic_expandir),0) AS clic_expandir,
                 COALESCE(SUM(iht.clic_cerrar),0) AS clic_cerrar
             FROM interaccion_habilidad_tecnica iht
             JOIN visitante v ON v.id_visitante = iht.id_visitante
-            WHERE v.id_portafolio = ?
-        ", [$id_portafolio]);
-
-        // 4. Historial de visitas últimos meses
-        $visitasMensuales = DB::select("
-            SELECT
-                TO_CHAR(primera_visita, 'Mon YYYY') AS mes,
-                COUNT(*) AS visitas
-            FROM visitante
-            WHERE id_portafolio = ? AND primera_visita >= NOW() - INTERVAL '6 months'
-            GROUP BY TO_CHAR(primera_visita, 'YYYY-MM'), TO_CHAR(primera_visita, 'Mon YYYY')
-            ORDER BY TO_CHAR(primera_visita, 'YYYY-MM')
-        ", [$id_portafolio]);
-
-        // 5. Top de zonas calientes
-        $clicsPerfil = DB::select("
-            SELECT campo, COUNT(*) as intensidad
-            FROM clic_perfil cp
-            JOIN visitante v ON v.id_visitante = cp.id_visitante
-            WHERE v.id_portafolio = ? GROUP BY campo ORDER BY intensidad DESC LIMIT 5
-        ", [$id_portafolio]);
+            WHERE v.id_portafolio = ? 
+              AND v.primera_visita BETWEEN ? AND ?
+        ", [$id_portafolio, $fechaInicio, $fechaFin]);
 
         $clicsProyectos = DB::select("
-            SELECT campo, COUNT(*) as intensidad
+            SELECT cp.campo, COUNT(*) as intensidad
             FROM clic_proyecto cp
             JOIN visitante v ON v.id_visitante = cp.id_visitante
-            WHERE v.id_portafolio = ? GROUP BY campo ORDER BY intensidad DESC LIMIT 5
-        ", [$id_portafolio]);
+            WHERE v.id_portafolio = ? 
+              AND v.primera_visita BETWEEN ? AND ?
+            GROUP BY cp.campo ORDER BY intensidad DESC LIMIT 5
+        ", [$id_portafolio, $fechaInicio, $fechaFin]);
+    }
 
-        // 6. Generar el objeto PDF a través de DomPDF
-        $pdf = Pdf::loadView('reportes.analiticas', compact(
-            'portafolio', 
-            'visitantes', 
-            'perfil', 
-            'tecnicas', 
-            'visitasMensuales', 
-            'clicsPerfil', 
-            'clicsProyectos'
-        ));
+    // Top coordenadas perfil ESTRICTAMENTE de ese mes
+    $clicsPerfil = DB::select("
+        SELECT cp.campo, COUNT(*) as intensidad
+        FROM clic_perfil cp
+        JOIN visitante v ON v.id_visitante = cp.id_visitante
+        WHERE v.id_portafolio = ? 
+          AND v.primera_visita BETWEEN ? AND ?
+        GROUP BY cp.campo ORDER BY intensidad DESC LIMIT 5
+    ", [$id_portafolio, $fechaInicio, $fechaFin]);
 
-        $fileName = 'reporte_devlinked_analytics_' . now()->format('Ymd_His') . '.pdf';
+    // 5. Renderizar el PDF pasando las variables de rango de tiempo
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reportes.analiticas', compact(
+        'portafolio', 
+        'visitantes', 
+        'perfil', 
+        'tecnicas', 
+        'clicsPerfil', 
+        'clicsProyectos',
+        'filtros',
+        'fechaInicio',
+        'fechaFin'
+    ));
 
-        // Verificar si la petición solicita enviar por correo electrónico
-        if ($request->has('enviar_email') && $request->input('enviar_email') == 'true') {
-            
-            // Obtener el correo al que se enviará
-            $destinatario = $request->input('email', auth()->user()->email ?? null);
+    $fileName = 'reporte_analytics_mes_' . $fechaObjeto->format('m_Y') . '.pdf';
 
-            if (!$destinatario) {
-                return response()->json(['error' => 'No se especificó un correo electrónico válido.'], 422);
-            }
+    if ($request->has('enviar_email') && $request->input('enviar_email') == 'true') {
+        $destinatario = $request->input('email', auth()->user()->email ?? null);
 
-            // Extraer los bytes binarios del PDF
-            $pdfData = $pdf->output();
-
-            // Despachar el envío vía SMTP (Gmail)
-            Mail::to($destinatario)->send(new ReporteAnaliticasMail($portafolio, $pdfData, $fileName));
-
-            return response()->json(['success' => 'El reporte analítico ha sido enviado con éxito a ' . $destinatario]);
+        if (!$destinatario) {
+            return response()->json(['error' => 'No se especificó un correo electrónico válido.'], 422);
         }
 
-        // Descarga directa tradicional
-        return $pdf->download($fileName);
+        $pdfData = $pdf->output();
+        Mail::to($destinatario)->send(new ReporteAnaliticasMail($portafolio, $pdfData, $fileName));
+
+        return response()->json(['success' => 'El reporte filtrado ha sido enviado con éxito a ' . $destinatario]);
     }
+
+    return $pdf->download($fileName);
+}
 }
 
