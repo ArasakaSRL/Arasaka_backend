@@ -22,9 +22,9 @@ class ProyectoResource extends JsonResource
             }) : [],
             'url_imagen' => $this->imagenes ? $this->imagenes->map(function ($url_imagen) {
                 return [
-                    'id_tecnologia' => $url_imagen->id_url_imagen_proyecto,
-                    'nombre' => $url_imagen->id_proyecto,
-                    'logo' => $url_imagen->url_imagen,
+                    'id_url_imagen' => $url_imagen->id_url_imagen_proyecto,
+                    'id_proyecto' => $url_imagen->id_proyecto,
+                    'url_imagen' => $url_imagen->url_imagen,
                 ];
             }) : [],
             'fecha_inicio' => $this->fecha_inicio?->format('d-m-Y'),
