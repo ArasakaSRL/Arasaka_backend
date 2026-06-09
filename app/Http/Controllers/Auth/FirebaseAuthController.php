@@ -43,7 +43,9 @@ class FirebaseAuthController extends Controller
                 ], 422);
             }
 
-            $usuario = Usuario::where('correo', $correo)->first();
+            $usuario = Usuario::where('firebase_uid', $uid)
+                ->orWhere('correo', $correo)
+                ->first();
 
             if ($usuario) {
                 // Registrado con correo y contraseña
