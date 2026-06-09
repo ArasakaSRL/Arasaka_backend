@@ -47,6 +47,7 @@ class PublicPortafolioController extends Controller
     public function index(Request $request)
     {
         $query = Portafolio::where('link_activo', true)
+            ->where('suspendido', false)
             ->whereHas('usuario', function ($q) {
                 $q->where('estado', true);
             });
