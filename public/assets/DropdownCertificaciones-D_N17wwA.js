@@ -1,0 +1,10 @@
+import{a as e}from"./chunk-BEqpzyXh.js";import{r as t,t as n}from"./jsx-runtime-H2Lj-n6k.js";import{t as r}from"./circle-chevron-down-B20Yn7_K.js";var i=e(t(),1),a=n();function o({titulo:e,opciones:t,placeholder:n=`Selecciona una opción`,tamMax:o,value:s,onChange:c,error:l,required:u}){let d=(0,i.useRef)(null),[f,p]=(0,i.useState)(!1),m=e=>{c&&c(e),p(!1)};return(0,i.useEffect)(()=>{let e=e=>{d.current&&!d.current.contains(e.target)&&p(!1)};return document.addEventListener(`mousedown`,e),()=>document.removeEventListener(`mousedown`,e)},[]),(0,a.jsxs)(`section`,{className:`flex flex-col gap-1.5 w-full relative`,children:[(0,a.jsxs)(`div`,{className:`flex justify-between items-center`,children:[(0,a.jsxs)(`label`,{className:`flex items-center gap-1.5 text-black font-semibold text-[14px] w-full text-left`,children:[e,u&&(0,a.jsx)(`span`,{className:`text-red-500`,children:`*`})]}),o&&(0,a.jsxs)(`span`,{className:`text-[11px] text-gray-400 mr-1`,children:[s?s.label.length:0,`/`,o]})]}),(0,a.jsxs)(`div`,{onClick:e=>{e.stopPropagation(),p(!f)},className:`
+          w-full flex items-center justify-between px-3 py-2 text-[14px]
+          rounded-xl border transition-all
+          ${l?``:`border-gray-300 focus-within:ring-1 focus-within:ring-blue-600`}
+          bg-white cursor-pointer
+        `,children:[(0,a.jsx)(`span`,{className:s?`text-gray-600`:`text-gray-400`,children:s?s.label:n}),(0,a.jsx)(r,{size:18,className:`text-gray-400 transition-transform ${f?`rotate-180`:``}`})]}),l&&u&&(0,a.jsx)(`p`,{className:`text-red-600 text-[12px] text-left w-full animate-in fade-in slide-in-from-top-1`,children:`Este campo es obligatorio`}),f&&(0,a.jsx)(`div`,{onClick:e=>e.stopPropagation(),className:`absolute z-50 top-[calc(100%+4px)] w-full bg-white border border-gray-300 rounded-xl shadow-lg max-h-36 overflow-y-auto scrollbar-hide`,children:t.map(e=>(0,a.jsx)(`button`,{type:`button`,onClick:()=>m(e),className:`
+                w-full text-left px-3 py-2 text-sm text-black
+                hover:bg-[#D4DBE2] cursor-pointer
+                ${s?.value===e.value?`bg-blue-100 text-black`:``}
+              `,children:e.label},e.value))})]})}export{o as t};
