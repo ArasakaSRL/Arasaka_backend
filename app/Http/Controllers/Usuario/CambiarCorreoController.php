@@ -8,6 +8,7 @@ use App\Models\Usuario;
 use App\Notifications\CodigoVerificacionCorreoNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class CambiarCorreoController extends Controller
 {
@@ -32,7 +33,8 @@ class CambiarCorreoController extends Controller
             'expira_en'   => now()->addMinutes(15),
         ]);
 
-        $request->user()->notify(new CodigoVerificacionCorreoNotification($codigo, $data['correo_nuevo']));
+        Notification::route('mail', $data['correo_nuevo'])
+            ->notify(new CodigoVerificacionCorreoNotification($codigo));
 
         return response()->json(['message' => 'Código enviado al nuevo correo.']);
     }

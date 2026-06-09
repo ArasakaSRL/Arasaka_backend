@@ -3,11 +3,11 @@
 namespace App\Notifications;
 
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class CodigoVerificacionCorreoNotification extends Notification
 {
-    public function __construct(private string $codigo, private string $correoNuevo) {}
+    public function __construct(private string $codigo) {}
 
     public function via($notifiable): array
     {
@@ -16,13 +16,12 @@ class CodigoVerificacionCorreoNotification extends Notification
 
     public function toMail($notifiable)
     {
-        Mail::raw(
-            "Tu código de verificación para cambiar tu correo es: {$this->codigo}\n\nEste código expira en 15 minutos.\n\nSi no solicitaste este cambio, ignora este mensaje.",
-            fn($m) => $m
-                ->to($this->correoNuevo)
-                ->subject('Código de verificación - ' . config('app.name'))
-        );
-
-        return null;
+        return (new MailMessage)
+            ->subject('Código de verificación - ' . config('app.name'))
+            ->greeting('Hola')
+            ->line('Tu código de verificación para cambiar tu correo es:')
+            ->line("**{$this->codigo}**")
+            ->line('Este código expira en 15 minutos.')
+            ->line('Si no solicitaste este cambio, ignora este mensaje.');
     }
 }
