@@ -12,6 +12,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
@@ -44,62 +45,66 @@ class RegisteredUserController extends Controller
 
         $username = $this->generarUsername($request->nombre, $request->apellido);
 
-        $usuario = Usuario::create([
-            'nombre'             => $request->nombre,
-            'apellido'           => $request->apellido,
-            'username'           => $username,
-            'correo'             => $request->correo,
-            'password'           => Hash::make($request->string('password')),
-            'url_foto'           => $request->url_foto,
-            'estado'             => $request->estado,
-            'suspendido'         => false,
-            'verificacion_email' => null,
-            'tour_completado'    => false,
-        ]);
+        $usuario = DB::transaction(function () use ($request, $username) {
+            $usuario = Usuario::create([
+                'nombre'             => $request->nombre,
+                'apellido'           => $request->apellido,
+                'username'           => $username,
+                'correo'             => $request->correo,
+                'password'           => Hash::make($request->string('password')),
+                'url_foto'           => $request->url_foto,
+                'estado'             => $request->estado,
+                'suspendido'         => false,
+                'verificacion_email' => null,
+                'tour_completado'    => false,
+            ]);
 
-        $portafolioData = $request->input('portafolio', []);
-        $idPortafolio = (string) Str::uuid();
+            $portafolioData = $request->input('portafolio', []);
+            $idPortafolio = (string) Str::uuid();
 
-        Portafolio::create([
-            'id_portafolio'         => $idPortafolio,
-            'id_usuario'            => $usuario->id_usuario,
-            'nombre'                => $portafolioData['nombre'] ?? $request->nombre . ' ' . $request->apellido,
-            'descripcion'           => $portafolioData['descripcion'] ?? null,
-            'visibilidad'           => $portafolioData['visibilidad'] ?? true,
-            'link_activo'           => true,
-            'duracion_link'         => 'sin_limite',
-            'fecha_expiracion_link' => null,
-            'fecha_creacion'        => now(),
-            'fecha_actualizacion'   => now(),
-        ]);
+            Portafolio::create([
+                'id_portafolio'         => $idPortafolio,
+                'id_usuario'            => $usuario->id_usuario,
+                'nombre'                => $portafolioData['nombre'] ?? $request->nombre . ' ' . $request->apellido,
+                'descripcion'           => $portafolioData['descripcion'] ?? null,
+                'visibilidad'           => $portafolioData['visibilidad'] ?? true,
+                'link_activo'           => true,
+                'duracion_link'         => 'sin_limite',
+                'fecha_expiracion_link' => null,
+                'fecha_creacion'        => now(),
+                'fecha_actualizacion'   => now(),
+            ]);
 
-        ConfiguracionPortafolio::create([
-            'id_portafolio'          => $idPortafolio,
-            'mostrar_proyecto'       => true,
-            'mostrar_habilidades'    => true,
-            'mostrar_experiencia'    => true,
-            'mostrar_certificaciones'=> true,
-            'mostrar_servicios'      => true,
-            'paleta_colores'         => json_encode([
-                'primary'   => '#000000',
-                'secondary' => '#ffffff',
-            ]),
-        ]);
+            ConfiguracionPortafolio::create([
+                'id_portafolio'          => $idPortafolio,
+                'mostrar_proyecto'       => true,
+                'mostrar_habilidades'    => true,
+                'mostrar_experiencia'    => true,
+                'mostrar_certificaciones'=> true,
+                'mostrar_servicios'      => true,
+                'paleta_colores'         => json_encode([
+                    'primary'   => '#000000',
+                    'secondary' => '#ffffff',
+                ]),
+            ]);
 
-        VisualizacionesPortafolio::create([
-            'id_portafolio' => $idPortafolio,
-            'fecha'         => now()->toDateString(),
-        ]);
+            VisualizacionesPortafolio::create([
+                'id_portafolio' => $idPortafolio,
+                'fecha'         => now()->toDateString(),
+            ]);
 
-        InformacionBasica::create([
-            'id_informacion_basica' => (string) Str::uuid(),
-            'id_portafolio'         => $idPortafolio,
-            'nombre_completo'       => $request->nombre . ' ' . $request->apellido,
-            'gmail'                 => $request->correo,
-            'pais'                  => $request->input('pais', ''),
-            'foto_perfil'           => $request->url_foto ?? null,
-            'biografia'             => $request->biografia ?? null,
-        ]);
+            InformacionBasica::create([
+                'id_informacion_basica' => (string) Str::uuid(),
+                'id_portafolio'         => $idPortafolio,
+                'nombre_completo'       => $request->nombre . ' ' . $request->apellido,
+                'gmail'                 => $request->correo,
+                'pais'                  => $request->input('pais', ''),
+                'foto_perfil'           => $request->url_foto ?? null,
+                'biografia'             => $request->biografia ?? null,
+            ]);
+
+            return $usuario;
+        });
 
         event(new Registered($usuario));
 
