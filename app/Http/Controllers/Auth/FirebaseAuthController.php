@@ -83,6 +83,7 @@ class FirebaseAuthController extends Controller
                     'url_foto'           => $url_foto,
                     'verificacion_email' => now(),
                     'estado'             => true,
+                    'rol'                => 'user',
                     'suspendido'         => false,
                 ]);
                 $idPortafolio = (string) Str::uuid();

@@ -54,6 +54,7 @@ class RegisteredUserController extends Controller
                 'password'           => Hash::make($request->string('password')),
                 'url_foto'           => $request->url_foto,
                 'estado'             => $request->estado,
+                'rol'                => 'user',
                 'suspendido'         => false,
                 'verificacion_email' => null,
                 'tour_completado'    => false,

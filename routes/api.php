@@ -20,7 +20,6 @@ Route::get('/autenticar', function () {
         ]);
     }
     $user->load([
-        'roles',
         'portafolios.informacionBasica',
         'portafolios.telefonos',
         'portafolios.profesiones',
