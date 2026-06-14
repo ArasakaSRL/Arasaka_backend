@@ -73,4 +73,4 @@ RUN echo "* * * * * www-data php /var/www/html/artisan schedule:run >> /var/log/
     && chmod 0644 /etc/cron.d/laravel-scheduler \
     && crontab /etc/cron.d/laravel-scheduler
 
-CMD ["sh", "-c", "cron && php -S 0.0.0.0:${PORT:-8080} -t public"]
+CMD ["sh", "-c", "cron && php artisan queue:work --daemon --tries=3 & php -S 0.0.0.0:${PORT:-8080} -t public"]
