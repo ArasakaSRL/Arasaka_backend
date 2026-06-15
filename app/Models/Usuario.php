@@ -22,7 +22,8 @@ class Usuario extends Authenticatable implements MustVerifyEmail
 
     protected $fillable = [
         'nombre', 'apellido', 'username', 'correo', 'password',
-        'url_foto', 'public_id', 'estado', 'rol', 'suspendido', 'suspendido_hasta', 'tour_completado', 'verificacion_email', 'firebase_uid', 'provider',
+        'url_foto', 'public_id', 'estado', 'rol', 'suspendido', 'suspendido_hasta', 'tour_completado',
+        'verificacion_email', 'firebase_uid', 'provider',
     ];
 
     protected $hidden = ['password'];
