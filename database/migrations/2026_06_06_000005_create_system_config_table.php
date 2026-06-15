@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('system_config', function (Blueprint $table) {
+        Schema::create('configuracion_sistema', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('denuncias_advertencia')->default(8);
             $table->unsignedInteger('denuncias_suspension')->default(10);
@@ -19,6 +19,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('system_config');
+        Schema::dropIfExists('configuracion_sistema');
     }
 };

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SystemConfig extends Model
 {
-    protected $table = 'system_config';
+    protected $table = 'configuracion_sistema';
     public $timestamps = false;
 
     protected $fillable = [
