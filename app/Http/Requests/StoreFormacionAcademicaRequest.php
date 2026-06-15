@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreFormacionAcademicaRequest extends FormRequest
 {
@@ -32,7 +33,12 @@ class StoreFormacionAcademicaRequest extends FormRequest
                 'required',
                 'string',
                 'min:5',
-                'max:50'
+                'max:50',
+                Rule::unique('formacion_academica', 'titulo')
+                    ->where(function ($query) {
+                        return $query->where('nivel', request('nivel'));
+                    })
+                    ->ignore($this->route('id'), 'id_formacion_academica')
             ],
 
             'nivel' => [
@@ -55,6 +61,13 @@ class StoreFormacionAcademicaRequest extends FormRequest
                 'string',
                 'max:550'
             ]
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'titulo.unique' => 'Ya existe una formación académica con el mismo título y nivel.'
         ];
     }
 }

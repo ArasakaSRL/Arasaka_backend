@@ -13,6 +13,7 @@ use Mews\Purifier\Facades\Purifier;
 use App\Actions\Proyecto\GetProyectosByPortafolio;
 use App\Http\Requests\Proyecto\UpdateProyectoRequest;
 use Illuminate\Support\Facades\DB;
+use App\Actions\Proyecto\GetProyectoByIdAction;
 
 class ProyectoController extends Controller
 {
@@ -54,9 +55,9 @@ class ProyectoController extends Controller
 
     }
 
-    public function show($id)
+    public function show(GetProyectoByIdAction $action, $id)
     {
-        $proyecto = Proyecto::find($id);
+        $proyecto = $action->execute($id);
 
         if (!$proyecto) {
             return response()->json(['message' => 'Proyecto no encontrado'], 404);
