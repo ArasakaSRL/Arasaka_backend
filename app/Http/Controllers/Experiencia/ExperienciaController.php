@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Experiencia;
 
+use App\Actions\Experiencia\GetExperienciasOrdenadasAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\experiencia\ExperienciaRequest;
 use App\Http\Resources\ExperienciaResource;
@@ -91,6 +92,19 @@ class ExperienciaController extends Controller
 
         return response()->json([
             'message' => 'Experiencia eliminada correctamente'
+        ]);
+    }
+
+    public function timeline(
+        GetExperienciasOrdenadasAction $action,
+        string $idPortafolio
+    ): JsonResponse
+    {
+        $experiencias = $action->execute($idPortafolio);
+
+        return response()->json([
+            'message' => 'Experiencias obtenidas exitosamente',
+            'data' => ExperienciaResource::collection($experiencias)
         ]);
     }
 }

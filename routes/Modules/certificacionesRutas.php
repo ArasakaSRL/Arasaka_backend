@@ -8,6 +8,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('portafolios/{idPortafolio}/certificaciones')->group(function () {
         Route::get('/', [CertificacionController::class, 'index']);
+        
+        Route::get('/timeline', [CertificacionController::class, 'timeline']);
+
         Route::post('/', [CertificacionController::class, 'store']);
         Route::delete('/', [CertificacionController::class, 'deleteByPortafolio']);
         Route::get('/categoria/{idCategoria}', [CertificacionController::class, 'byCategoria']);
