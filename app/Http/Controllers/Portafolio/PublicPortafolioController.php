@@ -48,6 +48,7 @@ class PublicPortafolioController extends Controller
     {
         $query = Portafolio::where('link_activo', true)
             ->where('suspendido', false)
+            ->where('visibilidad', true)
             ->whereHas('usuario', function ($q) {
                 $q->where('estado', true);
             });
