@@ -18,18 +18,18 @@ class EnviarCorreoBrevo extends Controller
     public function enviarCorreo(Request $request)
     {
         $request->validate([
-            'to'         => 'required|email',
-            'from'       => 'required|email',
-            'subject'    => 'required|string',
-            'content'    => 'required|string',
-            'adjuntos'   => 'nullable|array',
-            'adjuntos.*' => 'file|max:10240',
+            'to'               => 'required|email',
+            'from'             => 'required|email',
+            'subject'          => 'required|string',
+            'content'          => 'required|string',
+            'nombre_remitente' => 'nullable|string|max:100',
+            'adjuntos'         => 'nullable|array',
+            'adjuntos.*'       => 'file|max:10240',
         ]);
 
         $usuario = $request->user();
-        $nombreRemitente = $usuario
-            ? trim($usuario->nombre . ' ' . $usuario->apellido)
-            : $request->input('nombre_remitente', 'Usuario externo');
+        $nombreRemitente = $request->input('nombre_remitente')
+            ?? ($usuario ? trim($usuario->nombre . ' ' . $usuario->apellido) : 'Usuario externo');
 
         $destinatario = Usuario::where('correo', $request->to)->first();
 
@@ -71,7 +71,7 @@ class EnviarCorreoBrevo extends Controller
 
     public function recibidos(Request $request)
     {
-        $correo = $request->user()->correo;
+        $correo = $this->resolverCorreo($request);
         $mensajes = $this->mensajeService->recibidos($correo);
 
         return MensajeResource::collection($mensajes);
@@ -79,9 +79,42 @@ class EnviarCorreoBrevo extends Controller
 
     public function enviados(Request $request)
     {
-        $correo = $request->user()->correo;
+        $correo = $this->resolverCorreo($request);
         $mensajes = $this->mensajeService->enviados($correo);
 
+        return MensajeResource::collection($mensajes);
+    }
+
+    private function resolverCorreo(Request $request): string
+    {
+        $idPortafolio = $request->query('id_portafolio');
+
+        if ($idPortafolio) {
+            $portafolio = \App\Models\Portafolio::where('id_portafolio', $idPortafolio)
+                ->where('id_usuario', $request->user()->id_usuario)
+                ->with('informacionBasica')
+                ->first();
+
+            if ($portafolio && $portafolio->informacionBasica?->gmail) {
+                return $portafolio->informacionBasica->gmail;
+            }
+        }
+
+        return $request->user()->correo;
+    }
+
+    public function destacar(Request $request, Mensaje $mensaje)
+    {
+        $idUsuario = $request->user()->id_usuario;
+        $destacado = $this->mensajeService->toggleDestacado($mensaje, $idUsuario);
+
+        return response()->json(['destacado' => $destacado]);
+    }
+
+    public function destacados(Request $request)
+    {
+        $correo = $this->resolverCorreo($request);
+        $mensajes = $this->mensajeService->destacados($request->user()->id_usuario, $correo);
         return MensajeResource::collection($mensajes);
     }
 

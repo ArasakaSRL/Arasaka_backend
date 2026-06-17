@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
+use App\Models\DenunciaPortafolio;
 
 class Portafolio extends Model
 {
@@ -21,6 +22,8 @@ class Portafolio extends Model
         'id_usuario',
         'nombre',
         'visibilidad',
+        'suspendido',
+        'suspendido_hasta',
         'descripcion',
         'slug',
         'fecha_creacion',
@@ -32,6 +35,8 @@ class Portafolio extends Model
 
     protected $casts = [
         'visibilidad' => 'boolean',
+        'suspendido'       => 'boolean',
+        'suspendido_hasta' => 'datetime',
         'fecha_creacion' => 'date',
         'fecha_actualizacion' => 'date',
         'link_activo' => 'boolean',
@@ -76,6 +81,35 @@ class Portafolio extends Model
     public function configuracion()
     {
         return $this->hasOne(ConfiguracionPortafolio::class, 'id_portafolio', 'id_portafolio');
+    }
+
+    public function informacionBasica()
+    {
+        return $this->hasOne(InformacionBasica::class, 'id_portafolio', 'id_portafolio');
+    }
+
+    public function telefonos()
+    {
+        return $this->hasMany(Telefono::class, 'id_portafolio', 'id_portafolio');
+    }
+
+    public function idiomas()
+    {
+        return $this->belongsToMany(Idioma::class, 'portafolio_idioma', 'id_portafolio', 'id_idioma');
+    }
+
+    public function profesiones()
+    {
+        return $this->belongsToMany(Profesion::class, 'portafolio_profesion', 'id_portafolio', 'id_profesion');
+    }
+    public function getRouteKeyName()
+{
+    return 'id_portafolio';
+}
+
+    public function denuncias()
+    {
+        return $this->hasMany(DenunciaPortafolio::class, 'id_portafolio', 'id_portafolio');
     }
 
     public function visualizaciones()

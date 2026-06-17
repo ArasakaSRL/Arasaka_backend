@@ -12,19 +12,16 @@ use App\Services\Proyecto\ProyectoService;
 use Mews\Purifier\Facades\Purifier;
 use App\Actions\Proyecto\GetProyectosByPortafolio;
 use App\Http\Requests\Proyecto\UpdateProyectoRequest;
+use Illuminate\Support\Facades\DB;
+use App\Actions\Proyecto\GetProyectoByIdAction;
 
 class ProyectoController extends Controller
 {
     public function __construct(protected ProyectoService $service){}
 
-    private function getIdPortafolio(){
-        return request()->user()->portafolio->id_portafolio;
-    } 
-
-    public function index(GetProyectosByPortafolio $action, $idPortafolio = null)
+    public function index(GetProyectosByPortafolio $action, $idPortafolio)
     {
-        $proyectos = $idPortafolio ? $action->execute($idPortafolio) : $action->execute($this->getIdPortafolio());
-        //dd(ProyectoResource::collection($proyectos));
+        $proyectos = $action->execute($idPortafolio);
         if ($proyectos) {
             $data = [
                 'message' => 'Proyectos obtenidos exitosamente',
@@ -39,10 +36,9 @@ class ProyectoController extends Controller
         }
     }
 
-    public function store(StoreProyectoRequest $request, CreateProyectoAction $action, $idPortafolio = null)
+    public function store(StoreProyectoRequest $request, CreateProyectoAction $action, $idPortafolio)
     {
-        //dd($request, $idPortafolio);
-        $proyecto = $idPortafolio ? $action->execute($request->validated(), $idPortafolio) : $action->execute($request->validated(), $this->getIdPortafolio());
+        $proyecto = $action->execute($request->validated(), $idPortafolio);
 
         if ($proyecto) {
             $data = [
@@ -59,9 +55,9 @@ class ProyectoController extends Controller
 
     }
 
-    public function show($id)
+    public function show(GetProyectoByIdAction $action, $id)
     {
-        $proyecto = Proyecto::find($id);
+        $proyecto = $action->execute($id);
 
         if (!$proyecto) {
             return response()->json(['message' => 'Proyecto no encontrado'], 404);
@@ -104,8 +100,10 @@ class ProyectoController extends Controller
                 return response()->json(['message' => 'No autorizado para eliminar este proyecto'], 403);
             } */
     
+            DB::table('interaccion_proyecto')->where('id_proyecto', $id)->delete();
+
             $proyecto->delete();
-    
+
             return response()->json(['message' => 'Proyecto eliminado exitosamente'], 200);
         }
 }

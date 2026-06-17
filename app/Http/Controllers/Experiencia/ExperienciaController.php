@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Experiencia;
 
+use App\Actions\Experiencia\GetExperienciasOrdenadasAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\experiencia\ExperienciaRequest;
 use App\Http\Resources\ExperienciaResource;
 use App\Services\Experiencia\ExperienciaService;
 use Illuminate\Http\JsonResponse;
-
+use App\Http\Requests\experiencia\EliminarExperienciaRequest;
 class ExperienciaController extends Controller
 {
     protected ExperienciaService $service;
@@ -17,25 +18,20 @@ class ExperienciaController extends Controller
         $this->service = $service;
     }
 
-    private function getPortafolioId()
+    public function index(string $idPortafolio): JsonResponse
     {
-        return auth()->user()->portafolio->id_portafolio;
-    }
-
-    public function index(): JsonResponse
-    {
-        $data = $this->service->listByPortafolio($this->getPortafolioId());
+        $data = $this->service->listByPortafolio($idPortafolio);
 
         return response()->json([
             'data' => ExperienciaResource::collection($data)
         ]);
     }
 
-    public function show(string $id): JsonResponse
+    public function show(string $idPortafolio, string $id): JsonResponse
     {
         $exp = $this->service->find($id);
 
-        if ($exp->id_portafolio !== $this->getPortafolioId()) {
+        if ($exp->id_portafolio !== $idPortafolio) {
             abort(403, 'No autorizado');
         }
 
@@ -44,11 +40,11 @@ class ExperienciaController extends Controller
         ]);
     }
 
-    public function store(ExperienciaRequest $request): JsonResponse
+    public function store(ExperienciaRequest $request, string $idPortafolio): JsonResponse
     {
         $exp = $this->service->create(
             $request->validated(),
-            $this->getPortafolioId()
+            $idPortafolio
         );
 
         return response()->json([
@@ -57,11 +53,11 @@ class ExperienciaController extends Controller
         ], 201);
     }
 
-    public function update(ExperienciaRequest $request, string $id): JsonResponse
+    public function update(ExperienciaRequest $request, string $idPortafolio, string $id): JsonResponse
     {
         $exp = $this->service->find($id);
 
-        if ($exp->id_portafolio !== $this->getPortafolioId()) {
+        if ($exp->id_portafolio !== $idPortafolio) {
             abort(403, 'No autorizado');
         }
 
@@ -72,12 +68,23 @@ class ExperienciaController extends Controller
             'data' => new ExperienciaResource($exp)
         ]);
     }
+    public function destroyMultiple(EliminarExperienciaRequest $request): JsonResponse
+    {
+    $totalEliminadas = $this->service->deleteMultiple(
+        $request->ids
+    );
 
-    public function destroy(string $id): JsonResponse
+    return response()->json([
+        'message' => 'Experiencias eliminadas correctamente',
+        'total_eliminadas' => $totalEliminadas
+    ]);
+    } 
+
+    public function destroy(string $idPortafolio, string $id): JsonResponse
     {
         $exp = $this->service->find($id);
 
-        if ($exp->id_portafolio !== $this->getPortafolioId()) {
+        if ($exp->id_portafolio !== $idPortafolio) {
             abort(403, 'No autorizado');
         }
 
@@ -85,6 +92,19 @@ class ExperienciaController extends Controller
 
         return response()->json([
             'message' => 'Experiencia eliminada correctamente'
+        ]);
+    }
+
+    public function timeline(
+        GetExperienciasOrdenadasAction $action,
+        string $idPortafolio
+    ): JsonResponse
+    {
+        $experiencias = $action->execute($idPortafolio);
+
+        return response()->json([
+            'message' => 'Experiencias obtenidas exitosamente',
+            'data' => ExperienciaResource::collection($experiencias)
         ]);
     }
 }

@@ -28,7 +28,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'correo'   => ['required', 'string', 'email'],
+            'correo'   => ['required_without:username', 'nullable', 'string', 'email'],
+            'username' => ['required_without:correo', 'nullable', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -42,7 +43,11 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['correo' => $this->correo, 'password' => $this->password], $this->boolean('remember'))) {
+        $credentials = $this->input('username')
+            ? ['username' => $this->username, 'password' => $this->password]
+            : ['correo'   => $this->correo,   'password' => $this->password];
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -78,9 +83,14 @@ class LoginRequest extends FormRequest
 
     /**
      * Get the rate limiting throttle key for the request.
+     * sirve para identificar de manera única a un usuario que está intentando iniciar sesión,
+     *  combinando su correo electrónico o nombre de usuario con su dirección IP.
+     *  Esto ayuda a prevenir ataques de fuerza bruta al limitar la cantidad de intentos
+     *  de inicio de sesión que un usuario puede realizar en un período de tiempo determinado.
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->input('correo')).'|'.$this->ip());
+        $identifier = $this->input('correo') ?? $this->input('username');
+        return Str::transliterate(Str::lower($identifier) . '|' . $this->ip());
     }
 }

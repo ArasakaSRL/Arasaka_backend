@@ -15,10 +15,14 @@ class ConfiguracionPortafolioResource extends JsonResource
         'mostrar_experiencias' => $this->mostrar_experiencia,
         'mostrar_servicios' => $this->mostrar_servicios,
         'mostrar_certificaciones' => $this->mostrar_certificaciones,
+        'mostrar_redes_profesionales' => $this->mostrar_redes_profesionales,
+        'mostrar_cv' => $this->mostrar_cv,
+        'mostrar_contacto' => $this->mostrar_contacto,
 
         'paleta_colores' => $this->paleta_colores,
 
         'visibilidad' => $this->portafolio?->visibilidad,
+        'plantilla' => $this->plantilla,
     ];
 }
 }

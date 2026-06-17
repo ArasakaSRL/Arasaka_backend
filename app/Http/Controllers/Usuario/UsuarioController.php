@@ -10,6 +10,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
+use Illuminate\Support\Facades\Hash;
+
 class UsuarioController extends Controller
 {
     public function __construct(protected ProfesionService $profesionService) {}
@@ -98,10 +100,14 @@ class UsuarioController extends Controller
     public function actualizarInformacion(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'nombre'   => 'sometimes|required|string|max:50',
-            'apellido' => 'sometimes|required|string|max:50',
-            'biografia' => 'sometimes|required|string|max:550',
-            'correo'    => 'sometimes|required|email|max:255',
+            'nombre'    => 'sometimes|required|string|max:50',
+            'apellido'  => 'sometimes|required|string|max:50',
+            'correo'    => 'sometimes|required|email|max:255|unique:usuario,correo,' . $request->user()->id_usuario . ',id_usuario',
+            'username'  => 'sometimes|required|string|alpha_num|max:50|unique:usuario,username,' . $request->user()->id_usuario . ',id_usuario',
+        ], [
+            'correo.unique'   => 'Este correo ya está en uso.',
+            'username.unique' => 'Este nombre de usuario ya está en uso.',
+            'username.alpha_num' => 'El nombre de usuario solo puede contener letras y números.',
         ]);
 
         $request->user()->update($data);
@@ -172,5 +178,52 @@ class UsuarioController extends Controller
         $telefono->update($data);
 
         return response()->json(['message' => 'Teléfono actualizado correctamente', 'data' => $telefono->fresh()]);
+    }
+
+    // PATCH /usuario/contrasena
+    public function cambiarContrasena(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'contrasena_actual' => 'required|string',
+            'contrasena_nueva'  => ['required', 'string', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        if (!Hash::check($data['contrasena_actual'], $request->user()->password)) {
+            return response()->json(['message' => 'La contraseña actual es incorrecta.'], 422);
+        }
+
+        $request->user()->update(['password' => Hash::make($data['contrasena_nueva'])]);
+
+        return response()->json(['message' => 'Contraseña actualizada correctamente']);
+    }
+
+    // POST /usuario/completar-perfil
+    public function completarPerfil(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->password !== null && $user->username !== null && $user->correo !== null) {
+            return response()->json(['message' => 'El perfil ya está completo.'], 422);
+        }
+
+        $data = $request->validate([
+            'password' => ['required', 'string', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ], [
+            'password.required'  => 'La contraseña es obligatoria.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+        ]);
+
+        $user->update([
+            'password' => Hash::make($data['password']),
+        ]);
+
+        return response()->json(['message' => 'Perfil completado correctamente.']);
+    }
+
+    // PATCH /usuario/tour
+    public function completarTour(Request $request): JsonResponse
+    {
+        $request->user()->update(['tour_completado' => true]);
+        return response()->json(['message' => 'Tour completado.']);
     }
 }

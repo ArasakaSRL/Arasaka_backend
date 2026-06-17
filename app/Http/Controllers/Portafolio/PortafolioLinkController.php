@@ -12,9 +12,11 @@ use Illuminate\Validation\Rule;
 class PortafolioLinkController extends Controller
 {
 
-    public function show()
+    public function show(string $slug)
     {
-        $portafolio = Portafolio::where('id_usuario', auth()->id())->first();
+        $portafolio = Portafolio::where('id_usuario', auth()->id())
+            ->where('slug', $slug)
+            ->first();
 
         if (!$portafolio) {
             return response()->json(['mensaje' => 'Portafolio no encontrado'], 404);
@@ -23,12 +25,13 @@ class PortafolioLinkController extends Controller
         return response()->json($this->formatear($portafolio));
     }
 
-    public function generar(Request $request)
+    public function generar(Request $request, string $slug)
     {
-       
         $usuario = Usuario::find(auth()->id());
 
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->first();
+        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)
+            ->where('slug', $slug)
+            ->first();
 
         if (!$portafolio) {
             return response()->json(['mensaje' => 'Portafolio no encontrado'], 404);

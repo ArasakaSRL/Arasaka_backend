@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ConfiguracionPortafolio;
+use App\Models\InformacionBasica;
 use App\Models\Portafolio;
 use App\Models\Usuario;
+use App\Models\VisualizacionesPortafolio;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +25,11 @@ class FirebaseAuthController extends Controller
         ]);
 
         try {
-            $verifiedToken = Firebase::auth()->verifyIdToken($request->id_token);
+            // El hosting compartido puede tener el reloj desfasado respecto a la hora real,
+            // lo que hace que Firebase vea el token como "emitido en el futuro".
+            // El leeway (en segundos) tolera ese desfase de reloj.
+            $leeway = (int) config('firebase.token_leeway', 60);
+            $verifiedToken = Firebase::auth()->verifyIdToken($request->id_token, false, $leeway);
 
             $uid      = $verifiedToken->claims()->get('sub');
             $correo   = $verifiedToken->claims()->get('email') ?? $request->input('correo');
@@ -40,7 +47,9 @@ class FirebaseAuthController extends Controller
                 ], 422);
             }
 
-            $usuario = Usuario::where('correo', $correo)->first();
+            $usuario = Usuario::where('firebase_uid', $uid)
+                ->orWhere('correo', $correo)
+                ->first();
 
             if ($usuario) {
                 // Registrado con correo y contraseña
@@ -72,15 +81,21 @@ class FirebaseAuthController extends Controller
                 $usuario = Usuario::create([
                     'nombre'             => $nombre,
                     'apellido'           => $apellido,
+                    'username'           => null,
                     'correo'             => $correo,
+                    'password'           => null,
                     'firebase_uid'       => $uid,
                     'provider'           => $provider,
                     'url_foto'           => $url_foto,
                     'verificacion_email' => now(),
                     'estado'             => true,
+                    'rol'                => 'user',
+                    'suspendido'         => false,
                 ]);
+                $idPortafolio = (string) Str::uuid();
+
                 Portafolio::create([
-                    'id_portafolio'         => (string) Str::uuid(),
+                    'id_portafolio'         => $idPortafolio,
                     'id_usuario'            => $usuario->id_usuario,
                     'nombre'                => trim($nombre . ' ' . $apellido),
                     'visibilidad'           => true,
@@ -90,6 +105,42 @@ class FirebaseAuthController extends Controller
                     'fecha_creacion'        => now(),
                     'fecha_actualizacion'   => now(),
                 ]);
+
+                ConfiguracionPortafolio::create([
+                    'id_portafolio'           => $idPortafolio,
+                    'mostrar_proyecto'        => true,
+                    'mostrar_habilidades'     => true,
+                    'mostrar_experiencia'     => true,
+                    'mostrar_certificaciones' => true,
+                    'mostrar_servicios'       => true,
+                    'paleta_colores'          => json_encode([
+                        'primary'   => '#000000',
+                        'secondary' => '#ffffff',
+                    ]),
+                ]);
+
+                VisualizacionesPortafolio::create([
+                    'id_portafolio' => $idPortafolio,
+                    'fecha'         => now()->toDateString(),
+                ]);
+
+                InformacionBasica::create([
+                    'id_informacion_basica' => (string) Str::uuid(),
+                    'id_portafolio'         => $idPortafolio,
+                    'nombre_completo'       => trim($nombre . ' ' . $apellido),
+                    'gmail'                 => $correo,
+                    'pais'                  => null,
+                    'foto_perfil'           => $url_foto,
+                    'biografia'             => null,
+                ]);
+            }
+
+            if ($usuario->suspendido && $usuario->suspendido_hasta?->isFuture()) {
+                return response()->json([
+                    'suspended'        => true,
+                    'message'          => 'Tu cuenta está suspendida.',
+                    'suspendido_hasta' => $usuario->suspendido_hasta->toIso8601String(),
+                ], 403);
             }
 
             Auth::login($usuario);

@@ -3,73 +3,57 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Portafolio;
 use App\Models\Usuario;
-use Illuminate\Auth\Events\Registered;
+use App\Notifications\CodigoRegistroNotification;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws ValidationException
-     */
-    public function store(Request $request): Response
+    public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'nombre'                    => ['required', 'string', 'max:255'],
-            'apellido'                  => ['required', 'string', 'max:255'],
-            'correo'                    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:usuario,correo'],
-            'password'                  => ['required', 'confirmed', Rules\Password::defaults()],
-            'biografia'                 => ['nullable', 'string'],
-            'url_foto'                  => ['nullable', 'string', 'url', 'max:500'],
-            'estado'                    => ['nullable', 'boolean'],
-            'verificacion_email'        => ['nullable', 'date'],
-            'portafolio.nombre'         => ['nullable', 'string', 'max:255'],
-            'portafolio.descripcion'    => ['nullable', 'string'],
-            'portafolio.visibilidad'    => ['nullable', 'boolean'],
+            'nombre'                 => ['required', 'string', 'max:255'],
+            'apellido'               => ['required', 'string', 'max:255'],
+            'correo'                 => ['required', 'string', 'lowercase', 'email', 'max:255'],
+            'password'               => ['required', 'confirmed', Rules\Password::defaults()],
+            'url_foto'               => ['nullable', 'string', 'url', 'max:500'],
+            'pais'                   => ['nullable', 'string', 'max:100'],
+            'portafolio.nombre'      => ['nullable', 'string', 'max:255'],
+            'portafolio.descripcion' => ['nullable', 'string'],
+            'portafolio.visibilidad' => ['nullable', 'boolean'],
         ]);
 
-        $usuario = Usuario::create([
-            'nombre'             => $request->nombre,
-            'apellido'           => $request->apellido,
-            'correo'             => $request->correo,
-            'password'           => Hash::make($request->string('password')),
-            'biografia'          => $request->biografia,
-            'url_foto'           => $request->url_foto,
-            'estado'             => $request->estado,
-            'verificacion_email' => null,
+        $usuarioExistente = Usuario::where('correo', $request->correo)->first();
+
+        if ($usuarioExistente && $usuarioExistente->hasVerifiedEmail()) {
+            throw ValidationException::withMessages([
+                'correo' => ['Este correo ya está en uso.'],
+            ]);
+        }
+
+        $codigo = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        $request->session()->put('registro_pendiente', [
+            'nombre'     => $request->nombre,
+            'apellido'   => $request->apellido,
+            'correo'     => $request->correo,
+            'password'   => $request->string('password'),
+            'url_foto'   => $request->url_foto,
+            'pais'       => $request->input('pais'),
+            'portafolio' => $request->input('portafolio', []),
+            'codigo'     => $codigo,
+            'expira'     => now()->addMinutes(5)->toIso8601String(),
         ]);
 
-        $portafolioData = $request->input('portafolio', []);
-        Portafolio::create([
-            'id_portafolio'         => (string) Str::uuid(),
-            'id_usuario'            => $usuario->id_usuario,
-            'nombre'                => $portafolioData['nombre'] ?? $request->nombre . ' ' . $request->apellido,
-            'descripcion'           => $portafolioData['descripcion'] ?? null,
-            'visibilidad'           => $portafolioData['visibilidad'] ?? true,
-            'link_activo'           => true,
-            'duracion_link'         => 'sin_limite',
-            'fecha_expiracion_link' => null,
-            'fecha_creacion'        => now(),
-            'fecha_actualizacion'   => now(),
+        Notification::route('mail', $request->correo)
+            ->notify(new CodigoRegistroNotification($codigo, $request->nombre));
+
+        return response()->json([
+            'message' => 'Codigo de verificacion enviado a tu correo.',
         ]);
-
-        event(new Registered($usuario));
-
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        Auth::login($usuario);
-
-        return response()->noContent();
     }
 }

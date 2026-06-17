@@ -7,6 +7,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Portafolio;
+use App\Models\Usuario;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReporteAnaliticasMail;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class HeatmapController extends Controller
 {
@@ -330,12 +334,23 @@ class HeatmapController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    private function resolverPortafolio(Request $request): Portafolio
+    {
+        $usuario = $request->user();
+        $idPortafolio = $request->query('id_portafolio');
+
+        if ($idPortafolio) {
+            return Portafolio::where('id_portafolio', $idPortafolio)
+                ->where('id_usuario', $usuario->id_usuario)
+                ->firstOrFail();
+        }
+
+        return Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+    }
+
     public function getVisitantes(Request $request): JsonResponse
     {
-        $usuario = $request->user();  // ← faltaba el punto y coma
-
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)
-            ->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
 
         $datos = DB::select("
             SELECT
@@ -354,19 +369,7 @@ class HeatmapController extends Controller
 
     public function getInteraccionesPerfil(Request $request): JsonResponse
     {
-        $usuario = $request->user();
-
-        \Log::info('Usuario autenticado:', [
-            'id_usuario' => $usuario->id_usuario,
-            'nombre'     => $usuario->nombre,
-        ]);
-
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)
-            ->firstOrFail();
-
-        \Log::info('Portfolio encontrado:', [
-            'id_portafolio' => $portafolio->id_portafolio,
-        ]);
+        $portafolio = $this->resolverPortafolio($request);
 
         $datos = DB::select("
             SELECT
@@ -390,8 +393,7 @@ class HeatmapController extends Controller
 
     public function getInteraccionesHabilidadesTecnicas(Request $request): JsonResponse
     {
-        $usuario    = $request->user();
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
 
         $datos = DB::select("
             SELECT
@@ -408,8 +410,7 @@ class HeatmapController extends Controller
 
     public function getVisitasPorMes(Request $request): JsonResponse
     {
-        $usuario    = $request->user();
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
 
         $datos = DB::select("
             SELECT
@@ -429,8 +430,7 @@ class HeatmapController extends Controller
 
     public function getCrecimientoMensual(Request $request): JsonResponse
     {
-        $usuario    = $request->user();
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
 
         // visitantes únicos acumulados por mes
         $datos = DB::select("
@@ -576,31 +576,31 @@ class HeatmapController extends Controller
 
     public function getClicsTecnicas(Request $request): JsonResponse
     {
-        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
         return response()->json($this->getClicsFromTable('clic_habilidad_tecnica', $portafolio->id_portafolio));
     }
 
     public function getClicsBlandas(Request $request): JsonResponse
     {
-        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
         return response()->json($this->getClicsFromTable('clic_habilidad_blanda', $portafolio->id_portafolio));
     }
 
     public function getClicsExperiencia(Request $request): JsonResponse
     {
-        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
         return response()->json($this->getClicsFromTable('clic_experiencia', $portafolio->id_portafolio));
     }
 
     public function getClicsProyecto(Request $request): JsonResponse
     {
-        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
         return response()->json($this->getClicsFromTable('clic_proyecto', $portafolio->id_portafolio));
     }
 
     public function getClicsCertificacion(Request $request): JsonResponse
     {
-        $portafolio = Portafolio::where('id_usuario', $request->user()->id_usuario)->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
         return response()->json($this->getClicsFromTable('clic_certificacion', $portafolio->id_portafolio));
     }
 
@@ -634,9 +634,7 @@ class HeatmapController extends Controller
 
     public function getClicsPerfil(Request $request): JsonResponse
     {
-        $usuario    = $request->user();
-        $portafolio = Portafolio::where('id_usuario', $usuario->id_usuario)
-            ->firstOrFail();
+        $portafolio = $this->resolverPortafolio($request);
 
         $clics = DB::select("
             SELECT cp.campo, cp.x, cp.y, COUNT(*) as intensidad
@@ -649,5 +647,137 @@ class HeatmapController extends Controller
 
         return response()->json($clics);
     }
+public function enviarReportePdf(Request $request)
+{
+    $portafolio = $this->resolverPortafolio($request);
+    $id_portafolio = $portafolio->id_portafolio;
+
+    // 1. Capturar la fecha en formato 'd-m-Y' (por ejemplo: 08-06-2026)
+    $fechaInput = $request->input('fecha_corte');
+
+    if ($fechaInput) {
+        // Parsear la fecha asegurando el formato exacto del front
+        $fechaObjeto = \Carbon\Carbon::createFromFormat('d-m-Y', $fechaInput);
+    } else {
+        $fechaObjeto = now();
+    }
+
+    // Definir estrictamente los límites del mes elegido (Evita mezclar datos de otros meses)
+    $fechaInicio = $fechaObjeto->copy()->startOfMonth()->startOfDay(); 
+    $fechaFin    = $fechaObjeto->copy()->endOfMonth()->endOfDay();     
+
+    // Capturar los switches del Frontend (Agregado 'perfil')
+    $filtros = [
+        'vistas'    => $request->input('incluir_vistas', true),
+        'perfil'    => $request->input('incluir_perfil', true), // <-- NUEVO FILTRO
+        'proyectos' => $request->input('incluir_proyectos', true),
+        'mensajes'  => $request->input('incluir_messages', true), // Mapeado como llega del Front
+        'cv'        => $request->input('incluir_cv', true),
+    ];
+
+    // 2. Resumen General de Tráfico (Vistas) ESTRICTAMENTE de ese mes
+    $visitantes = null;
+    if ($filtros['vistas']) {
+        $visitantes = DB::selectOne("
+            SELECT
+                COUNT(*) AS total_visitantes,
+                COUNT(CASE WHEN primera_visita = ultima_visita THEN 1 END) AS visitantes_nuevos,
+                COUNT(CASE WHEN primera_visita <> ultima_visita THEN 1 END) AS visitantes_recurrentes,
+                MAX(ultima_visita) AS ultima_visita
+            FROM visitante 
+            WHERE id_portafolio = ? 
+              AND primera_visita BETWEEN ? AND ?
+        ", [$id_portafolio, $fechaInicio, $fechaFin]);
+    }
+
+    // 3. Métricas de Perfil ESTRICTAMENTE de ese mes (Solo si se requiere procesar)
+    $perfil = null;
+    if ($filtros['perfil']) {
+        $perfil = DB::selectOne("
+            SELECT
+                COALESCE(SUM(ip.hover_foto_count),0) AS hover_foto_count,
+                COALESCE(SUM(ip.hover_foto_ms),0) AS hover_foto_ms,
+                COALESCE(SUM(ip.hover_correo_count),0) AS hover_correo_count,
+                COALESCE(SUM(ip.hover_correo_ms),0) AS hover_correo_ms,
+                COALESCE(SUM(ip.clic_foto_perfil),0) AS clic_foto_perfil,
+                COALESCE(SUM(ip.clic_correo),0) AS clic_correo,
+                COALESCE(SUM(ip.clic_linkedin),0) AS clic_linkedin,
+                COALESCE(SUM(ip.clic_github),0) AS clic_github,
+                COALESCE(SUM(ip.clic_contactar),0) AS clic_contactar,
+                COALESCE(SUM(ip.clic_descargar_cv),0) AS clic_descargar_cv
+            FROM interaccion_perfil ip
+            JOIN visitante v ON v.id_visitante = ip.id_visitante
+            WHERE v.id_portafolio = ? 
+              AND v.primera_visita BETWEEN ? AND ?
+        ", [$id_portafolio, $fechaInicio, $fechaFin]);
+    }
+
+    // 4. Datos de Proyectos y Habilidades (Zonas Calientes) ESTRICTAMENTE de ese mes
+    $clicsProyectos = [];
+    $tecnicas = null;
+    if ($filtros['proyectos']) {
+        $tecnicas = DB::selectOne("
+            SELECT
+                COALESCE(SUM(iht.clic_expandir),0) AS clic_expandir,
+                COALESCE(SUM(iht.clic_cerrar),0) AS clic_cerrar
+            FROM interaccion_habilidad_tecnica iht
+            JOIN visitante v ON v.id_visitante = iht.id_visitante
+            WHERE v.id_portafolio = ? 
+              AND v.primera_visita BETWEEN ? AND ?
+        ", [$id_portafolio, $fechaInicio, $fechaFin]);
+
+        $clicsProyectos = DB::select("
+            SELECT cp.campo, COUNT(*) as intensidad
+            FROM clic_proyecto cp
+            JOIN visitante v ON v.id_visitante = cp.id_visitante
+            WHERE v.id_portafolio = ? 
+              AND v.primera_visita BETWEEN ? AND ?
+            GROUP BY cp.campo ORDER BY intensidad DESC LIMIT 5
+        ", [$id_portafolio, $fechaInicio, $fechaFin]);
+    }
+
+    // Top coordenadas perfil ESTRICTAMENTE de ese mes
+    $clicsPerfil = [];
+    if ($filtros['perfil']) {
+        $clicsPerfil = DB::select("
+            SELECT cp.campo, COUNT(*) as intensidad
+            FROM clic_perfil cp
+            JOIN visitante v ON v.id_visitante = cp.id_visitante
+            WHERE v.id_portafolio = ? 
+              AND v.primera_visita BETWEEN ? AND ?
+            GROUP BY cp.campo ORDER BY intensidad DESC LIMIT 5
+        ", [$id_portafolio, $fechaInicio, $fechaFin]);
+    }
+
+    // 5. Renderizar el PDF pasando las variables de rango de tiempo
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reportes.analiticas', compact(
+        'portafolio', 
+        'visitantes', 
+        'perfil', 
+        'tecnicas', 
+        'clicsPerfil', 
+        'clicsProyectos',
+        'filtros',
+        'fechaInicio',
+        'fechaFin'
+    ));
+
+    $fileName = 'reporte_analytics_mes_' . $fechaObjeto->format('m_Y') . '.pdf';
+
+    if ($request->has('enviar_email') && $request->input('enviar_email') == 'true') {
+        $destinatario = $request->input('email', auth()->user()->email ?? null);
+
+        if (!$destinatario) {
+            return response()->json(['error' => 'No se especificó un correo electrónico válido.'], 422);
+        }
+
+        $pdfData = $pdf->output();
+        Mail::to($destinatario)->send(new ReporteAnaliticasMail($portafolio, $pdfData, $fileName));
+
+        return response()->json(['success' => 'El reporte filtrado ha sido enviado con éxito a ' . $destinatario]);
+    }
+
+    return $pdf->download($fileName);
+}
 }
 

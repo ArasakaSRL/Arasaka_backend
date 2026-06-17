@@ -3,9 +3,54 @@
 namespace App\Services\Portafolio;
 
 use App\Models\Portafolio;
-
+use App\Actions\Portafolio\CrearPortafolioAction;
+use App\Actions\Portafolio\EliminarPortafolioAction;
+use App\Actions\Portafolio\ActualizarPortafolioAction;
+use Illuminate\Http\Exceptions\HttpResponseException;
 class PortafolioService
 {
+    
+    public function __construct(
+        protected CrearPortafolioAction $crearAction,
+        protected ActualizarPortafolioAction $actualizarAction,
+        protected EliminarPortafolioAction $eliminarAction,
+    ) {}
+
+    public function crear(
+        array $datos,
+        string $idUsuario
+    ): Portafolio {
+         $existe = Portafolio::whereRaw(
+            'LOWER(nombre) = ? AND id_usuario = ?',
+            [strtolower(trim($datos['nombre'])), $idUsuario]
+        )->exists();
+        if ($existe) {
+            throw new HttpResponseException(response()->json([
+                'success' => false,
+                'message' => 'Ya tienes un portafolio con ese nombre. Por favor elige otro nombre.',
+                'data' => null
+            ], 422));
+        }
+        return $this->crearAction
+            ->ejecutar($datos, $idUsuario);
+    }
+
+    public function actualizar(
+        Portafolio $portafolio,
+        array $datos
+    ): Portafolio {
+
+        return $this->actualizarAction
+            ->ejecutar($portafolio, $datos);
+    }
+
+    public function eliminar(
+        Portafolio $portafolio
+    ): void {
+
+        $this->eliminarAction
+            ->ejecutar($portafolio);
+    }
     public function obtenerPublicoPorSlug(string $slug)
     {
         return Portafolio::query()
@@ -27,10 +72,11 @@ class PortafolioService
     private function relacionesCompletas(): array
     {
         return [
-            'usuario.telefonos',
-            'usuario.pais',
-            'usuario.profesiones',
-            'usuario.idiomas',
+            'usuario',
+            'informacionBasica',
+            'telefonos',
+            'profesiones',
+            'idiomas',
 
             'proyectos.estados',
             'proyectos.imagenes',
@@ -46,4 +92,6 @@ class PortafolioService
             'configuracion',
         ];
     }
+
+    
 }

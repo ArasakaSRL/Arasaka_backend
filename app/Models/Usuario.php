@@ -21,11 +21,17 @@ class Usuario extends Authenticatable implements MustVerifyEmail
     protected $keyType = 'string';
 
     protected $fillable = [
-        'nombre', 'apellido', 'correo', 'password',
-        'biografia', 'url_foto', 'public_id', 'estado', 'verificacion_email', 'firebase_uid', 'provider',
+        'nombre', 'apellido', 'username', 'correo', 'password',
+        'url_foto', 'public_id', 'estado', 'rol', 'suspendido', 'suspendido_hasta', 'tour_completado',
+        'verificacion_email', 'firebase_uid', 'provider',
     ];
 
     protected $hidden = ['password'];
+
+    protected $casts = [
+        'suspendido'       => 'boolean',
+        'suspendido_hasta' => 'datetime',
+    ];
 
     protected static function boot()
     {
@@ -35,6 +41,11 @@ class Usuario extends Authenticatable implements MustVerifyEmail
                 $model->id_usuario = (string) Str::uuid();
             }
         });
+    }
+
+    public function routeNotificationForMail(): string
+    {
+        return $this->correo;
     }
 
     public function sendEmailVerificationNotification()
@@ -67,9 +78,9 @@ class Usuario extends Authenticatable implements MustVerifyEmail
         $this->notify(new RestablecerContrasenaNotification($token));
     }
 
-    public function roles()
+    public function esAdmin(): bool
     {
-        return $this->belongsToMany(Rol::class, 'usuario_rol', 'id_usuario', 'id_rol');
+        return $this->rol === 'admin';
     }
 
     public function telefonos()
@@ -82,17 +93,8 @@ class Usuario extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Pais::class, 'id_usuario');
     }
 
-    public function profesiones()
+    public function portafolios()
     {
-        return $this->belongsToMany(Profesion::class, 'usuario_profesion', 'id_usuario', 'id_profesion');
+        return $this->hasMany(Portafolio::class, 'id_usuario', 'id_usuario');
     }
-
-    public function idiomas()
-    {
-        return $this->belongsToMany(Idioma::class, 'usuario_idioma', 'id_usuario', 'id_idioma');
-    }
-    public function portafolio()
-{
-    return $this->hasOne(Portafolio::class, 'id_usuario', 'id_usuario');
-}
 }

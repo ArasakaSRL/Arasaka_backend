@@ -18,18 +18,18 @@ class PublicPortafolioResource extends JsonResource
 
             'usuario' => [
                 'id' => $this->usuario?->id_usuario,
-                'nombre' => $this->usuario?->nombre,
-                'apellido' => $this->usuario?->apellido,
-                'correo' => $this->usuario?->correo,
-                'biografia' => $this->usuario?->biografia,
-                'foto_perfil' => $this->usuario?->url_foto,
-                'telefonos' => $this->usuario?->telefonos->map(fn($t) => [
+                'nombre' => $this->informacionBasica?->nombre_completo ?? ($this->usuario?->nombre . ' ' . $this->usuario?->apellido),
+                'correo' => $this->informacionBasica?->gmail ?? $this->usuario?->correo,
+                'biografia' => $this->informacionBasica?->biografia,
+                'foto_perfil' => $this->informacionBasica?->foto_perfil ?? $this->usuario?->url_foto,
+                'pais' => $this->informacionBasica?->pais,
+                'telefonos' => $this->telefonos->map(fn($t) => [
                     'numero' => $t->telefono,
                 ]),
-                'pais' => $this->usuario?->pais?->nombre,
-                'profesiones' => $this->usuario?->profesiones,
-                'idiomas' => $this->usuario?->idiomas,
+                'profesiones' => $this->profesiones,
+                'idiomas' => $this->idiomas,
             ],
+            'informacion_basica' => $this->informacionBasica,
 
             'proyectos' => $this->proyectos ->take(5) -> map(fn($p) => [
                 'id_proyecto' => $p->id_proyecto,
@@ -114,7 +114,10 @@ class PublicPortafolioResource extends JsonResource
                 'mostrar_servicios' => $this->configuracion->mostrar_servicios,
                 'mostrar_certificaciones' => $this->configuracion->mostrar_certificaciones,
                 'mostrar_redes_profesionales' => $this->configuracion->mostrar_redes_profesionales,
+                'mostrar_cv' => $this->configuracion->mostrar_cv,
+                'mostrar_contacto' => $this->configuracion->mostrar_contacto,
                 'paleta_colores' => $this->configuracion->paleta_colores,
+                'plantilla' => $this->configuracion->plantilla ?? 'predeterminado',
             ] : null,
         ];
     }
