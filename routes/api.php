@@ -52,3 +52,6 @@ require __DIR__ . "/Modules/asistenteRutas.php";
 require __DIR__ . "/Modules/portafoliosRutas.php";
 require __DIR__ . "/Modules/AdminRutas.php";
 require __DIR__ . "/Modules/formacionAcademica.php";
+
+require __DIR__ . "/Modules/interaccionesRutas.php";
+require __DIR__ . "/Modules/visitantesRutas.php";
