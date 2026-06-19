@@ -5,7 +5,7 @@ use App\Http\Controllers\Admin\DenunciaAdminController;
 use App\Http\Controllers\Admin\SystemConfigController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
+Route::middleware(['auth:sanctum', 'admin'])->prefix('/admin')->group(function () {
     Route::get('/users', [AdminController::class, 'indexAllUsuarios'])->name('users.index');
 
     // Denuncias y suspensiones

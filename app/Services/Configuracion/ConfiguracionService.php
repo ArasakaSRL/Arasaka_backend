@@ -4,7 +4,7 @@ namespace App\Services\Configuracion;
 
 use App\Models\ConfiguracionPortafolio;
 use App\Models\Portafolio;
-
+use App\Models\Proyecto;
 class ConfiguracionService
 {
     public function getByPortafolio($id_portafolio)
@@ -33,6 +33,10 @@ public function update($id_portafolio, $data)
         Portafolio::where('id_portafolio', $id_portafolio)
             ->update([
                 'visibilidad' => $data['visibilidad']
+            ]);
+        Proyecto::where('id_portafolio', $id_portafolio)
+            ->update([
+                'visible' => $data['visibilidad']
             ]);
 
         unset($data['visibilidad']);

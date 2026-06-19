@@ -45,6 +45,7 @@
         Devlinked Platform - Documento de Analíticas Internas - Página <span class="page-number"></span>
     </footer>
 
+    {{-- 1. SECCIÓN VISTAS GENERALES --}}
     @if($filtros['vistas'])
         <h2>Resumen General de Tráfico (Vistas del Mes)</h2>
         <table class="summary-box">
@@ -69,56 +70,60 @@
         </p>
     @endif
 
-    <h2>Interacciones Detalladas del Perfil</h2>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Elemento de Interacción</th>
-                <th class="text-right">Total Eventos / Clics</th>
-                <th class="text-right">Tiempo Total de Retención (Hover)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><strong>Fotografía de Perfil</strong></td>
-                <td class="text-right highlight">{{ number_format($perfil->clic_foto_perfil ?? 0) }}</td>
-                <td class="text-right">{{ number_format(($perfil->hover_foto_ms ?? 0) / 1000, 2) }} s ({{ number_format($perfil->hover_foto_count ?? 0) }} hovers)</td>
-            </tr>
-            
-            @if($filtros['mensajes'])
-            <tr>
-                <td><strong>Botón de Acción "Contactar" (Mensajes)</strong></td>
-                <td class="text-right highlight">{{ number_format($perfil->clic_contactar ?? 0) }}</td>
-                <td class="text-right" style="color: #ccc;">N/A</td>
-            </tr>
-            @endif
+    {{-- 2. SECCIÓN INTERACCIONES DETALLADAS (Opcional según Filtro) --}}
+    @if($filtros['perfil'])
+        <h2>Interacciones Detalladas del Perfil</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Elemento de Interacción</th>
+                    <th class="text-right">Total Eventos / Clics</th>
+                    <th class="text-right">Tiempo Total de Retención (Hover)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Fotografía de Perfil</strong></td>
+                    <td class="text-right highlight">{{ number_format($perfil->clic_foto_perfil ?? 0) }}</td>
+                    <td class="text-right">{{ number_format(($perfil->hover_foto_ms ?? 0) / 1000, 2) }} s ({{ number_format($perfil->hover_foto_count ?? 0) }} hovers)</td>
+                </tr>
+                
+                @if($filtros['mensajes'])
+                <tr>
+                    <td><strong>Botón de Acción "Contactar" (Mensajes)</strong></td>
+                    <td class="text-right highlight">{{ number_format($perfil->clic_contactar ?? 0) }}</td>
+                    <td class="text-right" style="color: #ccc;">N/A</td>
+                </tr>
+                @endif
 
-            <tr>
-                <td><strong>Enlace de Correo Electrónico</strong></td>
-                <td class="text-right highlight">{{ number_format($perfil->clic_correo ?? 0) }}</td>
-                <td class="text-right">{{ number_format(($perfil->hover_correo_ms ?? 0) / 1000, 2) }} s ({{ number_format($perfil->hover_correo_count ?? 0) }} hovers)</td>
-            </tr>
-            <tr>
-                <td><strong>Perfil Profesional LinkedIn</strong></td>
-                <td class="text-right highlight">{{ number_format($perfil->clic_linkedin ?? 0) }}</td>
-                <td class="text-right" style="color: #ccc;">N/A</td>
-            </tr>
-            <tr>
-                <td><strong>Repositorio GitHub</strong></td>
-                <td class="text-right highlight">{{ number_format($perfil->clic_github ?? 0) }}</td>
-                <td class="text-right" style="color: #ccc;">N/A</td>
-            </tr>
+                <tr>
+                    <td><strong>Enlace de Correo Electrónico</strong></td>
+                    <td class="text-right highlight">{{ number_format($perfil->clic_correo ?? 0) }}</td>
+                    <td class="text-right">{{ number_format(($perfil->hover_correo_ms ?? 0) / 1000, 2) }} s ({{ number_format($perfil->hover_correo_count ?? 0) }} hovers)</td>
+                </tr>
+                <tr>
+                    <td><strong>Perfil Profesional LinkedIn</strong></td>
+                    <td class="text-right highlight">{{ number_format($perfil->clic_linkedin ?? 0) }}</td>
+                    <td class="text-right" style="color: #ccc;">N/A</td>
+                </tr>
+                <tr>
+                    <td><strong>Repositorio GitHub</strong></td>
+                    <td class="text-right highlight">{{ number_format($perfil->clic_github ?? 0) }}</td>
+                    <td class="text-right" style="color: #ccc;">N/A</td>
+                </tr>
 
-            @if($filtros['cv'])
-            <tr>
-                <td><strong>Descarga de Currículum Vitae (CV)</strong></td>
-                <td class="text-right highlight">{{ number_format($perfil->clic_descargar_cv ?? 0) }}</td>
-                <td class="text-right" style="color: #ccc;">N/A</td>
-            </tr>
-            @endif
-        </tbody>
-    </table>
+                @if($filtros['cv'])
+                <tr>
+                    <td><strong>Descarga de Currículum Vitae (CV)</strong></td>
+                    <td class="text-right highlight">{{ number_format($perfil->clic_descargar_cv ?? 0) }}</td>
+                    <td class="text-right" style="color: #ccc;">N/A</td>
+                </tr>
+                @endif
+            </tbody>
+        </table>
+    @endif
 
+    {{-- 3. HISTORIAL DE TRÁFICO --}}
     @if($filtros['vistas'])
         <h2>Historial de Visitas de Este Mes</h2>
         <table class="data-table">
@@ -154,55 +159,67 @@
         </table>
     @endif
 
-    @if($filtros['proyectos'])
-        <h2>Análisis de Competencias y Zonas Calientes (Proyectos)</h2>
-        <table class="data-table" style="margin-bottom: 10px;">
-            <thead>
-                <tr>
-                    <th>Acción en Habilidad Técnica</th>
-                    <th class="text-right">Número Total de Clics</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Despliegues / Detalles Expandidos</td>
-                    <td class="text-right highlight">{{ number_format($tecnicas->clic_expandir ?? 0) }}</td>
-                </tr>
-                <tr>
-                    <td>Secciones Cerradas / Contraídas</td>
-                    <td class="text-right highlight">{{ number_format($tecnicas->clic_cerrar ?? 0) }}</td>
-                </tr>
-            </tbody>
-        </table>
+    {{-- 4. SECCIÓN PROYECTOS Y ZONAS CALIENTES --}}
+    @if($filtros['proyectos'] || $filtros['perfil'])
+        <h2>Análisis de Competencias y Zonas Calientes</h2>
+        
+        @if($filtros['proyectos'])
+            <table class="data-table" style="margin-bottom: 10px;">
+                <thead>
+                    <tr>
+                        <th>Acción en Habilidad Técnica</th>
+                        <th class="text-right">Número Total de Clics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Despliegues / Detalles Expandidos</td>
+                        <td class="text-right highlight">{{ number_format($tecnicas->clic_expandir ?? 0) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Secciones Cerradas / Contraídas</td>
+                        <td class="text-right highlight">{{ number_format($tecnicas->clic_cerrar ?? 0) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        @endif
 
         <table style="width: 100%; margin-top: 15px;">
             <tr>
+                {{-- Subtabla Perfil (Muestra solo si está activo perfil) --}}
                 <td style="width: 48%; vertical-align: top; padding: 0;">
-                    <h3 style="font-size: 11px; color:#003366; margin: 0 0 5px 0;">Top Clics Coordenadas Perfil</h3>
-                    <table class="data-table" style="font-size: 11px;">
-                        @forelse($clicsPerfil as $cp)
-                            <tr>
-                                <td>{{ $cp->campo }}</td>
-                                <td class="text-right highlight" style="width: 35%;">{{ $cp->intensidad }} clics</td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="2" style="color:#aaa;">Sin clics en coordenadas este mes.</td></tr>
-                        @endforelse
-                    </table>
+                    @if($filtros['perfil'])
+                        <h3 style="font-size: 11px; color:#003366; margin: 0 0 5px 0;">Top Clics Coordenadas Perfil</h3>
+                        <table class="data-table" style="font-size: 11px;">
+                            @forelse($clicsPerfil as $cp)
+                                <tr>
+                                    <td>{{ $cp->campo }}</td>
+                                    <td class="text-right highlight" style="width: 35%;">{{ $cp->intensidad }} clics</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="2" style="color:#aaa;">Sin clics en coordenadas este mes.</td></tr>
+                            @endforelse
+                        </table>
+                    @endif
                 </td>
+                
                 <td style="width: 4%;"></td>
+                
+                {{-- Subtabla Proyectos (Muestra solo si está activo proyectos) --}}
                 <td style="width: 48%; vertical-align: top; padding: 0;">
-                    <h3 style="font-size: 11px; color:#003366; margin: 0 0 5px 0;">Top Clics Coordenadas Proyectos</h3>
-                    <table class="data-table" style="font-size: 11px;">
-                        @forelse($clicsProyectos as $cpp)
-                            <tr>
-                                <td>{{ $cpp->campo }}</td>
-                                <td class="text-right highlight" style="width: 35%;">{{ $cpp->intensidad }} clics</td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="2" style="color:#aaa;">Sin clics en coordenadas este mes.</td></tr>
-                        @endforelse
-                    </table>
+                    @if($filtros['proyectos'])
+                        <h3 style="font-size: 11px; color:#003366; margin: 0 0 5px 0;">Top Clics Coordenadas Proyectos</h3>
+                        <table class="data-table" style="font-size: 11px;">
+                            @forelse($clicsProyectos as $cpp)
+                                <tr>
+                                    <td>{{ $cpp->campo }}</td>
+                                    <td class="text-right highlight" style="width: 35%;">{{ $cpp->intensidad }} clics</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="2" style="color:#aaa;">Sin clics en coordenadas este mes.</td></tr>
+                            @endforelse
+                        </table>
+                    @endif
                 </td>
             </tr>
         </table>

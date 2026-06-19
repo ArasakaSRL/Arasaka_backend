@@ -25,7 +25,11 @@ class FirebaseAuthController extends Controller
         ]);
 
         try {
-            $verifiedToken = Firebase::auth()->verifyIdToken($request->id_token);
+            // El hosting compartido puede tener el reloj desfasado respecto a la hora real,
+            // lo que hace que Firebase vea el token como "emitido en el futuro".
+            // El leeway (en segundos) tolera ese desfase de reloj.
+            $leeway = (int) config('firebase.token_leeway', 60);
+            $verifiedToken = Firebase::auth()->verifyIdToken($request->id_token, false, $leeway);
 
             $uid      = $verifiedToken->claims()->get('sub');
             $correo   = $verifiedToken->claims()->get('email') ?? $request->input('correo');
@@ -43,7 +47,9 @@ class FirebaseAuthController extends Controller
                 ], 422);
             }
 
-            $usuario = Usuario::where('correo', $correo)->first();
+            $usuario = Usuario::where('firebase_uid', $uid)
+                ->orWhere('correo', $correo)
+                ->first();
 
             if ($usuario) {
                 // Registrado con correo y contraseña
@@ -83,6 +89,7 @@ class FirebaseAuthController extends Controller
                     'url_foto'           => $url_foto,
                     'verificacion_email' => now(),
                     'estado'             => true,
+                    'rol'                => 'user',
                     'suspendido'         => false,
                 ]);
                 $idPortafolio = (string) Str::uuid();

@@ -3,7 +3,7 @@
 namespace App\Notifications;
 
 use Illuminate\Auth\Notifications\VerifyEmail;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class VerificarCorreoNotification extends VerifyEmail
 {
@@ -11,13 +11,11 @@ class VerificarCorreoNotification extends VerifyEmail
     {
         $url = $this->verificationUrl($notifiable);
 
-        Mail::raw(
-            "Haz clic en el siguiente enlace para verificar tu correo:\n\n" . $url . "\n\nSi no creaste una cuenta, ignora este mensaje.",
-            fn($m) => $m
-                ->to($notifiable->getEmailForVerification())
-                ->subject('Verifica tu correo - ' . config('app.name'))
-        );
-
-        return null;
+        return (new MailMessage)
+            ->subject('Verifica tu correo - ' . config('app.name'))
+            ->greeting('Hola')
+            ->line('Haz clic en el siguiente botón para verificar tu correo:')
+            ->action('Verificar correo', $url)
+            ->line('Si no creaste una cuenta, ignora este mensaje.');
     }
 }

@@ -10,6 +10,7 @@ class GetProyectosByPortafolio
     public function execute($idPortafolio)
     {
         return Proyecto::where('id_portafolio', $idPortafolio)
+                ->where('visible', true)
                 ->with(['tecnologias', 'imagenes'])
                 ->orderBy('fecha_creacion', 'desc')
                 ->get();

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Certificacion;
 use App\Actions\Certificacion\CreateCertificacion;
 use App\Actions\Certificacion\GetCertificacionesByPortafolio;
+use App\Actions\Certificacion\GetCertificacionesOrdenadasAction;
 use App\Http\Requests\Certificacion\StoreCertificacionRequest;
 use App\Http\Resources\CertificacionResource;
 use App\Models\Certificacion;
 use App\Services\Certificacion\CertificacionService;
 use App\Http\Requests\Certificacion\DeleteCertificacionRequest;
+
 class CertificacionController {
 
     public function __construct(
@@ -75,6 +77,18 @@ class CertificacionController {
         return response()->json([
             'message' => 'Todas las certificaciones fueron eliminadas',
             'total_eliminadas' => $total
+        ]);
+    }
+
+    public function timeline(
+        GetCertificacionesOrdenadasAction $action,
+        string $idPortafolio
+    ){
+        $certificaciones = $action->execute($idPortafolio);
+
+        return response()->json([
+            'message' => 'Certificaciones obtenidas exitosamente',
+            'data' => CertificacionResource::collection($certificaciones)
         ]);
     }
 }

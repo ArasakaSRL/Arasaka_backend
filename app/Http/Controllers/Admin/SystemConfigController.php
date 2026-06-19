@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Notification;
 use App\Http\Controllers\Controller;
 use App\Models\SystemConfig;
+use App\Models\Usuario;
+use App\Notifications\ConfiguracionActualizadaNotification;
 
 class SystemConfigController extends Controller
 {
@@ -28,7 +31,26 @@ class SystemConfigController extends Controller
         ]);
 
         $config = SystemConfig::get();
+
+        $campos = [
+            'denuncias_advertencia', 'denuncias_suspension',
+            'portafolios_advertencia', 'portafolios_suspension',
+            'dias_suspension_portafolio', 'dias_suspension_usuario',
+        ];
+
+        $cambios = [];
+        foreach ($campos as $campo) {
+            if ((int) $config->$campo !== (int) $datos[$campo]) {
+                $cambios[$campo] = ['antes' => $config->$campo, 'despues' => $datos[$campo]];
+            }
+        }
+
         $config->update($datos);
+
+        if (!empty($cambios)) {
+            $usuarios = Usuario::where('rol', 'user')->where('estado', true)->get();
+            Notification::send($usuarios, new ConfiguracionActualizadaNotification($cambios));
+        }
 
         return response()->json([
             'success' => true,

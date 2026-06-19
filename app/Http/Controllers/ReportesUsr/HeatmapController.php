@@ -666,11 +666,12 @@ public function enviarReportePdf(Request $request)
     $fechaInicio = $fechaObjeto->copy()->startOfMonth()->startOfDay(); 
     $fechaFin    = $fechaObjeto->copy()->endOfMonth()->endOfDay();     
 
-    // Capturar los switches del Frontend
+    // Capturar los switches del Frontend (Agregado 'perfil')
     $filtros = [
         'vistas'    => $request->input('incluir_vistas', true),
+        'perfil'    => $request->input('incluir_perfil', true), // <-- NUEVO FILTRO
         'proyectos' => $request->input('incluir_proyectos', true),
-        'mensajes'  => $request->input('incluir_mensajes', true),
+        'mensajes'  => $request->input('incluir_messages', true), // Mapeado como llega del Front
         'cv'        => $request->input('incluir_cv', true),
     ];
 
@@ -689,24 +690,27 @@ public function enviarReportePdf(Request $request)
         ", [$id_portafolio, $fechaInicio, $fechaFin]);
     }
 
-    // 3. Métricas de Perfil ESTRICTAMENTE de ese mes
-    $perfil = DB::selectOne("
-        SELECT
-            COALESCE(SUM(ip.hover_foto_count),0) AS hover_foto_count,
-            COALESCE(SUM(ip.hover_foto_ms),0) AS hover_foto_ms,
-            COALESCE(SUM(ip.hover_correo_count),0) AS hover_correo_count,
-            COALESCE(SUM(ip.hover_correo_ms),0) AS hover_correo_ms,
-            COALESCE(SUM(ip.clic_foto_perfil),0) AS clic_foto_perfil,
-            COALESCE(SUM(ip.clic_correo),0) AS clic_correo,
-            COALESCE(SUM(ip.clic_linkedin),0) AS clic_linkedin,
-            COALESCE(SUM(ip.clic_github),0) AS clic_github,
-            COALESCE(SUM(ip.clic_contactar),0) AS clic_contactar,
-            COALESCE(SUM(ip.clic_descargar_cv),0) AS clic_descargar_cv
-        FROM interaccion_perfil ip
-        JOIN visitante v ON v.id_visitante = ip.id_visitante
-        WHERE v.id_portafolio = ? 
-          AND v.primera_visita BETWEEN ? AND ?
-    ", [$id_portafolio, $fechaInicio, $fechaFin]);
+    // 3. Métricas de Perfil ESTRICTAMENTE de ese mes (Solo si se requiere procesar)
+    $perfil = null;
+    if ($filtros['perfil']) {
+        $perfil = DB::selectOne("
+            SELECT
+                COALESCE(SUM(ip.hover_foto_count),0) AS hover_foto_count,
+                COALESCE(SUM(ip.hover_foto_ms),0) AS hover_foto_ms,
+                COALESCE(SUM(ip.hover_correo_count),0) AS hover_correo_count,
+                COALESCE(SUM(ip.hover_correo_ms),0) AS hover_correo_ms,
+                COALESCE(SUM(ip.clic_foto_perfil),0) AS clic_foto_perfil,
+                COALESCE(SUM(ip.clic_correo),0) AS clic_correo,
+                COALESCE(SUM(ip.clic_linkedin),0) AS clic_linkedin,
+                COALESCE(SUM(ip.clic_github),0) AS clic_github,
+                COALESCE(SUM(ip.clic_contactar),0) AS clic_contactar,
+                COALESCE(SUM(ip.clic_descargar_cv),0) AS clic_descargar_cv
+            FROM interaccion_perfil ip
+            JOIN visitante v ON v.id_visitante = ip.id_visitante
+            WHERE v.id_portafolio = ? 
+              AND v.primera_visita BETWEEN ? AND ?
+        ", [$id_portafolio, $fechaInicio, $fechaFin]);
+    }
 
     // 4. Datos de Proyectos y Habilidades (Zonas Calientes) ESTRICTAMENTE de ese mes
     $clicsProyectos = [];
@@ -733,14 +737,17 @@ public function enviarReportePdf(Request $request)
     }
 
     // Top coordenadas perfil ESTRICTAMENTE de ese mes
-    $clicsPerfil = DB::select("
-        SELECT cp.campo, COUNT(*) as intensidad
-        FROM clic_perfil cp
-        JOIN visitante v ON v.id_visitante = cp.id_visitante
-        WHERE v.id_portafolio = ? 
-          AND v.primera_visita BETWEEN ? AND ?
-        GROUP BY cp.campo ORDER BY intensidad DESC LIMIT 5
-    ", [$id_portafolio, $fechaInicio, $fechaFin]);
+    $clicsPerfil = [];
+    if ($filtros['perfil']) {
+        $clicsPerfil = DB::select("
+            SELECT cp.campo, COUNT(*) as intensidad
+            FROM clic_perfil cp
+            JOIN visitante v ON v.id_visitante = cp.id_visitante
+            WHERE v.id_portafolio = ? 
+              AND v.primera_visita BETWEEN ? AND ?
+            GROUP BY cp.campo ORDER BY intensidad DESC LIMIT 5
+        ", [$id_portafolio, $fechaInicio, $fechaFin]);
+    }
 
     // 5. Renderizar el PDF pasando las variables de rango de tiempo
     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reportes.analiticas', compact(

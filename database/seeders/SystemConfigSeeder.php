@@ -9,9 +9,9 @@ class SystemConfigSeeder extends Seeder
 {
     public function run(): void
     {
-        $existe = DB::table('system_config')->exists();
+        $existe = DB::table('configuracion_sistema')->exists();
         if (!$existe) {
-            DB::table('system_config')->insert([
+            DB::table('configuracion_sistema')->insert([
                 'denuncias_advertencia'  => 8,
                 'denuncias_suspension'   => 10,
                 'portafolios_advertencia' => 2,

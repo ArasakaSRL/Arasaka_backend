@@ -20,6 +20,7 @@ class UsuariosResource extends JsonResource
             'apellido' => $this->apellido,
             'username' => $this->username,
             'correo' => $this->correo,
+            'rol' => $this->rol,
             'url_foto' => $this->url_foto,
             'portafolios' => $this->portafolios ?? $this->portafolios->map(function ($p){
                 return[

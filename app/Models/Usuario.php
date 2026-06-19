@@ -22,7 +22,8 @@ class Usuario extends Authenticatable implements MustVerifyEmail
 
     protected $fillable = [
         'nombre', 'apellido', 'username', 'correo', 'password',
-        'url_foto', 'public_id', 'estado', 'suspendido', 'suspendido_hasta', 'tour_completado', 'verificacion_email', 'firebase_uid', 'provider',
+        'url_foto', 'public_id', 'estado', 'rol', 'suspendido', 'suspendido_hasta', 'tour_completado',
+        'verificacion_email', 'firebase_uid', 'provider',
     ];
 
     protected $hidden = ['password'];
@@ -77,9 +78,9 @@ class Usuario extends Authenticatable implements MustVerifyEmail
         $this->notify(new RestablecerContrasenaNotification($token));
     }
 
-    public function roles()
+    public function esAdmin(): bool
     {
-        return $this->belongsToMany(Rol::class, 'usuario_rol', 'id_usuario', 'id_rol');
+        return $this->rol === 'admin';
     }
 
     public function telefonos()
