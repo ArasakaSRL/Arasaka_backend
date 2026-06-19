@@ -116,6 +116,10 @@ class Portafolio extends Model
     {
         return $this->hasMany(VisualizacionesPortafolio::class, 'id_portafolio', 'id_portafolio');
     }
+    public function formacion_academica()
+    {
+        return $this->hasMany(FormacionAcademica::class, 'id_portafolio', 'id_portafolio');
+    }
     protected static function boot()
 {
     parent::boot();

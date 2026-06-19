@@ -13,6 +13,18 @@ return [
 
     /*
      * ------------------------------------------------------------------------
+     * Token leeway (clock skew tolerance)
+     * ------------------------------------------------------------------------
+     *
+     * Segundos de tolerancia al verificar ID tokens. Útil en hostings
+     * compartidos cuyo reloj está desfasado y provoca el error
+     * "The token was issued in the future".
+     */
+
+    'token_leeway' => (int) env('FIREBASE_TOKEN_LEEWAY', 60),
+
+    /*
+     * ------------------------------------------------------------------------
      * Firebase project configurations
      * ------------------------------------------------------------------------
      */

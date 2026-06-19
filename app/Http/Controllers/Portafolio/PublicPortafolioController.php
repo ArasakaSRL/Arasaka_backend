@@ -18,7 +18,7 @@ class PublicPortafolioController extends Controller
     {
         $portafolio = $this->action->execute($slug);
 
-        if (!$portafolio || !$portafolio->usuario || $portafolio->usuario->estado === false) {
+        if (!$portafolio || !$portafolio->usuario || $portafolio->usuario->estado === false || $portafolio->usuario->esAdmin()) {
             return response()->json([
                 'mensaje' => 'Este portafolio ya no está disponible',
                 'codigo' => 'no_disponible',
@@ -48,8 +48,10 @@ class PublicPortafolioController extends Controller
     {
         $query = Portafolio::where('link_activo', true)
             ->where('suspendido', false)
+            ->where('visibilidad', true)
             ->whereHas('usuario', function ($q) {
-                $q->where('estado', true);
+                $q->where('estado', true)
+                  ->where('rol', '!=', 'admin');
             });
 
         // Búsqueda de texto libre

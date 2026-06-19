@@ -25,7 +25,11 @@ class FirebaseAuthController extends Controller
         ]);
 
         try {
-            $verifiedToken = Firebase::auth()->verifyIdToken($request->id_token);
+            // El hosting compartido puede tener el reloj desfasado respecto a la hora real,
+            // lo que hace que Firebase vea el token como "emitido en el futuro".
+            // El leeway (en segundos) tolera ese desfase de reloj.
+            $leeway = (int) config('firebase.token_leeway', 60);
+            $verifiedToken = Firebase::auth()->verifyIdToken($request->id_token, false, $leeway);
 
             $uid      = $verifiedToken->claims()->get('sub');
             $correo   = $verifiedToken->claims()->get('email') ?? $request->input('correo');

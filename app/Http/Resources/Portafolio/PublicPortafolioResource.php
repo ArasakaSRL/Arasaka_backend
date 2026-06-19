@@ -107,6 +107,15 @@ class PublicPortafolioResource extends JsonResource
                 'nombre' => $r->nombre,
                 'url_Red' => $r->url,
             ]),
+            'formacion_academica' => $this->formacion_academica ->take(5) ->map(fn($f) => [
+                'id_formacion_academica' => $f->id_formacion_academica,
+                'institucion' => $f->institucion,
+                'titulo' => $f->titulo,
+                'nivel' => $f->nivel,
+                'fecha_inicio' => $f->fecha_inicio,
+                'fecha_fin' => $f->fecha_fin,
+                'descripcion' => $f->descripcion,
+            ]),
             'configuracion' => $this->configuracion ? [
                 'mostrar_proyectos' => $this->configuracion->mostrar_proyecto,
                 'mostrar_habilidades' => $this->configuracion->mostrar_habilidades,

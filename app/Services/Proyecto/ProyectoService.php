@@ -7,17 +7,18 @@ use Illuminate\Support\Str;
 
 class ProyectoService {
     public function crear($data ,$idPortafolio){
-        //dd($data, $idPortafolio);
         $proyecto = Proyecto::create([
             'id_proyecto' => Str::uuid(),
             'id_portafolio' => $idPortafolio,
             ...$data
         ]);
         $proyecto->tecnologias()->sync($data['tecnologias']);
-        $url_imagen = collect($data['url_imagen'])->map(fn($url_imagen) => [
-            'url_imagen' => $url_imagen
-        ])->toArray();
-        $proyecto->imagenes()->createMany($url_imagen);
+        if(array_key_exists('url_imagen', $data) && is_array($data['url_imagen'])){
+            $url_imagen = collect($data['url_imagen'])->map(fn($url_imagen) => [
+                'url_imagen' => $url_imagen
+            ])->toArray();
+            $proyecto->imagenes()->createMany($url_imagen);
+        }
         return $proyecto;
     }
 

@@ -26,4 +26,8 @@ class FormacionAcademica extends Model
         'fecha_fin',
         'descripcion'
     ];
+    public function portafolio()
+    {
+        return $this->belongsTo(Portafolio::class, 'id_portafolio', 'id_portafolio');
+    }
 }

@@ -1,1 +1,0 @@
-import"./api-DsVADrK5.js";import{u as e}from"./update-perfilPersonal-DHrjqSCR.js";export{e as getPortafolio};
