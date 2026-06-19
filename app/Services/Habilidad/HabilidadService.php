@@ -37,7 +37,6 @@ class HabilidadService{
 }
 
     public function actualizar(array $data, String $idHabilidad){
-        //dd($data);
         $habilidad = Habilidad::findOrFail($idHabilidad);
         if (array_key_exists('id_tecnologia', $data)) {
             $data['nombre'] = Tecnologia::findOrFail($data['id_tecnologia'])->nombre;

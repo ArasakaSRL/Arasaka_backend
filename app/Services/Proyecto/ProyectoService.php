@@ -7,7 +7,6 @@ use Illuminate\Support\Str;
 
 class ProyectoService {
     public function crear($data ,$idPortafolio){
-        //dd($data, $idPortafolio);
         $proyecto = Proyecto::create([
             'id_proyecto' => Str::uuid(),
             'id_portafolio' => $idPortafolio,
