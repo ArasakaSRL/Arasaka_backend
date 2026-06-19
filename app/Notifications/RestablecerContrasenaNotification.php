@@ -17,6 +17,7 @@ class RestablecerContrasenaNotification extends ResetPassword
             ->line('Recibiste este correo porque se solicitó restablecer tu contraseña.')
             ->action('Restablecer contraseña', $url)
             ->line('Este enlace expira en 60 minutos.')
-            ->line('Si no solicitaste esto, ignora este mensaje.');
+            ->line('Si no solicitaste esto, ignora este mensaje.')
+            ->salutation('Saludos, ' . config('app.name'));
     }
 }
