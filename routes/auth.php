@@ -28,11 +28,9 @@ Route::post('/iniciar-sesion', [AuthenticatedSessionController::class, 'store'])
     ->name('iniciar-sesion');
 
 Route::post('/recuperar-contrasena', [PasswordResetLinkController::class, 'store'])
-    ->middleware('guest')
     ->name('contrasena.correo');
 
 Route::post('/restablecer-contrasena', [NewPasswordController::class, 'store'])
-    ->middleware('guest')
     ->name('contrasena.restablecer');
 
 Route::get('/verificar-correo/{id}/{hash}', VerifyEmailController::class)
