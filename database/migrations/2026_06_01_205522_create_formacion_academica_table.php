@@ -26,8 +26,8 @@ return new class extends Migration {
                 'Licenciatura',
                 'Maestria',
                 'Doctorado',
-                'Diplomado',
-                'Curso'
+                'PostDoctorado',
+                'Especialidad'
             ]);
 
             $table->date('fecha_inicio');

@@ -43,7 +43,7 @@ class StoreFormacionAcademicaRequest extends FormRequest
 
             'nivel' => [
                 'required',
-                'in:Tecnico,Licenciatura,Maestria,Doctorado,Diplomado,Curso'
+                'in:Tecnico,Licenciatura,Maestria,Doctorado,PostDoctorado,Especialidad'
             ],
 
             'fecha_inicio' => [
