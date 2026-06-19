@@ -29,7 +29,7 @@ class StoreProyectoRequest extends FormRequest
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
             'tecnologias' => 'required|array||min:1',
             'tecnologias.*' => 'exists:tecnologias,id_tecnologia',
-            'url_imagen'=> 'sometimes|array|min:1',
+            'url_imagen'=> 'sometimes|array',
             'url_imagen.*'=> 'url',
             'url_demo' => 'nullable|url',
             'url_github' => 'nullable|url',
@@ -58,7 +58,6 @@ class StoreProyectoRequest extends FormRequest
             'tecnologias.*.exists' => 'Una o más tecnologías seleccionadas no existen.',
 
             'url_imagen.array' => 'Las URL de las imágenes deben ser un arreglo.',
-            'url_imagen.min' => 'Debe proporcionar al menos una URL de imagen.',
             'url_imagen.*.url' => 'Cada URL de imagen debe ser una URL válida.',
 
             'url_demo.url' => 'La URL de la demo debe ser una URL válida.',
