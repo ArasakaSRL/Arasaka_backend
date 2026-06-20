@@ -47,12 +47,12 @@ class StoreFormacionAcademicaRequest extends FormRequest
             ],
 
             'fecha_inicio' => [
-                'required',
+                'nullable',
                 'date'
             ],
 
             'fecha_fin' => [
-                'nullable',
+                'required',
                 'date'
             ],
 

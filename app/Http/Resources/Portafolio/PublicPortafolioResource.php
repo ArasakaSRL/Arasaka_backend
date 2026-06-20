@@ -103,7 +103,7 @@ class PublicPortafolioResource extends JsonResource
                 'orientacion' => $c->orientacion_imagen,
             ]),
             'redes_profesionales' => $this->redesProfesionales ->take(5) ->map(fn($r) => [
-                'id_red_profesional' => $r->id_red,
+                'id_red_profesional' => $r->id_red_profesional,
                 'nombre' => $r->nombre,
                 'url_Red' => $r->url,
             ]),
