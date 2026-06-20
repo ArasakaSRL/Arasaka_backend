@@ -55,3 +55,4 @@ require __DIR__ . "/Modules/formacionAcademica.php";
 
 require __DIR__ . "/Modules/interaccionesRutas.php";
 require __DIR__ . "/Modules/visitantesRutas.php";
+require __DIR__ . "/Modules/redesProfecionale.php";
