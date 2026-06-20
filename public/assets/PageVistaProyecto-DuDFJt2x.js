@@ -1,0 +1,1 @@
+import"./jsx-runtime-H2Lj-n6k.js";import"./proxy-BZvn1kju.js";import"./api-DGz2hVoe.js";import"./portafolio.service-C0P7nfW0.js";import{i as e}from"./index-DTG94GW6.js";export{e as default};
