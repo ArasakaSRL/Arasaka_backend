@@ -29,6 +29,7 @@ return new class extends Migration
             $table->integer('clic_github')->default(0);
             $table->integer('clic_demo')->default(0);
             $table->integer('clic_detalle')->default(0);
+            $table->integer('clic_general')->default(0);  
 
             $table->timestampTz('ultima_interaccion')->useCurrent();
 

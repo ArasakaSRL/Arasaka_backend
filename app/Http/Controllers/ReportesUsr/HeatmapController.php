@@ -262,7 +262,7 @@ class HeatmapController extends Controller
         ]);
 
         $campo     = $data['campo'];
-        $permitidos = ['hover_count', 'hover_ms', 'clic_github', 'clic_demo', 'clic_detalle'];
+        $permitidos = ['hover_count', 'hover_ms', 'clic_github', 'clic_demo', 'clic_detalle', 'clic_general'];
 
         if (!in_array($campo, $permitidos)) {
             return response()->json(['ok' => true]);
@@ -304,7 +304,7 @@ class HeatmapController extends Controller
         $campo      = $data['campo'];
         $permitidos = [
             'hover_count', 'hover_ms',
-            'clic_abrir_modal', 'clic_ver_credencial', 'clic_cerrar_modal'
+            'clic_abrir_modal', 'clic_ver_credencial', 'clic_cerrar_modal','clic_general'
         ];
 
         if (!in_array($campo, $permitidos)) {
